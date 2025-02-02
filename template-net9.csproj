@@ -1,0 +1,66 @@
+<Project Sdk="Microsoft.NET.Sdk.WebAssembly">
+	<PropertyGroup Condition="'$(Configuration)' == 'Debug'">
+		<RunAOTCompilation>false</RunAOTCompilation>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)' == 'Release'">
+		<RunAOTCompilation>true</RunAOTCompilation>
+	</PropertyGroup>
+	<ItemGroup Condition="'$(Configuration)' == 'Release'">
+		<WasmOptConfigurationFlags Include="--converge -O4 -Oz"></WasmOptConfigurationFlags>
+	</ItemGroup>
+
+	<PropertyGroup>
+		<TargetFramework>net9.0</TargetFramework>
+		<LangVersion>12.0</LangVersion>
+		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+		<EnableUnsafeBinaryFormatterSerialization>true</EnableUnsafeBinaryFormatterSerialization>
+		<Nullable>disable</Nullable>
+		<DisableBuildCompression>true</DisableBuildCompression>
+		<TrimMode>partial</TrimMode>
+
+		<NoWarn>IL2026,IL2046,IL2057,IL2062,IL2065,IL2067,IL2070,IL2072,IL2075,IL2087,IL2090</NoWarn>
+		<NoWarn>$(NoWarn),SYSLIB0011,CS0169,CS0219,CS0649,CS8981,CA2022</NoWarn>
+
+		<WasmBuildNative>true</WasmBuildNative>
+		<WasmEnableThreads>true</WasmEnableThreads>
+		<WasmEnableSIMD>true</WasmEnableSIMD>
+		<WasmEnableExceptionHandling>true</WasmEnableExceptionHandling>
+
+		<WasmAllowUndefinedSymbols>true</WasmAllowUndefinedSymbols>
+		<WasmBitcodeCompileOptimizationFlag>-O3</WasmBitcodeCompileOptimizationFlag>
+		<WasmNativeStrip>true</WasmNativeStrip>
+		<WasmStripILAfterAOT>false</WasmStripILAfterAOT>
+		<WasmNativeDebugSymbols>true</WasmNativeDebugSymbols>
+
+		<EmccExtraLDFlags>-sMIN_WEBGL_VERSION=2 -sWASMFS -Wl,--no-check-features</EmccExtraLDFlags>
+		<EmccLinkOptimizationFlag>-O3</EmccLinkOptimizationFlag>
+		<EmccCompileOptimizationFlag>-O3</EmccCompileOptimizationFlag>
+		<EmccEnvironment>web,worker</EmccEnvironment>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<!-- FNA -->
+		<NativeFileReference Include="statics\SDL2.a" />
+		<NativeFileReference Include="statics\FNA3D.a" />
+		<NativeFileReference Include="statics\libmojoshader.a" />
+		<NativeFileReference Include="statics\FAudio.a" />
+
+		<!-- WASMFS -->
+		<NativeFileReference Include="Emscripten.c" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<Compile Remove="terraria\Decompiled\**\*" />
+		<Compile Remove="extract-relogic\**\*" />
+		<ProjectReference Include="..\FNA\FNA.Core.csproj" />
+		<PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+		<PackageReference Include="DotNetZip" Version="1.16.0" />
+		<PackageReference Include="MP3Sharp" Version="1.0.5" />
+		<PackageReference Include="NVorbis" Version="0.10.5" />
+		<PackageReference Include="CsvHelper" Version="33.0.1" />
+
+		<!-- TODO replace with Steamworks.cs -->
+		<PackageReference Include="Steamworks.NET" Version="2024.8.0" />
+	</ItemGroup>
+</Project>
+

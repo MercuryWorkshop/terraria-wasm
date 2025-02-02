@@ -1,0 +1,158 @@
+--- terraria/Decompiled/Terraria/Graphics/Capture/CaptureCamera.cs
++++ terraria/Terraria/Graphics/Capture/CaptureCamera.cs
+@@ -1,13 +1,10 @@
+ using System;
+ using System.Collections.Generic;
+ using System.Drawing;
+-using System.Drawing.Imaging;
+ using System.IO;
+-using System.Runtime.InteropServices;
+ using System.Threading;
+ using Microsoft.Xna.Framework;
+ using Microsoft.Xna.Framework.Graphics;
+-using ReLogic.OS;
+ using Terraria.Graphics.Effects;
+ using Terraria.Localization;
+ using Terraria.Utilities;
+@@ -195,7 +192,7 @@
+ 			else
+ 			{
+ 				_graphics.SetRenderTarget(null);
+-				SaveImage(_frameBuffer, captureChunk.ScaledArea.Width, captureChunk.ScaledArea.Height, ImageFormat.Png, _activeSettings.OutputName, captureChunk.Area.X + "-" + captureChunk.Area.Y + ".png");
++				SaveImage(_frameBuffer, captureChunk.ScaledArea.Width, captureChunk.ScaledArea.Height, _activeSettings.OutputName, captureChunk.Area.X + "-" + captureChunk.Area.Y + ".png");
+ 			}
+ 			_tilesProcessed += captureChunk.Area.Width * captureChunk.Area.Height;
+ 		}
+@@ -247,7 +244,7 @@
+ 		return _tilesProcessed / _totalTiles;
+ 	}
+ 
+-	private bool SaveImage(int width, int height, ImageFormat imageFormat, string filename)
++	private bool SaveImage(int width, int height, string filename)
+ 	{
+ 		string savePath = Main.SavePath;
+ 		char directorySeparatorChar = Path.DirectorySeparatorChar;
+@@ -259,22 +256,8 @@
+ 		}
+ 		try
+ 		{
+-			if (!Platform.IsWindows)
+-			{
+-				using FileStream stream = File.Create(filename);
+-				PlatformUtilities.SavePng(stream, width, height, width, height, _outputData);
+-			}
+-			else
+-			{
+-				using Bitmap bitmap = new Bitmap(width, height);
+-				System.Drawing.Rectangle rect = new System.Drawing.Rectangle(0, 0, width, height);
+-				BitmapData bitmapData = bitmap.LockBits(rect, ImageLockMode.WriteOnly, PixelFormat.Format32bppPArgb);
+-				IntPtr scan = bitmapData.Scan0;
+-				Marshal.Copy(_outputData, 0, scan, width * height * 4);
+-				bitmap.UnlockBits(bitmapData);
+-				bitmap.Save(filename, imageFormat);
+-				bitmap.Dispose();
+-			}
++			using FileStream stream = File.Create(filename);
++			PlatformUtilities.SavePng(stream, width, height, width, height, _outputData);
+ 			return true;
+ 		}
+ 		catch (Exception value)
+@@ -284,7 +267,7 @@
+ 		}
+ 	}
+ 
+-	private void SaveImage(Texture2D texture, int width, int height, ImageFormat imageFormat, string foldername, string filename)
++	private void SaveImage(Texture2D texture, int width, int height, string foldername, string filename)
+ 	{
+ 		string[] obj = new string[5]
+ 		{
+@@ -306,54 +289,26 @@
+ 		{
+ 			return;
+ 		}
+-		if (!Platform.IsWindows)
+-		{
+-			int elementCount = texture.Width * texture.Height * 4;
+-			texture.GetData(_outputData, 0, elementCount);
+-			int num = 0;
+-			int num2 = 0;
+-			for (int i = 0; i < height; i++)
+-			{
+-				for (int j = 0; j < width; j++)
+-				{
+-					_outputData[num2] = _outputData[num];
+-					_outputData[num2 + 1] = _outputData[num + 1];
+-					_outputData[num2 + 2] = _outputData[num + 2];
+-					_outputData[num2 + 3] = _outputData[num + 3];
+-					num += 4;
+-					num2 += 4;
+-				}
+-				num += texture.Width - width << 2;
+-			}
+-			using FileStream stream = File.Create(text2);
+-			PlatformUtilities.SavePng(stream, width, height, width, height, _outputData);
+-			return;
+-		}
+-		using Bitmap bitmap = new Bitmap(width, height);
+-		System.Drawing.Rectangle rect = new System.Drawing.Rectangle(0, 0, width, height);
+-		int elementCount2 = texture.Width * texture.Height * 4;
+-		texture.GetData(_outputData, 0, elementCount2);
+-		int num3 = 0;
+-		int num4 = 0;
+-		for (int k = 0; k < height; k++)
+-		{
+-			for (int l = 0; l < width; l++)
+-			{
+-				byte b = _outputData[num3 + 2];
+-				_outputData[num4 + 2] = _outputData[num3];
+-				_outputData[num4] = b;
+-				_outputData[num4 + 1] = _outputData[num3 + 1];
+-				_outputData[num4 + 3] = _outputData[num3 + 3];
+-				num3 += 4;
+-				num4 += 4;
++
++		int elementCount = texture.Width * texture.Height * 4;
++		texture.GetData(_outputData, 0, elementCount);
++		int num = 0;
++		int num2 = 0;
++		for (int i = 0; i < height; i++)
++		{
++			for (int j = 0; j < width; j++)
++			{
++				_outputData[num2] = _outputData[num];
++				_outputData[num2 + 1] = _outputData[num + 1];
++				_outputData[num2 + 2] = _outputData[num + 2];
++				_outputData[num2 + 3] = _outputData[num + 3];
++				num += 4;
++				num2 += 4;
+ 			}
+-			num3 += texture.Width - width << 2;
++			num += texture.Width - width << 2;
+ 		}
+-		BitmapData bitmapData = bitmap.LockBits(rect, ImageLockMode.WriteOnly, PixelFormat.Format32bppPArgb);
+-		IntPtr scan = bitmapData.Scan0;
+-		Marshal.Copy(_outputData, 0, scan, width * height * 4);
+-		bitmap.UnlockBits(bitmapData);
+-		bitmap.Save(text2, imageFormat);
++		using FileStream stream = File.Create(text2);
++		PlatformUtilities.SavePng(stream, width, height, width, height, _outputData);
+ 	}
+ 
+ 	private void FinishCapture()
+@@ -365,7 +320,6 @@
+ 			{
+ 				int width = _outputImageSize.Width;
+ 				int height = _outputImageSize.Height;
+-				ImageFormat png = ImageFormat.Png;
+ 				string[] obj = new string[6]
+ 				{
+ 					Main.SavePath,
+@@ -382,7 +336,7 @@
+ 				obj[3] = directorySeparatorChar.ToString();
+ 				obj[4] = _activeSettings.OutputName;
+ 				obj[5] = ".png";
+-				if (SaveImage(width, height, png, string.Concat(obj)))
++				if (SaveImage(width, height, string.Concat(obj)))
+ 				{
+ 					break;
+ 				}

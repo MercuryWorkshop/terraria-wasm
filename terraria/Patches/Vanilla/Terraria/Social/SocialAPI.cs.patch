@@ -1,0 +1,10 @@
+--- terraria/Decompiled/Terraria/Social/SocialAPI.cs
++++ terraria/Terraria/Social/SocialAPI.cs
+@@ -3,7 +3,6 @@
+ using ReLogic.OS;
+ using Terraria.Social.Base;
+ using Terraria.Social.Steam;
+-using Terraria.Social.WeGame;
+ 
+ namespace Terraria.Social;
+ 

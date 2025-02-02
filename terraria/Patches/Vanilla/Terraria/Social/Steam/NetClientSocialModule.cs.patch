@@ -1,0 +1,10 @@
+--- terraria/Decompiled/Terraria/Social/Steam/NetClientSocialModule.cs
++++ terraria/Terraria/Social/Steam/NetClientSocialModule.cs
+@@ -4,7 +4,6 @@
+ using Terraria.Localization;
+ using Terraria.Net;
+ using Terraria.Net.Sockets;
+-using Terraria.Social.WeGame;
+ 
+ namespace Terraria.Social.Steam;
+ 

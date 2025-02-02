@@ -1,0 +1,45 @@
+--- terraria/Decompiled/Terraria/Main.cs
++++ terraria/Terraria/Main.cs
+@@ -12,7 +12,6 @@
+ using System.Text.RegularExpressions;
+ using System.Threading;
+ using System.Threading.Tasks;
+-using System.Windows.Forms;
+ using Microsoft.Win32;
+ using Microsoft.Xna.Framework;
+ using Microsoft.Xna.Framework.Content;
+@@ -24,7 +23,6 @@
+ using ReLogic.Graphics;
+ using ReLogic.Localization.IME;
+ using ReLogic.OS;
+-using ReLogic.Peripherals.RGB;
+ using ReLogic.Utilities;
+ using Terraria.Achievements;
+ using Terraria.Audio;
+@@ -282,10 +280,6 @@
+ 
+ 	public static Main instance;
+ 
+-	public static ChromaEngine Chroma;
+-
+-	public static ChromaHotkeyPainter ChromaPainter;
+-
+ 	public static Camera Camera = new Camera();
+ 
+ 	public static IPlayerRenderer PlayerRenderer = new LegacyPlayerRenderer();
+@@ -49166,6 +49160,7 @@
+ 		return result;
+ 	}
+ 
++	/*
+ 	private static void SetDisplayModeAsBorderless(ref int width, ref int height, Form form)
+ 	{
+ 		if (screenBorderless && !graphics.IsFullScreen && screenBorderlessPendingResizes > 0)
+@@ -49196,6 +49191,7 @@
+ 		form.Location = new System.Drawing.Point(0, 0);
+ 		form.FormBorderStyle = FormBorderStyle.None;
+ 	}
++	*/
+ 
+ 	public static void OpenCharacterSelectUI()
+ 	{

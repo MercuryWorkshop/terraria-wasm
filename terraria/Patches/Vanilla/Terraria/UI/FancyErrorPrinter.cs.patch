@@ -1,0 +1,10 @@
+--- terraria/Decompiled/Terraria/UI/FancyErrorPrinter.cs
++++ terraria/Terraria/UI/FancyErrorPrinter.cs
+@@ -2,7 +2,6 @@
+ using System.Collections.Generic;
+ using System.IO;
+ using System.Text;
+-using System.Windows.Forms;
+ using ReLogic.Content;
+ using ReLogic.OS;
+ 

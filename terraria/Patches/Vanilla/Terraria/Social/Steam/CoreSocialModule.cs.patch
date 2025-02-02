@@ -1,0 +1,9 @@
+--- terraria/Decompiled/Terraria/Social/Steam/CoreSocialModule.cs
++++ terraria/Terraria/Social/Steam/CoreSocialModule.cs
+@@ -1,6 +1,5 @@
+ using System;
+ using System.Threading;
+-using System.Windows.Forms;
+ using ReLogic.OS;
+ using Steamworks;
+ using Terraria.Localization;

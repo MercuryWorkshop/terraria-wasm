@@ -1,0 +1,10 @@
+--- terraria/Decompiled/Terraria/NPC.cs
++++ terraria/Terraria/NPC.cs
+@@ -14,7 +14,6 @@
+ using Terraria.GameContent.Drawing;
+ using Terraria.GameContent.Events;
+ using Terraria.GameContent.ItemDropRules;
+-using Terraria.GameContent.RGB;
+ using Terraria.GameContent.Tile_Entities;
+ using Terraria.GameContent.UI;
+ using Terraria.Graphics.CameraModifiers;

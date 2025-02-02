@@ -1,0 +1,33 @@
+--- terraria/Decompiled/Terraria/Graphics/WindowStateController.cs
++++ terraria/Terraria/Graphics/WindowStateController.cs
+@@ -1,5 +1,3 @@
+-using System.Drawing;
+-using System.Windows.Forms;
+ using ReLogic.OS;
+ 
+ namespace Terraria.Graphics;
+@@ -22,16 +20,10 @@
+ 
+ 	public void TryMovingToScreen(string screenDeviceName)
+ 	{
+-		if (CanMoveWindowAcrossScreens && TryGetBounds(screenDeviceName, out var bounds) && IsVisibleOnAnyScreen(bounds))
+-		{
+-			Form form = Control.FromHandle(Main.instance.Window.Handle);
+-			if (WouldViewFitInScreen(form.Bounds, bounds))
+-			{
+-				form.Location = new Point(bounds.Width / 2 - form.Width / 2 + bounds.X, bounds.Height / 2 - form.Height / 2 + bounds.Y);
+-			}
+-		}
++
+ 	}
+ 
++	/*
+ 	private bool TryGetBounds(string screenDeviceName, out Rectangle bounds)
+ 	{
+ 		bounds = default(Rectangle);
+@@ -68,4 +60,5 @@
+ 		}
+ 		return false;
+ 	}
++	*/
+ }
