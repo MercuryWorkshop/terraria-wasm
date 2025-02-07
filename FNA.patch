@@ -10,34 +10,21 @@ index 84be250..86215eb 100644
      <Compile Include="lib\SDL3-CS\SDL3\SDL3.Legacy.cs" />
      <Compile Include="lib\FAudio\csharp\FAudio.cs" />
      <Compile Include="lib\Theorafile\csharp\Theorafile.cs" />
-Submodule lib/SDL3-CS contains modified content
-diff --git a/lib/SDL3-CS/SDL3/SDL3.Legacy.cs b/lib/SDL3-CS/SDL3/SDL3.Legacy.cs
-index 338963f..c513257 100644
---- a/lib/SDL3-CS/SDL3/SDL3.Legacy.cs
-+++ b/lib/SDL3-CS/SDL3/SDL3.Legacy.cs
-@@ -2282,7 +2282,7 @@ namespace SDL3
- 		[DllImport(nativeLibName, CallingConvention = CallingConvention.Cdecl)]
- 		public static extern IntPtr SDL_GetWindows(out int count);
- 
--		[DllImport(nativeLibName, EntryPoint = "SDL_CreateWindow", CallingConvention = CallingConvention.Cdecl)]
-+		[DllImport(nativeLibName, EntryPoint = "SDL__CreateWindow", CallingConvention = CallingConvention.Cdecl)]
- 		private static extern IntPtr INTERNAL_SDL_CreateWindow(byte* title, int w, int h, SDL_WindowFlags flags);
- 		public static IntPtr SDL_CreateWindow(string title, int w, int h, SDL_WindowFlags flags)
- 		{
-@@ -2311,7 +2311,7 @@ namespace SDL3
- 		[DllImport(nativeLibName, CallingConvention = CallingConvention.Cdecl)]
- 		public static extern uint SDL_GetWindowProperties(IntPtr window);
- 
--		[DllImport(nativeLibName, CallingConvention = CallingConvention.Cdecl)]
-+		[DllImport(nativeLibName, EntryPoint = "SDL__GetWindowFlags", CallingConvention = CallingConvention.Cdecl)]
- 		public static extern SDL_WindowFlags SDL_GetWindowFlags(IntPtr window);
- 
- 		[DllImport(nativeLibName, EntryPoint = "SDL_SetWindowTitle", CallingConvention = CallingConvention.Cdecl)]
 diff --git a/src/Content/ContentTypeReaderManager.cs b/src/Content/ContentTypeReaderManager.cs
-index 5fcf9e1..a7c2338 100644
+index 5fcf9e1..12f44fc 100644
 --- a/src/Content/ContentTypeReaderManager.cs
 +++ b/src/Content/ContentTypeReaderManager.cs
-@@ -196,6 +196,13 @@ namespace Microsoft.Xna.Framework.Content
+@@ -21,6 +21,9 @@ using System.Text.RegularExpressions;
+ 
+ namespace Microsoft.Xna.Framework.Content
+ {
++	public class ContentTypeReaderMetaTypeManager {
++		public static Type BackupType;
++	}
+ 	public sealed class ContentTypeReaderManager
+ 	{
+ 		#region Private Variables
+@@ -196,6 +199,15 @@ namespace Microsoft.Xna.Framework.Content
  						readerTypeString = PrepareType(readerTypeString);
  
  						Type l_readerType = Type.GetType(readerTypeString);
@@ -46,6 +33,8 @@ index 5fcf9e1..a7c2338 100644
 +							if (readerTypeString == "Microsoft.Xna.Framework.Content.ListReader`1[[System.Char, mscorlib]]")
 +							{
 +								l_readerType = typeof(Microsoft.Xna.Framework.Content.ListReader<System.Char>);
++							} else {
++								l_readerType = ContentTypeReaderMetaTypeManager.BackupType;
 +							}
 +						}
  						if (l_readerType != null)
