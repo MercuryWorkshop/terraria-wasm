@@ -1,0 +1,12 @@
+--- terraria/Decompiled/Terraria/Utilities/PlatformUtilities.cs
++++ terraria/Terraria/Utilities/PlatformUtilities.cs
+@@ -31,7 +31,8 @@
+ 		byte[] array = new byte[width * height * 4 + 41 + 57 + 256];
+ 		IntPtr intPtr = Marshal.AllocHGlobal(array.Length);
+ 		IntPtr dst = SDL.SDL_RWFromMem(intPtr, array.Length);
+-		SDL_image.IMG_SavePNG_RW(surface, dst, 1);
++		// TerrariaWasm TODO!!!
++		// SDL_image.IMG_SavePNG_RW(surface, dst, 1);
+ 		SDL.SDL_FreeSurface(surface);
+ 		Marshal.Copy(intPtr, array, 0, array.Length);
+ 		Marshal.FreeHGlobal(intPtr);

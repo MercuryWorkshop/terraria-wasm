@@ -8,3 +8,12 @@
  using Terraria.GameContent.Tile_Entities;
  using Terraria.GameContent.UI;
  using Terraria.Graphics.CameraModifiers;
+@@ -1379,7 +1378,7 @@
+ 		{
+ 			highestTierBossOrEvent = 398;
+ 		}
+-		CommonConditions.Boss.HighestTierBossOrEvent = highestTierBossOrEvent;
++		//CommonConditions.Boss.HighestTierBossOrEvent = highestTierBossOrEvent;
+ 	}
+ 
+ 	public void SpawnWithHigherTime(int timeMult)

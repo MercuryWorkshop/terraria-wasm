@@ -80,10 +80,6 @@ preInit();
 export async function play() {
 	gameState.playing = true;
 
-	if (!await hasEmbeddedResources()) {
-		await downloadEmbeddedResources();
-	}
-
 	const before = performance.now();
 	console.debug("Init...");
 	exports.Program.Init();

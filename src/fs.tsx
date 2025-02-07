@@ -2,10 +2,7 @@ import { Button, Icon } from "./ui";
 
 import tar from "tar-stream";
 // @ts-expect-error
-import {
-	fromWeb as streamFromWeb,
-	toWeb as streamToWeb,
-} from "streamx-webstream";
+import { fromWeb as streamFromWeb, toWeb as streamToWeb, } from "streamx-webstream";
 
 import iconFolder from "@ktibow/iconset-material-symbols/folder";
 import iconDraft from "@ktibow/iconset-material-symbols/draft";
@@ -69,44 +66,6 @@ export async function copyFolder(
 	}
 	const newFolder = await to.getDirectoryHandle(folder.name, { create: true });
 	await upload(folder, newFolder);
-}
-
-export async function hasEmbeddedResources(): Promise<boolean> {
-	try {
-		await rootFolder.getDirectoryHandle("EmbeddedResources", {
-			create: false,
-		});
-		return true;
-	} catch {
-		return false;
-	}
-}
-
-export async function downloadEmbeddedResources() {
-	let res = await rootFolder.getDirectoryHandle("EmbeddedResources", {
-		create: true,
-	});
-	try {
-		let manifest = await fetch("resources/resources.txt");
-		if (!manifest.ok) throw new Error("Failed to load resource manifest");
-
-		let resourcefiles = (await manifest.text()).split("\n");
-		for (const file of resourcefiles) {
-			let response = await fetch("resources/" + file);
-			if (!response.ok) throw new Error("Failed to download Embedded Resource " + file);
-
-			res.getFileHandle(file, { create: true }).then(async (fileHandle) => {
-				const writable = await fileHandle.createWritable();
-				await response.body!.pipeTo(writable);
-			});
-
-			console.info("Downloaded Embedded Resource " + file);
-		}
-	} catch {
-		// delete folder
-		await rootFolder.removeEntry("EmbeddedResources", { recursive: true });
-		throw new Error("Failed to download Embedded Resources");
-	}
 }
 
 export async function hasContent(): Promise<boolean> {

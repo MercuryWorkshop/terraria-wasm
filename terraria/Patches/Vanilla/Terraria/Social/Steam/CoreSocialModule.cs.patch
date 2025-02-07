@@ -7,3 +7,12 @@
  using ReLogic.OS;
  using Steamworks;
  using Terraria.Localization;
+@@ -39,7 +38,7 @@
+ 		}
+ 		if (!SteamAPI.Init())
+ 		{
+-			MessageBox.Show(Language.GetTextValue("Error.LaunchFromSteam"), Language.GetTextValue("Error.Error"));
++			Console.WriteLine(Language.GetTextValue("Error.LaunchFromSteam"), Language.GetTextValue("Error.Error"));
+ 			Environment.Exit(1);
+ 		}
+ 		IsSteamValid = true;

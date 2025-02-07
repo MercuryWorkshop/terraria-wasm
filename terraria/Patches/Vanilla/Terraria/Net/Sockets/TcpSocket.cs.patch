@@ -1,0 +1,26 @@
+--- terraria/Decompiled/Terraria/Net/Sockets/TcpSocket.cs
++++ terraria/Terraria/Net/Sockets/TcpSocket.cs
+@@ -30,18 +30,22 @@
+ 
+ 	public TcpSocket()
+ 	{
++		/*
+ 		_connection = new TcpClient
+ 		{
+ 			NoDelay = true
+-		};
++			};
++		*/
+ 	}
+ 
+ 	public TcpSocket(TcpClient tcpClient)
+ 	{
++		/*
+ 		_connection = tcpClient;
+ 		_connection.NoDelay = true;
+ 		IPEndPoint iPEndPoint = (IPEndPoint)tcpClient.Client.RemoteEndPoint;
+ 		_remoteAddress = new TcpAddress(iPEndPoint.Address, iPEndPoint.Port);
++		*/
+ 	}
+ 
+ 	void ISocket.Close()

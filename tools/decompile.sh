@@ -27,6 +27,6 @@ ilspycmd --nested-directories -lv CSharp11_0 -p -o terraria/Decompiled terraria/
 rm -r \
 	terraria/Decompiled/{Terraria,ReLogic}.csproj \
 	terraria/Decompiled/ReLogic/{{OS,Localization/IME}/Windows,Localization/IME/WindowsIme.cs,Peripherals} \
-	terraria/Decompiled/Terraria/{Social/WeGame,Initializers/ChromaInitializer.cs,GameContent/{RGB,ChromaHotkeyPainter.cs},Net/WeGameAddress.cs,Control.cs}
+	terraria/Decompiled/Terraria/{Social/WeGame,Initializers/ChromaInitializer.cs,GameContent/{RGB,ChromaHotkeyPainter.cs},Net/WeGameAddress.cs,{Control,Program,LinuxLaunch}.cs}
 cp terraria/Decompiled/app.ico public/
 cp -r terraria/Decompiled/{ReLogic,Terraria} terraria/

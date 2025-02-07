@@ -1,0 +1,12 @@
+--- terraria/Decompiled/Terraria/Audio/SoundEngine.cs
++++ terraria/Terraria/Audio/SoundEngine.cs
+@@ -18,7 +18,8 @@
+ 
+ 	public static void Initialize()
+ 	{
+-		IsAudioSupported = TestAudioSupport();
++		// TerrariaWasm TODO!!!!
++		IsAudioSupported = false; // TestAudioSupport();
+ 	}
+ 
+ 	public static void Load(IServiceProvider services)

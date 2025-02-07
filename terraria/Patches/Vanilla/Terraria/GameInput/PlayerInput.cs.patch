@@ -1,0 +1,26 @@
+--- terraria/Decompiled/Terraria/GameInput/PlayerInput.cs
++++ terraria/Terraria/GameInput/PlayerInput.cs
+@@ -1231,7 +1231,6 @@
+ 			{
+ 				flag2 = true;
+ 			}
+-			Main.ChromaPainter.PressKey(pressedKeys[i]);
+ 		}
+ 		if (Main.blockKey != Keys.None.ToString())
+ 		{
+@@ -1413,7 +1412,6 @@
+ 			ListenFor(null, InputMode.Keyboard);
+ 			Main.blockKey = newKey;
+ 			Main.blockInput = false;
+-			Main.ChromaPainter.CollectBoundKeys();
+ 		}
+ 		if (CurrentlyRebinding && _listeningInputMode == InputMode.KeyboardUI)
+ 		{
+@@ -1431,7 +1429,6 @@
+ 			ListenFor(null, InputMode.KeyboardUI);
+ 			Main.blockKey = newKey;
+ 			Main.blockInput = false;
+-			Main.ChromaPainter.CollectBoundKeys();
+ 		}
+ 		FixDerpedRebinds();
+ 		if (PlayerInput.OnBindingChange != null)

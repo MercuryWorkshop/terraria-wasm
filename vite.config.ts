@@ -10,7 +10,7 @@ export default defineConfig({
 			"Cross-Origin-Opener-Policy": "same-origin",
 		},
 		strictPort: true,
-		port: 5000,
+		port: 5001,
 	},
 	build: {
 		target: "es2022",

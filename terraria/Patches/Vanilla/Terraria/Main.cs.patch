@@ -27,7 +27,200 @@
  	public static Camera Camera = new Camera();
  
  	public static IPlayerRenderer PlayerRenderer = new LegacyPlayerRenderer();
-@@ -49166,6 +49160,7 @@
+@@ -3427,21 +3421,6 @@
+ 
+ 	private static void TrySupporting8K()
+ 	{
+-		if (!Platform.IsWindows)
+-		{
+-			return;
+-		}
+-		instance.ReleaseTargets();
+-		Type type = Assembly.GetAssembly(typeof(GraphicsProfile)).GetType("Microsoft.Xna.Framework.Graphics.ProfileCapabilities", throwOnError: true);
+-		if (type != null)
+-		{
+-			FieldInfo field = type.GetField("MaxTextureSize", BindingFlags.Instance | BindingFlags.NonPublic);
+-			FieldInfo field2 = type.GetField("HiDef", BindingFlags.Static | BindingFlags.NonPublic);
+-			if (field != null && field2 != null)
+-			{
+-				field.SetValue(field2.GetValue(null), 8192);
+-			}
+-		}
+ 	}
+ 
+ 	public static void AnglerQuestSwap()
+@@ -3906,24 +3885,6 @@
+ 		}
+ 		PendingBorderlessState = screenBorderless;
+ 		screenBorderlessPendingResizes = (screenBorderless ? 6 : 0);
+-		if (Platform.IsWindows && !dedServ)
+-		{
+-			Form form = Control.FromHandle(instance.Window.Handle);
+-			if (screenBorderless)
+-			{
+-				SetBorderlessFormStyle(form);
+-			}
+-			else if (screenMaximized)
+-			{
+-				form.FormBorderStyle = FormBorderStyle.Sizable;
+-				form.WindowState = FormWindowState.Maximized;
+-			}
+-			else
+-			{
+-				form.FormBorderStyle = FormBorderStyle.Sizable;
+-			}
+-			form.BringToFront();
+-		}
+ 		int currentValue2 = graphics.PreferredBackBufferWidth;
+ 		int currentValue3 = graphics.PreferredBackBufferHeight;
+ 		configuration.Get("DisplayWidth", ref currentValue2);
+@@ -4277,10 +4238,6 @@
+ 				{
+ 					terrariasFixedTiming = binaryReader.ReadBoolean();
+ 				}
+-				if (num >= 91 && binaryReader.ReadBoolean() && !dedServ && Platform.IsWindows)
+-				{
+-					Control.FromHandle(base.Window.Handle).WindowState = FormWindowState.Maximized;
+-				}
+ 				if (num >= 4)
+ 				{
+ 					int width = binaryReader.ReadInt32();
+@@ -4773,18 +4730,10 @@
+ 
+ 	public void NeverSleep()
+ 	{
+-		if (Platform.IsWindows)
+-		{
+-			previousExecutionState = NativeMethods.SetThreadExecutionState(2147483649u);
+-		}
+ 	}
+ 
+ 	public void YouCanSleepNow()
+ 	{
+-		if (Platform.IsWindows && previousExecutionState != 0)
+-		{
+-			NativeMethods.SetThreadExecutionState(previousExecutionState);
+-		}
+ 	}
+ 
+ 	public void DedServ()
+@@ -4794,14 +4743,6 @@
+ 		if (autoShutdown)
+ 		{
+ 			string lpWindowName = (Console.Title = "terraria" + rand.Next(int.MaxValue));
+-			if (Platform.IsWindows)
+-			{
+-				IntPtr intPtr = FindWindow(null, lpWindowName);
+-				if (intPtr != IntPtr.Zero)
+-				{
+-					ShowWindow(intPtr, 0);
+-				}
+-			}
+ 		}
+ 		else
+ 		{
+@@ -5910,7 +5851,6 @@
+ 		MinimapFrameManagerInstance.BindTo(preferences);
+ 		BigBossProgressBar.BindTo(preferences);
+ 		ResourceSetsManager.BindTo(preferences);
+-		ChromaInitializer.BindTo(preferences);
+ 		Terraria.Graphics.Effects.Filters.Scene.BindTo(preferences);
+ 		if (SocialAPI.Cloud != null)
+ 		{
+@@ -6065,12 +6005,6 @@
+ 			WorldGen.EveryTileFrame();
+ 			player[myPlayer].Spawn(PlayerSpawnContext.SpawningIntoWorld);
+ 		}
+-		else if (Platform.IsWindows && !dedServ)
+-		{
+-			IntPtr systemMenu = GetSystemMenu(base.Window.Handle, bRevert: false);
+-			int menuItemCount = GetMenuItemCount(systemMenu);
+-			RemoveMenu(systemMenu, menuItemCount - 1, 1024);
+-		}
+ 		if (!dedServ)
+ 		{
+ 			SoundID.FillAccessMap();
+@@ -9829,9 +9763,6 @@
+ 		_achievementAdvisor = new AchievementAdvisor();
+ 		OpenRecent();
+ 		UILinksInitializer.Load();
+-		Chroma = new ChromaEngine();
+-		ChromaPainter = new ChromaHotkeyPainter();
+-		ChromaPainter.CollectBoundKeys();
+ 		CacheSupportedDisplaySizes();
+ 		if (autoJoin)
+ 		{
+@@ -9917,7 +9848,6 @@
+ 		}
+ 		AssetSourceController.UseResourcePacks(AssetInitializer.CreateResourcePackList(base.Services));
+ 		AssetInitializer.LoadSplashAssets(asyncLoadForSounds: true);
+-		ChromaInitializer.Load();
+ 		_gameContentLoadProcess = LoadContent_Deferred();
+ 	}
+ 
+@@ -15630,8 +15560,6 @@
+ 		{
+ 			UpdateAudio();
+ 			GlobalTimeWrappedHourly = (float)(gameTime.TotalGameTime.TotalSeconds % 3600.0);
+-			ChromaInitializer.UpdateEvents();
+-			Chroma.Update(GlobalTimeWrappedHourly);
+ 			return;
+ 		}
+ 		PartySky.MultipleSkyWorkaroundFix = true;
+@@ -15736,8 +15664,6 @@
+ 		DoUpdate_AutoSave();
+ 		if (!dedServ)
+ 		{
+-			ChromaInitializer.UpdateEvents();
+-			Chroma.Update(GlobalTimeWrappedHourly);
+ 			if (superFast)
+ 			{
+ 				base.IsFixedTimeStep = false;
+@@ -15931,17 +15857,6 @@
+ 			}
+ 			UpdateOldNPCShop();
+ 			hasFocus = base.IsActive;
+-			if (Platform.IsWindows)
+-			{
+-				Form form = Control.FromHandle(base.Window.Handle);
+-				bool num3 = form.WindowState == FormWindowState.Minimized;
+-				bool flag = Form.ActiveForm == form;
+-				hasFocus |= flag;
+-				if (num3)
+-				{
+-					hasFocus = false;
+-				}
+-			}
+ 			if (!hasFocus && netMode == 0)
+ 			{
+ 				if (!Platform.IsOSX)
+@@ -16101,10 +16016,6 @@
+ 		{
+ 			DoUpdateInWorld(_worldUpdateTimeTester);
+ 		}
+-		if (netMode != 2)
+-		{
+-			ChromaPainter.Update();
+-		}
+ 	}
+ 
+ 	internal static void UpdateCreativeGameModeOverride()
+@@ -44855,7 +44766,6 @@
+ 
+ 	private static void TryDisposingEverything()
+ 	{
+-		ChromaInitializer.DisableAllDeviceGroups();
+ 		CaptureManager.Instance.Dispose();
+ 		audioSystem.Dispose();
+ 	}
+@@ -49159,13 +49069,10 @@
+ 	private static bool IsBorderlessDisplayAvailable()
+ 	{
+ 		bool result = false;
+-		if (Platform.IsWindows)
+-		{
+-			result = true;
+-		}
  		return result;
  	}
  
@@ -35,7 +228,7 @@
  	private static void SetDisplayModeAsBorderless(ref int width, ref int height, Form form)
  	{
  		if (screenBorderless && !graphics.IsFullScreen && screenBorderlessPendingResizes > 0)
-@@ -49196,6 +49191,7 @@
+@@ -49196,6 +49103,7 @@
  		form.Location = new System.Drawing.Point(0, 0);
  		form.FormBorderStyle = FormBorderStyle.None;
  	}
@@ -43,3 +236,98 @@
  
  	public static void OpenCharacterSelectUI()
  	{
+@@ -62938,22 +62846,7 @@
+ 	public static void SetDisplayMode(int width, int height, bool fullscreen)
+ 	{
+ 		bool flag = false;
+-		Form form = null;
+-		if (Platform.IsWindows)
+-		{
+-			form = Control.FromHandle(instance.Window.Handle);
+-			screenMaximized = form.WindowState == FormWindowState.Maximized;
+-			if (screenBorderless && screenMaximized && !graphics.IsFullScreen)
+-			{
+-				screenMaximized = false;
+-				form.WindowState = FormWindowState.Normal;
+-			}
+-			flag = form.FormBorderStyle == FormBorderStyle.None;
+-		}
+-		else
+-		{
+-			screenMaximized = false;
+-		}
++		screenMaximized = false;
+ 		bool flag2 = false;
+ 		int num3;
+ 		int num4;
+@@ -62970,14 +62863,6 @@
+ 					TryPickingDefaultUIScale(800f);
+ 				}
+ 			}
+-			if (Platform.IsWindows)
+-			{
+-				form.MinimumSize = new Size(0, 0);
+-				if (!fullscreen && !flag3)
+-				{
+-					SetDisplayModeAsBorderless(ref width, ref height, form);
+-				}
+-			}
+ 			if (width > maxScreenW)
+ 			{
+ 				float num = (float)height / (float)width;
+@@ -63009,34 +62894,12 @@
+ 		else
+ 		{
+ 			PlayerInput.RawMouseScale = Vector2.One;
+-			if (Platform.IsWindows)
+-			{
+-				form.MinimumSize = new Size(minScreenW, minScreenH);
+-				if (flag)
+-				{
+-					width = displayWidth[0];
+-					height = displayHeight[0];
+-				}
+-			}
+ 			width = Math.Min(width, maxScreenW);
+ 			height = Math.Min(height, maxScreenH);
+ 			num3 = graphics.GraphicsDevice.Viewport.Width;
+ 			num4 = graphics.GraphicsDevice.Viewport.Height;
+ 			flag2 = graphics.PreferredBackBufferWidth != graphics.GraphicsDevice.Viewport.Width || graphics.PreferredBackBufferHeight != graphics.GraphicsDevice.Viewport.Height;
+ 		}
+-		if (Platform.IsWindows && !fullscreen && !flag2)
+-		{
+-			if (form.ClientSize.Width < graphics.PreferredBackBufferWidth)
+-			{
+-				width = form.ClientSize.Width;
+-				flag2 = true;
+-			}
+-			if (form.ClientSize.Height < graphics.PreferredBackBufferHeight)
+-			{
+-				height = form.ClientSize.Height;
+-				flag2 = true;
+-			}
+-		}
+ 		width &= 0x7FFFFFFE;
+ 		height &= 0x7FFFFFFE;
+ 		width = Math.Max(width, minScreenW);
+@@ -63069,20 +62932,6 @@
+ 			PendingResolutionWidth = screenWidth;
+ 			PendingResolutionHeight = screenHeight;
+ 			PlayerInput.CacheOriginalScreenDimensions();
+-			if (Platform.IsWindows && !fullscreen)
+-			{
+-				if (screenBorderless)
+-				{
+-					ApplyBorderlessResolution(form);
+-					form.FormBorderStyle = FormBorderStyle.None;
+-				}
+-				else
+-				{
+-					form.FormBorderStyle = FormBorderStyle.Sizable;
+-				}
+-				form.SendToBack();
+-				form.BringToFront();
+-			}
+ 			Lighting.Initialize();
+ 			if (!drawToScreen && !_isResizingAndRemakingTargets)
+ 			{

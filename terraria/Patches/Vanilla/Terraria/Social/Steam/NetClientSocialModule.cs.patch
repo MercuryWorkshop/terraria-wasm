@@ -8,3 +8,57 @@
  
  namespace Terraria.Social.Steam;
  
+@@ -57,7 +56,6 @@
+ 				playerData.SetAsActive();
+ 				Main.menuMode = 882;
+ 				Main.statusText = Language.GetTextValue("Social.Joining");
+-				WeGameHelper.WriteDebugString(" CheckParameters， lobby.join");
+ 				_lobby.Join(lobbySteamId, OnLobbyEntered);
+ 			});
+ 		}
+@@ -65,7 +63,6 @@
+ 
+ 	public override void LaunchLocalServer(Process process, ServerMode mode)
+ 	{
+-		WeGameHelper.WriteDebugString("LaunchLocalServer");
+ 		if (_lobby.State != 0)
+ 		{
+ 			_lobby.Leave();
+@@ -155,7 +152,6 @@
+ 
+ 	private void OnLobbyJoinRequest(GameLobbyJoinRequested_t result)
+ 	{
+-		WeGameHelper.WriteDebugString(" OnLobbyJoinRequest");
+ 		if (_lobby.State != 0)
+ 		{
+ 			_lobby.Leave();
+@@ -176,7 +172,6 @@
+ 
+ 	private void OnLobbyEntered(LobbyEnter_t result, bool failure)
+ 	{
+-		WeGameHelper.WriteDebugString(" OnLobbyEntered");
+ 		SteamNetworking.AllowP2PPacketRelay(bAllow: true);
+ 		SendAuthTicket(_lobby.Owner);
+ 		int num = 0;
+@@ -221,7 +216,6 @@
+ 
+ 	private void SendAuthTicket(CSteamID address)
+ 	{
+-		WeGameHelper.WriteDebugString(" SendAuthTicket");
+ 		if (_authTicket == HAuthTicket.Invalid)
+ 		{
+ 			_authTicket = SteamUser.GetAuthSessionTicket(_authData, _authData.Length, out _authDataLength);
+@@ -261,13 +255,11 @@
+ 
+ 	private void OnSessionConnectFail(P2PSessionConnectFail_t result)
+ 	{
+-		WeGameHelper.WriteDebugString(" OnSessionConnectFail");
+ 		Close(result.m_steamIDRemote);
+ 	}
+ 
+ 	private void OnP2PSessionRequest(P2PSessionRequest_t result)
+ 	{
+-		WeGameHelper.WriteDebugString(" OnP2PSessionRequest");
+ 		CSteamID steamIDRemote = result.m_steamIDRemote;
+ 		if (_connectionStateMap.ContainsKey(steamIDRemote) && _connectionStateMap[steamIDRemote] != 0)
+ 		{

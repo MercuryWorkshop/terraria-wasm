@@ -8,3 +8,32 @@
  
  namespace Terraria.Social;
  
+@@ -47,9 +46,11 @@
+ 		case SocialMode.Steam:
+ 			LoadSteam();
+ 			break;
++			/*
+ 		case SocialMode.WeGame:
+ 			LoadWeGame();
+ 			break;
++			*/
+ 		}
+ 		foreach (ISocialModule module in _modules)
+ 		{
+@@ -104,9 +105,9 @@
+ 		{
+ 			Network = LoadModule<Terraria.Social.Steam.NetClientSocialModule>();
+ 		}
+-		WeGameHelper.WriteDebugString("LoadSteam modules");
+ 	}
+ 
++	/*
+ 	private static void LoadWeGame()
+ 	{
+ 		LoadModule<Terraria.Social.WeGame.CoreSocialModule>();
+@@ -123,4 +124,5 @@
+ 		}
+ 		WeGameHelper.WriteDebugString("LoadWeGame modules");
+ 	}
++	*/
+ }

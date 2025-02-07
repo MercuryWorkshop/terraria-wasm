@@ -1,0 +1,8 @@
+--- terraria/Decompiled/Terraria/Social/SocialMode.cs
++++ terraria/Terraria/Social/SocialMode.cs
+@@ -4,5 +4,4 @@
+ {
+ 	None,
+ 	Steam,
+-	WeGame
+ }

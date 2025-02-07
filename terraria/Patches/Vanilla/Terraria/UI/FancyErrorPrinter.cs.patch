@@ -8,3 +8,13 @@
  using ReLogic.Content;
  using ReLogic.OS;
  
+@@ -129,9 +128,5 @@
+ 
+ 	private static void ShowTheBox(string preparedMessage)
+ 	{
+-		if (Platform.IsWindows && !Main.dedServ)
+-		{
+-			MessageBox.Show(preparedMessage, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+-		}
+ 	}
+ }

@@ -1,0 +1,11 @@
+--- terraria/Decompiled/Terraria/Audio/OGGAudioTrack.cs
++++ terraria/Terraria/Audio/OGGAudioTrack.cs
+@@ -59,7 +59,7 @@
+ 
+ 	private void FindLoops()
+ 	{
+-		IDictionary<string, IList<string>> all = _vorbisReader.Tags.All;
++		IDictionary<string, IList<string>> all = (IDictionary<string, IList<string>>)_vorbisReader.Tags.All;
+ 		TryReadingTag(all, "LOOPSTART", ref _loopStart);
+ 		TryReadingTag(all, "LOOPEND", ref _loopEnd);
+ 	}

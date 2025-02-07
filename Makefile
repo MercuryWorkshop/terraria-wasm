@@ -13,12 +13,12 @@ clean:
 
 build: statics
 	dotnet publish -c $(Profile) -v diag
-	# microsoft messed up etc etc
-	sed -i 's/FS_createPath("\/","usr\/share",!0,!0)/FS_createPath("\/usr","share",!0,!0)/' bin/$(Profile)/net9.0/publish/wwwroot/_framework/dotnet.runtime.*.js
-	sed -i 's/var SDL2=Module\["SDL2"\];return SDL2.audioContext.sampleRate/return 1/' bin/$(Profile)/net9.0/publish/wwwroot/_framework/dotnet.native.*.js
-	sed -i 's/SDL2===undefined||SDL2.capture===undefined/true/' bin/$(Profile)/net9.0/publish/wwwroot/_framework/dotnet.native.*.js
-	sed -i 's/SDL2===undefined||SDL2.audio===undefined/true/' bin/$(Profile)/net9.0/publish/wwwroot/_framework/dotnet.native.*.js
 	cp -rv bin/$(Profile)/net9.0/publish/wwwroot/_framework public/
+	# microsoft messed up etc etc
+	sed -i 's/FS_createPath("\/","usr\/share",!0,!0)/FS_createPath("\/usr","share",!0,!0)/' public/_framework/dotnet.runtime.*.js
+	sed -i 's/var SDL2=Module\["SDL2"\];return SDL2.audioContext.sampleRate/return 1/' public/_framework/dotnet.native.*.js
+	sed -i 's/SDL2===undefined||SDL2.capture===undefined/true/' public/_framework/dotnet.native.*.js
+	sed -i 's/SDL2===undefined||SDL2.audio===undefined/true/' public/_framework/dotnet.native.*.js
 
 serve: build
 	pnpm dev

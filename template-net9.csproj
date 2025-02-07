@@ -18,8 +18,10 @@
 		<DisableBuildCompression>true</DisableBuildCompression>
 		<TrimMode>partial</TrimMode>
 
+		<StartupObject>Program</StartupObject>
+
 		<NoWarn>IL2026,IL2046,IL2057,IL2062,IL2065,IL2067,IL2070,IL2072,IL2075,IL2087,IL2090</NoWarn>
-		<NoWarn>$(NoWarn),SYSLIB0011,CS0169,CS0219,CS0649,CS8981,CA2022</NoWarn>
+		<NoWarn>$(NoWarn),SYSLIB0011,SYSLIB0022,CS0067,CS0162,CS0169,CS0219,CS0414,CS0649,CS1522,CS1717,CS8981,CA2022,CA1416</NoWarn>
 
 		<WasmBuildNative>true</WasmBuildNative>
 		<WasmEnableThreads>true</WasmEnableThreads>
@@ -46,7 +48,7 @@
 		<NativeFileReference Include="statics\FAudio.a" />
 
 		<!-- WASMFS -->
-		<NativeFileReference Include="Emscripten.c" />
+		<NativeFileReference Include="terraria\Emscripten.c" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -54,13 +56,96 @@
 		<Compile Remove="extract-relogic\**\*" />
 		<ProjectReference Include="..\FNA\FNA.Core.csproj" />
 		<PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+		<PackageReference Include="Newtonsoft.Json.Bson" Version="1.0.3" />
 		<PackageReference Include="DotNetZip" Version="1.16.0" />
 		<PackageReference Include="MP3Sharp" Version="1.0.5" />
 		<PackageReference Include="NVorbis" Version="0.10.5" />
-		<PackageReference Include="CsvHelper" Version="33.0.1" />
+		<!-- TODO find the real version of CsvHelper and fetch from nuget -->
+		<Reference Include="terraria/libs/CsvHelper.dll" />
 
 		<!-- TODO replace with Steamworks.cs -->
-		<PackageReference Include="Steamworks.NET" Version="2024.8.0" />
+		<PackageReference Include="Steamworks.NET" Version="20.1.0" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<EmbeddedResource Include="terraria/Decompiled/Terraria.GameContent.Creative.Content.Sacrifices.tsv" LogicalName="Terraria.GameContent.Creative.Content.Sacrifices.tsv" />
+		<EmbeddedResource Include="terraria/Decompiled/Terraria.IO.Data.ResourcePacksDefaultInfo.tsv" LogicalName="Terraria.IO.Data.ResourcePacksDefaultInfo.tsv" />
+		<EmbeddedResource Include="terraria/Decompiled/Terraria.Libraries.ReLogic.ReLogic.dll" LogicalName="Terraria.Libraries.ReLogic.ReLogic.dll" />
+		<EmbeddedResource Include="terraria/Decompiled/Terraria.Libraries.DotNetZip.Ionic.Zip.CF.dll" LogicalName="Terraria.Libraries.DotNetZip.Ionic.Zip.CF.dll" />
+		<EmbeddedResource Include="terraria/Decompiled/Terraria.Libraries.JSON.NET.Newtonsoft.Json.dll" LogicalName="Terraria.Libraries.JSON.NET.Newtonsoft.Json.dll" />
+		<EmbeddedResource Include="terraria/Decompiled/Terraria.Libraries.CsvHelper.CsvHelper.dll" LogicalName="Terraria.Libraries.CsvHelper.CsvHelper.dll" />
+		<EmbeddedResource Include="terraria/Decompiled/Terraria.Libraries.NVorbis.NVorbis.dll" LogicalName="Terraria.Libraries.NVorbis.NVorbis.dll" />
+		<EmbeddedResource Include="terraria/Decompiled/Terraria.Libraries.NVorbis.System.ValueTuple.dll" LogicalName="Terraria.Libraries.NVorbis.System.ValueTuple.dll" />
+		<EmbeddedResource Include="terraria/Decompiled/Terraria.Libraries.MP3Sharp.MP3Sharp.dll" LogicalName="Terraria.Libraries.MP3Sharp.MP3Sharp.dll" />
+		<EmbeddedResource Include="terraria/Decompiled/Terraria.Libraries.Steamworks.NET.Linux.Steamworks.NET.dll" LogicalName="Terraria.Libraries.Steamworks.NET.Linux.Steamworks.NET.dll" />
+		<EmbeddedResource Include="terraria/Decompiled/Terraria.Libraries.RailSDK.Linux.RailSDK.Net.dll" LogicalName="Terraria.Libraries.RailSDK.Linux.RailSDK.Net.dll" />
+		<EmbeddedResource Include="terraria/Decompiled/Terraria.Localization.Content.de-DE.json" LogicalName="Terraria.Localization.Content.de-DE.json" />
+		<EmbeddedResource Include="terraria/Decompiled/Terraria.Localization.Content.de-DE.Town.json" LogicalName="Terraria.Localization.Content.de-DE.Town.json" />
+		<EmbeddedResource Include="terraria/Decompiled/Terraria.Localization.Content.en-US.Items.json" LogicalName="Terraria.Localization.Content.en-US.Items.json" />
+		<EmbeddedResource Include="terraria/Decompiled/Terraria.Localization.Content.en-US.json" LogicalName="Terraria.Localization.Content.en-US.json" />
+		<EmbeddedResource Include="terraria/Decompiled/Terraria.Localization.Content.en-US.Town.json" LogicalName="Terraria.Localization.Content.en-US.Town.json" />
+		<EmbeddedResource Include="terraria/Decompiled/Terraria.Localization.Content.es-ES.json" LogicalName="Terraria.Localization.Content.es-ES.json" />
+		<EmbeddedResource Include="terraria/Decompiled/Terraria.Localization.Content.es-ES.Town.json" LogicalName="Terraria.Localization.Content.es-ES.Town.json" />
+		<EmbeddedResource Include="terraria/Decompiled/Terraria.Localization.Content.fr-FR.json" LogicalName="Terraria.Localization.Content.fr-FR.json" />
+		<EmbeddedResource Include="terraria/Decompiled/Terraria.Localization.Content.fr-FR.Town.json" LogicalName="Terraria.Localization.Content.fr-FR.Town.json" />
+		<EmbeddedResource Include="terraria/Decompiled/Terraria.Localization.Content.it-IT.json" LogicalName="Terraria.Localization.Content.it-IT.json" />
+		<EmbeddedResource Include="terraria/Decompiled/Terraria.Localization.Content.it-IT.Town.json" LogicalName="Terraria.Localization.Content.it-IT.Town.json" />
+		<EmbeddedResource Include="terraria/Decompiled/Terraria.Localization.Content.pl-PL.json" LogicalName="Terraria.Localization.Content.pl-PL.json" />
+		<EmbeddedResource Include="terraria/Decompiled/Terraria.Localization.Content.pl-PL.Town.json" LogicalName="Terraria.Localization.Content.pl-PL.Town.json" />
+		<EmbeddedResource Include="terraria/Decompiled/Terraria.Localization.Content.pt-BR.json" LogicalName="Terraria.Localization.Content.pt-BR.json" />
+		<EmbeddedResource Include="terraria/Decompiled/Terraria.Localization.Content.pt-BR.Town.json" LogicalName="Terraria.Localization.Content.pt-BR.Town.json" />
+		<EmbeddedResource Include="terraria/Decompiled/Terraria.Localization.Content.ru-RU.json" LogicalName="Terraria.Localization.Content.ru-RU.json" />
+		<EmbeddedResource Include="terraria/Decompiled/Terraria.Localization.Content.ru-RU.Town.json" LogicalName="Terraria.Localization.Content.ru-RU.Town.json" />
+		<EmbeddedResource Include="terraria/Decompiled/Terraria.Localization.Content.zh-Hans.json" LogicalName="Terraria.Localization.Content.zh-Hans.json" />
+		<EmbeddedResource Include="terraria/Decompiled/Terraria.Localization.Content.zh-Hans.Town.json" LogicalName="Terraria.Localization.Content.zh-Hans.Town.json" />
+		<EmbeddedResource Include="terraria/Decompiled/Terraria.Localization.Content.de-DE.Items.json" LogicalName="Terraria.Localization.Content.de-DE.Items.json" />
+		<EmbeddedResource Include="terraria/Decompiled/Terraria.Localization.Content.es-ES.Items.json" LogicalName="Terraria.Localization.Content.es-ES.Items.json" />
+		<EmbeddedResource Include="terraria/Decompiled/Terraria.Localization.Content.fr-FR.Items.json" LogicalName="Terraria.Localization.Content.fr-FR.Items.json" />
+		<EmbeddedResource Include="terraria/Decompiled/Terraria.Localization.Content.it-IT.Items.json" LogicalName="Terraria.Localization.Content.it-IT.Items.json" />
+		<EmbeddedResource Include="terraria/Decompiled/Terraria.Localization.Content.pl-PL.Items.json" LogicalName="Terraria.Localization.Content.pl-PL.Items.json" />
+		<EmbeddedResource Include="terraria/Decompiled/Terraria.Localization.Content.pt-BR.Items.json" LogicalName="Terraria.Localization.Content.pt-BR.Items.json" />
+		<EmbeddedResource Include="terraria/Decompiled/Terraria.Localization.Content.ru-RU.Items.json" LogicalName="Terraria.Localization.Content.ru-RU.Items.json" />
+		<EmbeddedResource Include="terraria/Decompiled/Terraria.Localization.Content.zh-Hans.Items.json" LogicalName="Terraria.Localization.Content.zh-Hans.Items.json" />
+		<EmbeddedResource Include="terraria/Decompiled/Terraria.Localization.Content.de-DE.Legacy.json" LogicalName="Terraria.Localization.Content.de-DE.Legacy.json" />
+		<EmbeddedResource Include="terraria/Decompiled/Terraria.Localization.Content.en-US.Legacy.json" LogicalName="Terraria.Localization.Content.en-US.Legacy.json" />
+		<EmbeddedResource Include="terraria/Decompiled/Terraria.Localization.Content.es-ES.Legacy.json" LogicalName="Terraria.Localization.Content.es-ES.Legacy.json" />
+		<EmbeddedResource Include="terraria/Decompiled/Terraria.Localization.Content.fr-FR.Legacy.json" LogicalName="Terraria.Localization.Content.fr-FR.Legacy.json" />
+		<EmbeddedResource Include="terraria/Decompiled/Terraria.Localization.Content.it-IT.Legacy.json" LogicalName="Terraria.Localization.Content.it-IT.Legacy.json" />
+		<EmbeddedResource Include="terraria/Decompiled/Terraria.Localization.Content.pl-PL.Legacy.json" LogicalName="Terraria.Localization.Content.pl-PL.Legacy.json" />
+		<EmbeddedResource Include="terraria/Decompiled/Terraria.Localization.Content.pt-BR.Legacy.json" LogicalName="Terraria.Localization.Content.pt-BR.Legacy.json" />
+		<EmbeddedResource Include="terraria/Decompiled/Terraria.Localization.Content.ru-RU.Legacy.json" LogicalName="Terraria.Localization.Content.ru-RU.Legacy.json" />
+		<EmbeddedResource Include="terraria/Decompiled/Terraria.Localization.Content.zh-Hans.Legacy.json" LogicalName="Terraria.Localization.Content.zh-Hans.Legacy.json" />
+		<EmbeddedResource Include="terraria/Decompiled/Terraria.Localization.Content.de-DE.Projectiles.json" LogicalName="Terraria.Localization.Content.de-DE.Projectiles.json" />
+		<EmbeddedResource Include="terraria/Decompiled/Terraria.Localization.Content.en-US.Projectiles.json" LogicalName="Terraria.Localization.Content.en-US.Projectiles.json" />
+		<EmbeddedResource Include="terraria/Decompiled/Terraria.Localization.Content.es-ES.Projectiles.json" LogicalName="Terraria.Localization.Content.es-ES.Projectiles.json" />
+		<EmbeddedResource Include="terraria/Decompiled/Terraria.Localization.Content.fr-FR.Projectiles.json" LogicalName="Terraria.Localization.Content.fr-FR.Projectiles.json" />
+		<EmbeddedResource Include="terraria/Decompiled/Terraria.Localization.Content.it-IT.Projectiles.json" LogicalName="Terraria.Localization.Content.it-IT.Projectiles.json" />
+		<EmbeddedResource Include="terraria/Decompiled/Terraria.Localization.Content.pl-PL.Projectiles.json" LogicalName="Terraria.Localization.Content.pl-PL.Projectiles.json" />
+		<EmbeddedResource Include="terraria/Decompiled/Terraria.Localization.Content.pt-BR.Projectiles.json" LogicalName="Terraria.Localization.Content.pt-BR.Projectiles.json" />
+		<EmbeddedResource Include="terraria/Decompiled/Terraria.Localization.Content.ru-RU.Projectiles.json" LogicalName="Terraria.Localization.Content.ru-RU.Projectiles.json" />
+		<EmbeddedResource Include="terraria/Decompiled/Terraria.Localization.Content.zh-Hans.Projectiles.json" LogicalName="Terraria.Localization.Content.zh-Hans.Projectiles.json" />
+		<EmbeddedResource Include="terraria/Decompiled/Terraria.Localization.Content.de-DE.NPCs.json" LogicalName="Terraria.Localization.Content.de-DE.NPCs.json" />
+		<EmbeddedResource Include="terraria/Decompiled/Terraria.Localization.Content.en-US.NPCs.json" LogicalName="Terraria.Localization.Content.en-US.NPCs.json" />
+		<EmbeddedResource Include="terraria/Decompiled/Terraria.Localization.Content.es-ES.NPCs.json" LogicalName="Terraria.Localization.Content.es-ES.NPCs.json" />
+		<EmbeddedResource Include="terraria/Decompiled/Terraria.Localization.Content.fr-FR.NPCs.json" LogicalName="Terraria.Localization.Content.fr-FR.NPCs.json" />
+		<EmbeddedResource Include="terraria/Decompiled/Terraria.Localization.Content.it-IT.NPCs.json" LogicalName="Terraria.Localization.Content.it-IT.NPCs.json" />
+		<EmbeddedResource Include="terraria/Decompiled/Terraria.Localization.Content.pl-PL.NPCs.json" LogicalName="Terraria.Localization.Content.pl-PL.NPCs.json" />
+		<EmbeddedResource Include="terraria/Decompiled/Terraria.Localization.Content.pt-BR.NPCs.json" LogicalName="Terraria.Localization.Content.pt-BR.NPCs.json" />
+		<EmbeddedResource Include="terraria/Decompiled/Terraria.Localization.Content.ru-RU.NPCs.json" LogicalName="Terraria.Localization.Content.ru-RU.NPCs.json" />
+		<EmbeddedResource Include="terraria/Decompiled/Terraria.Localization.Content.zh-Hans.NPCs.json" LogicalName="Terraria.Localization.Content.zh-Hans.NPCs.json" />
+		<EmbeddedResource Include="terraria/Decompiled/Terraria.Localization.Content.en-US.Game.json" LogicalName="Terraria.Localization.Content.en-US.Game.json" />
+		<EmbeddedResource Include="terraria/Decompiled/Terraria.Localization.Content.de-DE.Game.json" LogicalName="Terraria.Localization.Content.de-DE.Game.json" />
+		<EmbeddedResource Include="terraria/Decompiled/Terraria.Localization.Content.es-ES.Game.json" LogicalName="Terraria.Localization.Content.es-ES.Game.json" />
+		<EmbeddedResource Include="terraria/Decompiled/Terraria.Localization.Content.fr-FR.Game.json" LogicalName="Terraria.Localization.Content.fr-FR.Game.json" />
+		<EmbeddedResource Include="terraria/Decompiled/Terraria.Localization.Content.it-IT.Game.json" LogicalName="Terraria.Localization.Content.it-IT.Game.json" />
+		<EmbeddedResource Include="terraria/Decompiled/Terraria.Localization.Content.pl-PL.Game.json" LogicalName="Terraria.Localization.Content.pl-PL.Game.json" />
+		<EmbeddedResource Include="terraria/Decompiled/Terraria.Localization.Content.pt-BR.Game.json" LogicalName="Terraria.Localization.Content.pt-BR.Game.json" />
+		<EmbeddedResource Include="terraria/Decompiled/Terraria.Localization.Content.ru-RU.Game.json" LogicalName="Terraria.Localization.Content.ru-RU.Game.json" />
+		<EmbeddedResource Include="terraria/Decompiled/Terraria.Localization.Content.zh-Hans.Game.json" LogicalName="Terraria.Localization.Content.zh-Hans.Game.json" />
+		<EmbeddedResource Include="terraria/Decompiled/Terraria.GameContent.WorldBuilding.Configuration.json" LogicalName="Terraria.GameContent.WorldBuilding.Configuration.json" />
+		<EmbeddedResource Include="terraria/Decompiled/Terraria.GameContent.Metadata.MaterialData.Materials.json" LogicalName="Terraria.GameContent.Metadata.MaterialData.Materials.json" />
+		<EmbeddedResource Include="terraria/Decompiled/Terraria.GameContent.Metadata.MaterialData.Tiles.json" LogicalName="Terraria.GameContent.Metadata.MaterialData.Tiles.json" />
+		<EmbeddedResource Include="terraria/Decompiled/Microsoft.Xna.Framework.RuntimeProfile" LogicalName="Microsoft.Xna.Framework.RuntimeProfile" />
 	</ItemGroup>
 </Project>
 
