@@ -75,7 +75,9 @@ let exports: any;
 
 export async function preInit() {
 	console.debug("initializing dotnet");
-	const runtime = await dotnet.create();
+	const runtime = await dotnet.withConfig({
+		pthreadPoolInitialSize: 16,
+	}).create();
 
 	const config = runtime.getConfig();
 	exports = await runtime.getAssemblyExports(config.mainAssemblyName);

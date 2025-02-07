@@ -1,0 +1,33 @@
+--- terraria/Decompiled/Terraria/Player.cs
++++ terraria/Terraria/Player.cs
+@@ -51191,15 +51191,12 @@
+ 		{
+ 			FileUtilities.Copy(path, path + ".bak", isCloudSave);
+ 		}
+-		RijndaelManaged rijndaelManaged = new RijndaelManaged();
+ 		using Stream stream = (isCloudSave ? ((Stream)new MemoryStream(2000)) : ((Stream)new FileStream(path, FileMode.Create)));
+-		using CryptoStream cryptoStream = new CryptoStream(stream, rijndaelManaged.CreateEncryptor(ENCRYPTION_KEY, ENCRYPTION_KEY), CryptoStreamMode.Write);
+-		using BinaryWriter binaryWriter = new BinaryWriter(cryptoStream);
++		using BinaryWriter binaryWriter = new BinaryWriter(stream);
+ 		binaryWriter.Write(279);
+ 		playerFile.Metadata.Write(binaryWriter);
+ 		Serialize(playerFile, player, binaryWriter);
+ 		binaryWriter.Flush();
+-		cryptoStream.FlushFinalBlock();
+ 		stream.Flush();
+ 		if (isCloudSave && SocialAPI.Cloud != null)
+ 		{
+@@ -51507,12 +51504,9 @@
+ 		bool gotToReadName = false;
+ 		try
+ 		{
+-			RijndaelManaged rijndaelManaged = new RijndaelManaged();
+-			rijndaelManaged.Padding = PaddingMode.None;
+ 			using (MemoryStream stream = new MemoryStream(FileUtilities.ReadAllBytes(playerPath, cloudSave)))
+ 			{
+-				using CryptoStream input = new CryptoStream(stream, rijndaelManaged.CreateDecryptor(ENCRYPTION_KEY, ENCRYPTION_KEY), CryptoStreamMode.Read);
+-				using BinaryReader binaryReader = new BinaryReader(input);
++				using BinaryReader binaryReader = new BinaryReader(stream);
+ 				int num = binaryReader.ReadInt32();
+ 				if (num >= 135)
+ 				{

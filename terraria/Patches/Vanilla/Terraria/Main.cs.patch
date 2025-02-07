@@ -27,6 +27,18 @@
  	public static Camera Camera = new Camera();
  
  	public static IPlayerRenderer PlayerRenderer = new LegacyPlayerRenderer();
+@@ -747,9 +741,9 @@
+ 
+ 	public static int desiredWorldTilesUpdateRate = 1;
+ 
+-	public static int maxScreenW = 1920;
++	public static int maxScreenW = 9999;
+ 
+-	public static int maxScreenH = 1200;
++	public static int maxScreenH = 999;
+ 
+ 	public static int minScreenW = 800;
+ 
 @@ -3427,21 +3421,6 @@
  
  	private static void TrySupporting8K()

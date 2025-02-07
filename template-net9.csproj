@@ -9,6 +9,7 @@
 		<WasmOptConfigurationFlags Include="--converge -O4 -Oz"></WasmOptConfigurationFlags>
 	</ItemGroup>
 
+
 	<PropertyGroup>
 		<TargetFramework>net9.0</TargetFramework>
 		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
@@ -21,7 +22,7 @@
 		<TrimMode>partial</TrimMode>
 
 		<NoWarn>IL2026,IL2045,IL2046,IL2055,IL2057,IL2060,IL2062,IL2065,IL2067,IL2070,IL2072,IL2075,IL2077,IL2080,IL2087,IL2090,IL2091,IL2104,IL2111</NoWarn>
-		<NoWarn>$(NoWarn),SYSLIB0003,SYSLIB0011,CS0169,CS0219,CS0649,CS8981,CA2022,CA1416</NoWarn>
+		<NoWarn>$(NoWarn),SYSLIB0003,SYSLIB0011,CS0168,CS0169,CS0219,CS0649,CS1522,CS1717,CS8981,CA1416,CA2022</NoWarn>
 
 		<WasmBuildNative>true</WasmBuildNative>
 		<WasmEnableThreads>true</WasmEnableThreads>

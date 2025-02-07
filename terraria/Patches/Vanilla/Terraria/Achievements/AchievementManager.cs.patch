@@ -1,0 +1,25 @@
+--- terraria/Decompiled/Terraria/Achievements/AchievementManager.cs
++++ terraria/Terraria/Achievements/AchievementManager.cs
+@@ -74,11 +74,9 @@
+ 			try
+ 			{
+ 				using MemoryStream memoryStream = new MemoryStream();
+-				using CryptoStream cryptoStream = new CryptoStream(memoryStream, new RijndaelManaged().CreateEncryptor(_cryptoKey, _cryptoKey), CryptoStreamMode.Write);
+-				using BsonWriter bsonWriter = new BsonWriter(cryptoStream);
++				using BsonWriter bsonWriter = new BsonWriter(memoryStream);
+ 				JsonSerializer.Create(_serializerSettings).Serialize(bsonWriter, _achievements);
+ 				bsonWriter.Flush();
+-				cryptoStream.FlushFinalBlock();
+ 				FileUtilities.WriteAllBytes(path, memoryStream.ToArray(), cloud);
+ 			}
+ 			catch (Exception exception)
+@@ -112,8 +110,7 @@
+ 			try
+ 			{
+ 				using MemoryStream stream = new MemoryStream(buffer);
+-				using CryptoStream stream2 = new CryptoStream(stream, new RijndaelManaged().CreateDecryptor(_cryptoKey, _cryptoKey), CryptoStreamMode.Read);
+-				using BsonReader reader = new BsonReader(stream2);
++				using BsonReader reader = new BsonReader(stream);
+ 				dictionary = JsonSerializer.Create(_serializerSettings).Deserialize<Dictionary<string, StoredAchievement>>(reader);
+ 			}
+ 			catch (Exception)

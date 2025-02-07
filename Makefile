@@ -1,4 +1,4 @@
-STATICS_RELEASE=8c5676a2-fbc3-45e2-ae45-36dbe4ca8da7
+STATICS_RELEASE=e97620f0-7022-49fe-845e-a28034d5d631
 Profile=Release
 
 statics:
