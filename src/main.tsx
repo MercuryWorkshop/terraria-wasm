@@ -1,4 +1,4 @@
-import { gameState, play, TIMEBUF_SIZE } from "./game";
+import { gameState, play, preInit, TIMEBUF_SIZE } from "./game";
 import { Button, Dialog, Icon, Link } from "./ui";
 import { store } from "./store";
 import { OpfsExplorer } from "./fs";
@@ -11,7 +11,7 @@ import iconFolderOpen from "@ktibow/iconset-material-symbols/folder-open";
 import iconTrophy from "@ktibow/iconset-material-symbols/trophy";
 
 export const Logo: Component<{}, {}> = function() {
-  this.css = `
+	this.css = `
 		display: flex;
 		align-items: center;
 		font-size: 1.5rem;
@@ -36,23 +36,23 @@ export const Logo: Component<{}, {}> = function() {
 			justify-content: space-between;
 		}
 	`;
-  return (
-    <div>
-      <img src="/app.ico" />
-      <span>terraria-wasm</span>
-      <div class="extras">
-        <span>v1.4.0.0</span>
-      </div>
-    </div>
-  )
+	return (
+		<div>
+			<img src="/app.ico" />
+			<span>terraria-wasm</span>
+			<div class="extras">
+				<span>v1.4.0.0</span>
+			</div>
+		</div>
+	)
 }
 
 const TopBar: Component<{
-  canvas: HTMLCanvasElement,
-  fsOpen: boolean,
-  achievementsOpen: boolean,
+	canvas: HTMLCanvasElement,
+	fsOpen: boolean,
+	achievementsOpen: boolean,
 }, { allowPlay: boolean, fps: HTMLElement }> = function() {
-  this.css = `
+	this.css = `
 		padding: 0.5em;
 
 		display: flex;
@@ -77,63 +77,63 @@ const TopBar: Component<{
 		}
 	`;
 
-  useChange([gameState.ready, gameState.playing], () => {
-    this.allowPlay = gameState.ready && !gameState.playing;
-  });
+	useChange([gameState.ready, gameState.playing], () => {
+		this.allowPlay = gameState.ready && !gameState.playing;
+	});
 
-  this.mount = () => {
-    setInterval(() => {
-      if (gameState.playing) {
-        const avgFrametime = gameState.timebuf.toArray().reduce((acc, x) => acc + x, 0) / TIMEBUF_SIZE;
-        const avgFps = (1000 / avgFrametime).toFixed(0);
-        this.fps.innerText = "" + avgFps;
-      }
-    }, 1000);
-  }
+	this.mount = () => {
+		setInterval(() => {
+			if (gameState.playing) {
+				const avgFrametime = gameState.timebuf.toArray().reduce((acc, x) => acc + x, 0) / TIMEBUF_SIZE;
+				const avgFps = (1000 / avgFrametime).toFixed(0);
+				this.fps.innerText = "" + avgFps;
+			}
+		}, 1000);
+	}
 
-  return (
-    <div>
-      <div class="group">
-        <Logo />
-        {$if(use(gameState.playing), <div>FPS: <span bind:this={use(this.fps)}></span></div>)}
-      </div>
-      <div class="expand" />
-      <div class="group">
-        <Button on:click={() => this.achievementsOpen = true} icon="full" type="normal" disabled={false}>
-          <Icon icon={iconTrophy} />
-        </Button>
-        <Button on:click={() => this.fsOpen = true} icon="full" type="normal" disabled={false}>
-          <Icon icon={iconFolderOpen} />
-        </Button>
-        <Button on:click={() => {
-          if (store.theme === "light") {
-            store.theme = "dark";
-          } else {
-            store.theme = "light";
-          }
-        }} icon="full" type="normal" disabled={false}>
-          <Icon icon={use(store.theme, x => x === "light" ? iconDarkMode : iconLightMode)} />
-        </Button>
-        <Button on:click={async () => {
-          try {
-            await this.canvas.requestFullscreen({ navigationUI: "hide" });
-          } catch { }
-        }} icon="full" type="normal" disabled={use(gameState.playing, x => !x)}>
-          <Icon icon={iconFullscreen} />
-        </Button>
-        <Button on:click={() => {
-          play();
-        }} icon="left" type="primary" disabled={use(this.allowPlay, x => !x)}>
-          <Icon icon={iconPlayArrow} />
-          Play
-        </Button>
-      </div>
-    </div>
-  )
+	return (
+		<div>
+			<div class="group">
+				<Logo />
+				{$if(use(gameState.playing), <div>FPS: <span bind:this={use(this.fps)}></span></div>)}
+			</div>
+			<div class="expand" />
+			<div class="group">
+				<Button on:click={() => this.achievementsOpen = true} icon="full" type="normal" disabled={false}>
+					<Icon icon={iconTrophy} />
+				</Button>
+				<Button on:click={() => this.fsOpen = true} icon="full" type="normal" disabled={false}>
+					<Icon icon={iconFolderOpen} />
+				</Button>
+				<Button on:click={() => {
+					if (store.theme === "light") {
+						store.theme = "dark";
+					} else {
+						store.theme = "light";
+					}
+				}} icon="full" type="normal" disabled={false}>
+					<Icon icon={use(store.theme, x => x === "light" ? iconDarkMode : iconLightMode)} />
+				</Button>
+				<Button on:click={async () => {
+					try {
+						await this.canvas.requestFullscreen({ navigationUI: "hide" });
+					} catch { }
+				}} icon="full" type="normal" disabled={use(gameState.playing, x => !x)}>
+					<Icon icon={iconFullscreen} />
+				</Button>
+				<Button on:click={() => {
+					play();
+				}} icon="left" type="primary" disabled={use(this.allowPlay, x => !x)}>
+					<Icon icon={iconPlayArrow} />
+					Play
+				</Button>
+			</div>
+		</div>
+	)
 }
 
 const BottomBar: Component<{}, {}> = function() {
-  this.css = `
+	this.css = `
 		background: var(--bg);
 		border-top: 2px solid var(--surface1);
 		padding: 0.5rem;
@@ -155,20 +155,21 @@ const BottomBar: Component<{}, {}> = function() {
 		}
 	`;
 
-  return (
-    <div>
-      <span>Ported by <Link href="https://github.com/velzie">velzie</Link></span>
-      <span>All game assets and code belong to <Link href="https://re-logic.com/">Re-Logic</Link> All rights reserved.</span>
-    </div>
-  )
+	return (
+		<div>
+			<span>Ported by <Link href="https://github.com/velzie">velzie</Link></span>
+			<span>All game assets and code belong to <Link href="https://re-logic.com/">Re-Logic</Link> All rights reserved.</span>
+		</div>
+	)
 }
 
 const GameView: Component<{ canvas: HTMLCanvasElement }, {}> = function() {
-  this.css = `
+	this.css = `
+		aspect-ratio: 16 / 9;
 		user-select: none;
 		display: grid;
 		grid-template-areas: "overlay";
-		overflow: hidden;
+		max-height: 90rem;
 
 		div, canvas {
 			grid-area: overlay;
@@ -196,24 +197,31 @@ const GameView: Component<{ canvas: HTMLCanvasElement }, {}> = function() {
 			background: black;
 		}
 	`;
-  const playing = use(gameState.playing, x => x ? "started" : "stopped");
+	const div = use(gameState.playing, x => x ? "started" : "stopped");
+	const canvas = use(gameState.playing, x => x ? "canvas started" : "canvas stopped");
 
-  return (
-    <div class="tcontainer">
-      <div class={playing}>
-        Game not running.
-      </div>
-      <canvas
-        id="canvas"
-        bind:this={use(this.canvas)}
-        on:contextmenu={(e: Event) => e.preventDefault()}
-      />
-    </div>
-  )
+	this.mount = () => {
+		// dotnet will immediately transfer the canvas to deputy thread, so this.mount is required
+		preInit();
+	};
+
+	return (
+		<div class="tcontainer">
+			<div class={div}>
+				Game not running.
+			</div>
+			<canvas
+				id="canvas"
+				class={canvas}
+				bind:this={use(this.canvas)}
+				on:contextmenu={(e: Event) => e.preventDefault()}
+			/>
+		</div>
+	)
 }
 
 const LogView: Component<{}, {}> = function() {
-  this.css = `
+	this.css = `
 		height: 16rem;
 		overflow: scroll;
 		padding: 1em;
@@ -226,37 +234,37 @@ const LogView: Component<{}, {}> = function() {
     }
 	`;
 
-  const create = (color: string, log: string) => {
-    const el = document.createElement("div");
-    el.innerText = log;
-    el.style.color = color;
-    return el;
-  }
+	const create = (color: string, log: string) => {
+		const el = document.createElement("div");
+		el.innerText = log;
+		el.style.color = color;
+		return el;
+	}
 
-  this.mount = () => {
-    setInterval(() => {
-      if (gameState.logbuf.length > 0) {
-        for (const log of gameState.logbuf) {
-          this.root.appendChild(create(log.color, log.log));
-        }
-        this.root.scrollTop = this.root.scrollHeight;
-        gameState.logbuf = [];
-      }
-    }, 1000);
-  };
+	this.mount = () => {
+		useChange([gameState.logbuf], () => {
+			if (gameState.logbuf.length > 0) {
+				for (const log of gameState.logbuf) {
+					this.root.appendChild(create(log.color, log.log));
+				}
+				this.root.scrollTop = this.root.scrollHeight;
+				gameState.logbuf = [];
+			}
+		});
+	};
 
-  return (
-    <div class="tcontainer">
-    </div>
-  )
+	return (
+		<div class="tcontainer">
+		</div>
+	)
 }
 
 export const Main: Component<{}, {
-  canvas: HTMLCanvasElement,
-  fsOpen: boolean,
-  achievementsOpen: boolean,
+	canvas: HTMLCanvasElement,
+	fsOpen: boolean,
+	achievementsOpen: boolean,
 }> = function() {
-  this.css = `
+	this.css = `
 		width: 100%;
 		height: 100%;
 		background: url(/backdrop.png);
@@ -283,26 +291,26 @@ export const Main: Component<{}, {
 		}
 	`;
 
-  this.fsOpen = false;
-  this.achievementsOpen = false;
+	this.fsOpen = false;
+	this.achievementsOpen = false;
 
-  return (
-    <div>
-      <TopBar
-        canvas={use(this.canvas)}
-        bind:fsOpen={use(this.fsOpen)}
-        bind:achievementsOpen={use(this.achievementsOpen)}
-      />
-      <div class="main">
-        <GameView bind:canvas={use(this.canvas)} />
-        <LogView />
-      </div>
-      <Dialog name="File System" bind:open={use(this.fsOpen)}>
-        <OpfsExplorer open={use(this.fsOpen)} />
-      </Dialog>
-      <Dialog name="Achievements" bind:open={use(this.achievementsOpen)}>
-      </Dialog>
-      <BottomBar />
-    </div>
-  );
+	return (
+		<div>
+			<TopBar
+				canvas={use(this.canvas)}
+				bind:fsOpen={use(this.fsOpen)}
+				bind:achievementsOpen={use(this.achievementsOpen)}
+			/>
+			<div class="main">
+				<GameView bind:canvas={use(this.canvas)} />
+				<LogView />
+			</div>
+			<Dialog name="File System" bind:open={use(this.fsOpen)}>
+				<OpfsExplorer open={use(this.fsOpen)} />
+			</Dialog>
+			<Dialog name="Achievements" bind:open={use(this.achievementsOpen)}>
+			</Dialog>
+			<BottomBar />
+		</div>
+	);
 }

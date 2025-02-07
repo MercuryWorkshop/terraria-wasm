@@ -1,24 +1,27 @@
-STATICS_RELEASE=9c3dd72e-5785-49f6-b648-cdcbb036fb7d
+STATICS_RELEASE=8c5676a2-fbc3-45e2-ae45-36dbe4ca8da7
 Profile=Release
 
 statics:
 	mkdir statics
 	wget https://github.com/r58Playz/FNA-WASM-Build/releases/download/$(STATICS_RELEASE)/FAudio.a -O statics/FAudio.a
-	wget https://github.com/r58Playz/FNA-WASM-Build/releases/download/$(STATICS_RELEASE)/FNA3D_Wrapped.a -O statics/FNA3D.a
+	wget https://github.com/r58Playz/FNA-WASM-Build/releases/download/$(STATICS_RELEASE)/FNA3D.a -O statics/FNA3D.a
 	wget https://github.com/r58Playz/FNA-WASM-Build/releases/download/$(STATICS_RELEASE)/libmojoshader.a -O statics/libmojoshader.a
-	wget https://github.com/r58Playz/FNA-WASM-Build/releases/download/$(STATICS_RELEASE)/SDL2.a -O statics/SDL2.a
+	wget https://github.com/r58Playz/FNA-WASM-Build/releases/download/$(STATICS_RELEASE)/SDL3.a -O statics/SDL3.a
 
 clean:
-	rm -rv statics obj bin || true
+	rm -rv statics obj bin
 
 build: statics
+	rm -rv public/_framework bin/$(Profile)/net9.0/publish/wwwroot/_framework || true
 	dotnet publish -c $(Profile) -v diag
-	cp -rv bin/$(Profile)/net9.0/publish/wwwroot/_framework public/
+	cp -rv bin/$(Profile)/net9.0/publish/wwwroot/_framework public/_framework
 	# microsoft messed up etc etc
 	sed -i 's/FS_createPath("\/","usr\/share",!0,!0)/FS_createPath("\/usr","share",!0,!0)/' public/_framework/dotnet.runtime.*.js
-	sed -i 's/var SDL2=Module\["SDL2"\];return SDL2.audioContext.sampleRate/return 1/' public/_framework/dotnet.native.*.js
-	sed -i 's/SDL2===undefined||SDL2.capture===undefined/true/' public/_framework/dotnet.native.*.js
-	sed -i 's/SDL2===undefined||SDL2.audio===undefined/true/' public/_framework/dotnet.native.*.js
+	# sdl messed up
+	sed -i 's/!window.matchMedia/!self.matchMedia/' public/_framework/dotnet.native.*.js
+	# emscripten sucks
+	sed -i 's/var offscreenCanvases={};/var offscreenCanvases={};if(globalThis.window\&\&!window.TRANSFERRED_CANVAS){transferredCanvasNames=[".canvas"];window.TRANSFERRED_CANVAS=true;}/' public/_framework/dotnet.native.*.js
+	sed -i 's/var offscreenCanvases = {};/var offscreenCanvases={};if(globalThis.window\&\&!window.TRANSFERRED_CANVAS){transferredCanvasNames=[".canvas"];window.TRANSFERRED_CANVAS=true;}/' public/_framework/dotnet.native.*.js
 
 serve: build
 	pnpm dev

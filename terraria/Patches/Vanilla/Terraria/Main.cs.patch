@@ -176,10 +176,11 @@
  			if (superFast)
  			{
  				base.IsFixedTimeStep = false;
-@@ -15931,17 +15857,6 @@
+@@ -15930,18 +15856,7 @@
+ 				logoScale = 1f;
  			}
  			UpdateOldNPCShop();
- 			hasFocus = base.IsActive;
+-			hasFocus = base.IsActive;
 -			if (Platform.IsWindows)
 -			{
 -				Form form = Control.FromHandle(base.Window.Handle);
@@ -191,6 +192,7 @@
 -					hasFocus = false;
 -				}
 -			}
++			hasFocus = true; 
  			if (!hasFocus && netMode == 0)
  			{
  				if (!Platform.IsOSX)

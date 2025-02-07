@@ -1,0 +1,10 @@
+--- terraria/Decompiled/ReLogic/OS/Linux/LinuxPlatform.cs
++++ terraria/ReLogic/OS/Linux/LinuxPlatform.cs
+@@ -16,6 +16,6 @@
+ 
+ 	public override void InitializeClientServices(IntPtr windowHandle)
+ 	{
+-		RegisterService((IImeService)new FnaIme());
++		RegisterService((IImeService)new FnaIme(windowHandle));
+ 	}
+ }

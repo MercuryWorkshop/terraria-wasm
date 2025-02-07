@@ -8,7 +8,6 @@ using Terraria.Initializers;
 using Terraria.Localization;
 using Terraria.Social;
 using System.Collections.Generic;
-using Microsoft.Xna.Framework.Content;
 
 partial class Program
 {
@@ -49,38 +48,39 @@ partial class Program
     }
 
     [JSExport]
-    internal static void Init()
+    internal static Task Init()
     {
         try
         {
-            ContentTypeReaderManagerMetaTypeManager.backupType = typeof(ReLogic.Graphics.DynamicSpriteFontReader);
+            Microsoft.Xna.Framework.Content.ContentTypeReaderMetaTypeManager.BackupType = typeof(ReLogic.Graphics.DynamicSpriteFontReader);
             SavePath = "libsdl/tsaves";
-            LanguageManager.Instance.SetLanguage(GameCulture.DefaultCulture);
-
-            Terraria.Main main = new Terraria.Main();
+            game = new Terraria.Main();
 
 			ThreadPool.SetMinThreads(8, 8);
+			LanguageManager.Instance.SetLanguage(GameCulture.DefaultCulture);
+			Terraria.Lang.InitializeLegacyLocalization();
+			SocialAPI.Initialize(null);
+			LaunchInitializer.LoadParameters(game);
 
-            Terraria.Lang.InitializeLegacyLocalization();
-            SocialAPI.Initialize(null);
-            LaunchInitializer.LoadParameters(main);
-
-            game = main;
+			return Task.Delay(0);
         }
         catch (Exception e)
         {
-            Console.WriteLine(e.ToString());
+            Console.Error.WriteLine("Error in Init()!!");
+            Console.Error.WriteLine(e);
+            return Task.FromException(e);
         }
     }
 
     [JSExport]
-    internal static void Cleanup()
+    internal static Task Cleanup()
     {
         // Any cleanup for the Game - usually after game.Run() in the decompilation
+        return Task.Delay(0);
     }
 
     [JSExport]
-    internal static bool MainLoop()
+    internal static Task<bool> MainLoop()
     {
         try
         {
@@ -90,8 +90,8 @@ partial class Program
         {
             Console.Error.WriteLine("Error in MainLoop()!");
             Console.Error.WriteLine(e);
-            throw;
+            return Task.FromException<bool>(e);
         }
-        return game.RunApplication;
+        return Task.FromResult(game.RunApplication);
     }
 }
