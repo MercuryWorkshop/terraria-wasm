@@ -59,7 +59,7 @@ partial class Program
 			ThreadPool.SetMinThreads(8, 8);
 			LanguageManager.Instance.SetLanguage(GameCulture.DefaultCulture);
 			Terraria.Lang.InitializeLegacyLocalization();
-			SocialAPI.Initialize(null);
+			// SocialAPI.Initialize(null);
 			LaunchInitializer.LoadParameters(game);
 
 			return Task.Delay(0);

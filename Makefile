@@ -1,5 +1,5 @@
 STATICS_RELEASE=e97620f0-7022-49fe-845e-a28034d5d631
-Profile=Debug
+Profile=Release
 
 statics:
 	mkdir statics
@@ -32,7 +32,7 @@ clean:
 build: statics node_modules FNA terraria/Decompiled
 	if [ $(Profile) = "Debug" ]; then\
 		sed 's/\[DllImport(nativeLibName, EntryPoint = "SDL_CreateWindow", CallingConvention = CallingConvention\.Cdecl)\]/[DllImport(nativeLibName, EntryPoint = "SDL__CreateWindow", CallingConvention = CallingConvention.Cdecl)]/' < SDL3.Legacy.cs |\
-		sed '/\[DllImport(nativeLibName, CallingConvention = CallingConvention.Cdecl)\]/ { N; s|\(\[DllImport(nativeLibName, CallingConvention = CallingConvention.Cdecl)\]\)\n\(.*SDL_GetWindowFlags.*\)|\1, EntryPoint = "SDL__GetWindowFlags"]\n\2| }'\
+		sed '/\[DllImport(nativeLibName, CallingConvention = CallingConvention.Cdecl)\]/ { N; s|\(\[DllImport(nativeLibName, CallingConvention = CallingConvention.Cdecl)\]\)\n\(.*SDL_GetWindowFlags.*\)|[DllImport(nativeLibName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "SDL__GetWindowFlags")]\n\2| }'\
 		> FNA/lib/SDL3-CS/SDL3/SDL3.Legacy.cs;\
 	else\
 		cp SDL3.Legacy.cs FNA/lib/SDL3-CS/SDL3/SDL3.Legacy.cs;\
