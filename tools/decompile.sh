@@ -13,7 +13,7 @@ if ! [[ "$(ilspycmd --version | head -1)" =~ ^"$ILSPY" ]]; then
 	exit 1
 fi
 
-terraria=$1
+terraria=${1:-}
 if [ ! -f "$terraria" ]; then
 	echo "usage: bash tools/decompile.sh <terraria.exe>"
 	echo "No terraria.exe specified or does not exist. Guessing default paths"
@@ -24,8 +24,10 @@ if [ ! -f "$terraria" ]; then
 			break
 		fi
 	done
-	echo "Could not find terraria.exe. Please specify the path to terraria.exe as an argument."
-	exit 1
+	if [ ! -f "$terraria" ]; then
+		echo "Could not find terraria.exe. Please specify the path to terraria.exe as an argument."
+		exit 1
+	fi
 fi
 
 
