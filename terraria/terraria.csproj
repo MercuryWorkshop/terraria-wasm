@@ -1,0 +1,151 @@
+<Project Sdk="Microsoft.NET.Sdk.WebAssembly">
+	<PropertyGroup Condition="'$(Configuration)' == 'Debug'">
+		<RunAOTCompilation>false</RunAOTCompilation>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)' == 'Release'">
+		<RunAOTCompilation>true</RunAOTCompilation>
+	</PropertyGroup>
+	<ItemGroup Condition="'$(Configuration)' == 'Release'">
+		<WasmOptConfigurationFlags Include="--converge -O4 -Oz"></WasmOptConfigurationFlags>
+	</ItemGroup>
+
+
+	<PropertyGroup>
+		<TargetFramework>net9.0</TargetFramework>
+		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+		<EnableUnsafeBinaryFormatterSerialization>true</EnableUnsafeBinaryFormatterSerialization>
+		<Nullable>disable</Nullable>
+
+		<StartupObject>Program</StartupObject>
+
+		<DisableBuildCompression>true</DisableBuildCompression>
+		<TrimMode>partial</TrimMode>
+
+		<NoWarn>IL2026,IL2045,IL2046,IL2055,IL2057,IL2060,IL2062,IL2065,IL2067,IL2070,IL2072,IL2075,IL2077,IL2080,IL2087,IL2090,IL2091,IL2104,IL2111</NoWarn>
+		<NoWarn>$(NoWarn),SYSLIB0003,SYSLIB0011,CS0168,CS0169,CS0219,CS0649,CS1522,CS1717,CS8981,CA1416,CA2022</NoWarn>
+
+		<WasmBuildNative>true</WasmBuildNative>
+		<WasmEnableThreads>true</WasmEnableThreads>
+		<WasmEnableSIMD>true</WasmEnableSIMD>
+		<WasmEnableExceptionHandling>true</WasmEnableExceptionHandling>
+		<WasmEnableWebcil>false</WasmEnableWebcil>
+
+		<WasmBitcodeCompileOptimizationFlag>-O3</WasmBitcodeCompileOptimizationFlag>
+		<WasmNativeStrip>true</WasmNativeStrip>
+		<WasmNativeDebugSymbols>false</WasmNativeDebugSymbols>
+
+		<EmccExtraLDFlags>-sMIN_WEBGL_VERSION=2 -sWASMFS -sOFFSCREENCANVAS_SUPPORT</EmccExtraLDFlags>
+		<EmccLinkOptimizationFlag>-O3</EmccLinkOptimizationFlag>
+		<EmccCompileOptimizationFlag>-O3</EmccCompileOptimizationFlag>
+		<EmccEnvironment>web,worker</EmccEnvironment>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<!-- FNA -->
+		<NativeFileReference Include="..\statics\SDL3.a" />
+		<NativeFileReference Include="..\statics\FNA3D.a" />
+		<NativeFileReference Include="..\statics\libmojoshader.a" />
+		<NativeFileReference Include="..\statics\FAudio.a" />
+
+		<!-- WASMFS -->
+		<NativeFileReference Include="Emscripten.c" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<Compile Remove="Decompiled\**\*" />
+		<Compile Remove="extract-relogic\**\*" />
+		<ProjectReference Include="..\FNA\FNA.Core.csproj" />
+		<PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+		<PackageReference Include="Newtonsoft.Json.Bson" Version="1.0.3" />
+		<PackageReference Include="DotNetZip" Version="1.16.0" />
+		<PackageReference Include="MP3Sharp" Version="1.0.5" />
+		<PackageReference Include="NVorbis" Version="0.10.5" />
+		<!-- TODO find the real version of CsvHelper and fetch from nuget -->
+		<Reference Include="libs/CsvHelper.dll" />
+
+		<!-- TODO replace with Steamworks.cs -->
+		<PackageReference Include="Steamworks.NET" Version="20.1.0" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<EmbeddedResource WithCulture="false" Type="Non-Resx" Include="Decompiled/Terraria.GameContent.Creative.Content.Sacrifices.tsv" LogicalName="Terraria.GameContent.Creative.Content.Sacrifices.tsv" />
+		<EmbeddedResource WithCulture="false" Type="Non-Resx" Include="Decompiled/Terraria.IO.Data.ResourcePacksDefaultInfo.tsv" LogicalName="Terraria.IO.Data.ResourcePacksDefaultInfo.tsv" />
+		<EmbeddedResource WithCulture="false" Type="Non-Resx" Include="Decompiled/Terraria.Libraries.ReLogic.ReLogic.dll" LogicalName="Terraria.Libraries.ReLogic.ReLogic.dll" />
+		<EmbeddedResource WithCulture="false" Type="Non-Resx" Include="Decompiled/Terraria.Libraries.DotNetZip.Ionic.Zip.CF.dll" LogicalName="Terraria.Libraries.DotNetZip.Ionic.Zip.CF.dll" />
+		<EmbeddedResource WithCulture="false" Type="Non-Resx" Include="Decompiled/Terraria.Libraries.JSON.NET.Newtonsoft.Json.dll" LogicalName="Terraria.Libraries.JSON.NET.Newtonsoft.Json.dll" />
+		<EmbeddedResource WithCulture="false" Type="Non-Resx" Include="Decompiled/Terraria.Libraries.CsvHelper.CsvHelper.dll" LogicalName="Terraria.Libraries.CsvHelper.CsvHelper.dll" />
+		<EmbeddedResource WithCulture="false" Type="Non-Resx" Include="Decompiled/Terraria.Libraries.NVorbis.NVorbis.dll" LogicalName="Terraria.Libraries.NVorbis.NVorbis.dll" />
+		<EmbeddedResource WithCulture="false" Type="Non-Resx" Include="Decompiled/Terraria.Libraries.NVorbis.System.ValueTuple.dll" LogicalName="Terraria.Libraries.NVorbis.System.ValueTuple.dll" />
+		<EmbeddedResource WithCulture="false" Type="Non-Resx" Include="Decompiled/Terraria.Libraries.MP3Sharp.MP3Sharp.dll" LogicalName="Terraria.Libraries.MP3Sharp.MP3Sharp.dll" />
+		<EmbeddedResource WithCulture="false" Type="Non-Resx" Include="Decompiled/Terraria.Libraries.Steamworks.NET.Linux.Steamworks.NET.dll" LogicalName="Terraria.Libraries.Steamworks.NET.Linux.Steamworks.NET.dll" />
+		<EmbeddedResource WithCulture="false" Type="Non-Resx" Include="Decompiled/Terraria.Libraries.RailSDK.Linux.RailSDK.Net.dll" LogicalName="Terraria.Libraries.RailSDK.Linux.RailSDK.Net.dll" />
+		<EmbeddedResource WithCulture="false" Type="Non-Resx" Include="Decompiled/Terraria.Localization.Content.de-DE.json" LogicalName="Terraria.Localization.Content.de-DE.json" />
+		<EmbeddedResource WithCulture="false" Type="Non-Resx" Include="Decompiled/Terraria.Localization.Content.de-DE.Town.json" LogicalName="Terraria.Localization.Content.de-DE.Town.json" />
+		<EmbeddedResource WithCulture="false" Type="Non-Resx" Include="Decompiled/Terraria.Localization.Content.en-US.Items.json" LogicalName="Terraria.Localization.Content.en-US.Items.json" />
+		<EmbeddedResource WithCulture="false" Type="Non-Resx" Include="Decompiled/Terraria.Localization.Content.en-US.json" LogicalName="Terraria.Localization.Content.en-US.json" />
+		<EmbeddedResource WithCulture="false" Type="Non-Resx" Include="Decompiled/Terraria.Localization.Content.en-US.Town.json" LogicalName="Terraria.Localization.Content.en-US.Town.json" />
+		<EmbeddedResource WithCulture="false" Type="Non-Resx" Include="Decompiled/Terraria.Localization.Content.es-ES.json" LogicalName="Terraria.Localization.Content.es-ES.json" />
+		<EmbeddedResource WithCulture="false" Type="Non-Resx" Include="Decompiled/Terraria.Localization.Content.es-ES.Town.json" LogicalName="Terraria.Localization.Content.es-ES.Town.json" />
+		<EmbeddedResource WithCulture="false" Type="Non-Resx" Include="Decompiled/Terraria.Localization.Content.fr-FR.json" LogicalName="Terraria.Localization.Content.fr-FR.json" />
+		<EmbeddedResource WithCulture="false" Type="Non-Resx" Include="Decompiled/Terraria.Localization.Content.fr-FR.Town.json" LogicalName="Terraria.Localization.Content.fr-FR.Town.json" />
+		<EmbeddedResource WithCulture="false" Type="Non-Resx" Include="Decompiled/Terraria.Localization.Content.it-IT.json" LogicalName="Terraria.Localization.Content.it-IT.json" />
+		<EmbeddedResource WithCulture="false" Type="Non-Resx" Include="Decompiled/Terraria.Localization.Content.it-IT.Town.json" LogicalName="Terraria.Localization.Content.it-IT.Town.json" />
+		<EmbeddedResource WithCulture="false" Type="Non-Resx" Include="Decompiled/Terraria.Localization.Content.pl-PL.json" LogicalName="Terraria.Localization.Content.pl-PL.json" />
+		<EmbeddedResource WithCulture="false" Type="Non-Resx" Include="Decompiled/Terraria.Localization.Content.pl-PL.Town.json" LogicalName="Terraria.Localization.Content.pl-PL.Town.json" />
+		<EmbeddedResource WithCulture="false" Type="Non-Resx" Include="Decompiled/Terraria.Localization.Content.pt-BR.json" LogicalName="Terraria.Localization.Content.pt-BR.json" />
+		<EmbeddedResource WithCulture="false" Type="Non-Resx" Include="Decompiled/Terraria.Localization.Content.pt-BR.Town.json" LogicalName="Terraria.Localization.Content.pt-BR.Town.json" />
+		<EmbeddedResource WithCulture="false" Type="Non-Resx" Include="Decompiled/Terraria.Localization.Content.ru-RU.json" LogicalName="Terraria.Localization.Content.ru-RU.json" />
+		<EmbeddedResource WithCulture="false" Type="Non-Resx" Include="Decompiled/Terraria.Localization.Content.ru-RU.Town.json" LogicalName="Terraria.Localization.Content.ru-RU.Town.json" />
+		<EmbeddedResource WithCulture="false" Type="Non-Resx" Include="Decompiled/Terraria.Localization.Content.zh-Hans.json" LogicalName="Terraria.Localization.Content.zh-Hans.json" />
+		<EmbeddedResource WithCulture="false" Type="Non-Resx" Include="Decompiled/Terraria.Localization.Content.zh-Hans.Town.json" LogicalName="Terraria.Localization.Content.zh-Hans.Town.json" />
+		<EmbeddedResource WithCulture="false" Type="Non-Resx" Include="Decompiled/Terraria.Localization.Content.de-DE.Items.json" LogicalName="Terraria.Localization.Content.de-DE.Items.json" />
+		<EmbeddedResource WithCulture="false" Type="Non-Resx" Include="Decompiled/Terraria.Localization.Content.es-ES.Items.json" LogicalName="Terraria.Localization.Content.es-ES.Items.json" />
+		<EmbeddedResource WithCulture="false" Type="Non-Resx" Include="Decompiled/Terraria.Localization.Content.fr-FR.Items.json" LogicalName="Terraria.Localization.Content.fr-FR.Items.json" />
+		<EmbeddedResource WithCulture="false" Type="Non-Resx" Include="Decompiled/Terraria.Localization.Content.it-IT.Items.json" LogicalName="Terraria.Localization.Content.it-IT.Items.json" />
+		<EmbeddedResource WithCulture="false" Type="Non-Resx" Include="Decompiled/Terraria.Localization.Content.pl-PL.Items.json" LogicalName="Terraria.Localization.Content.pl-PL.Items.json" />
+		<EmbeddedResource WithCulture="false" Type="Non-Resx" Include="Decompiled/Terraria.Localization.Content.pt-BR.Items.json" LogicalName="Terraria.Localization.Content.pt-BR.Items.json" />
+		<EmbeddedResource WithCulture="false" Type="Non-Resx" Include="Decompiled/Terraria.Localization.Content.ru-RU.Items.json" LogicalName="Terraria.Localization.Content.ru-RU.Items.json" />
+		<EmbeddedResource WithCulture="false" Type="Non-Resx" Include="Decompiled/Terraria.Localization.Content.zh-Hans.Items.json" LogicalName="Terraria.Localization.Content.zh-Hans.Items.json" />
+		<EmbeddedResource WithCulture="false" Type="Non-Resx" Include="Decompiled/Terraria.Localization.Content.de-DE.Legacy.json" LogicalName="Terraria.Localization.Content.de-DE.Legacy.json" />
+		<EmbeddedResource WithCulture="false" Type="Non-Resx" Include="Decompiled/Terraria.Localization.Content.en-US.Legacy.json" LogicalName="Terraria.Localization.Content.en-US.Legacy.json" />
+		<EmbeddedResource WithCulture="false" Type="Non-Resx" Include="Decompiled/Terraria.Localization.Content.es-ES.Legacy.json" LogicalName="Terraria.Localization.Content.es-ES.Legacy.json" />
+		<EmbeddedResource WithCulture="false" Type="Non-Resx" Include="Decompiled/Terraria.Localization.Content.fr-FR.Legacy.json" LogicalName="Terraria.Localization.Content.fr-FR.Legacy.json" />
+		<EmbeddedResource WithCulture="false" Type="Non-Resx" Include="Decompiled/Terraria.Localization.Content.it-IT.Legacy.json" LogicalName="Terraria.Localization.Content.it-IT.Legacy.json" />
+		<EmbeddedResource WithCulture="false" Type="Non-Resx" Include="Decompiled/Terraria.Localization.Content.pl-PL.Legacy.json" LogicalName="Terraria.Localization.Content.pl-PL.Legacy.json" />
+		<EmbeddedResource WithCulture="false" Type="Non-Resx" Include="Decompiled/Terraria.Localization.Content.pt-BR.Legacy.json" LogicalName="Terraria.Localization.Content.pt-BR.Legacy.json" />
+		<EmbeddedResource WithCulture="false" Type="Non-Resx" Include="Decompiled/Terraria.Localization.Content.ru-RU.Legacy.json" LogicalName="Terraria.Localization.Content.ru-RU.Legacy.json" />
+		<EmbeddedResource WithCulture="false" Type="Non-Resx" Include="Decompiled/Terraria.Localization.Content.zh-Hans.Legacy.json" LogicalName="Terraria.Localization.Content.zh-Hans.Legacy.json" />
+		<EmbeddedResource WithCulture="false" Type="Non-Resx" Include="Decompiled/Terraria.Localization.Content.de-DE.Projectiles.json" LogicalName="Terraria.Localization.Content.de-DE.Projectiles.json" />
+		<EmbeddedResource WithCulture="false" Type="Non-Resx" Include="Decompiled/Terraria.Localization.Content.en-US.Projectiles.json" LogicalName="Terraria.Localization.Content.en-US.Projectiles.json" />
+		<EmbeddedResource WithCulture="false" Type="Non-Resx" Include="Decompiled/Terraria.Localization.Content.es-ES.Projectiles.json" LogicalName="Terraria.Localization.Content.es-ES.Projectiles.json" />
+		<EmbeddedResource WithCulture="false" Type="Non-Resx" Include="Decompiled/Terraria.Localization.Content.fr-FR.Projectiles.json" LogicalName="Terraria.Localization.Content.fr-FR.Projectiles.json" />
+		<EmbeddedResource WithCulture="false" Type="Non-Resx" Include="Decompiled/Terraria.Localization.Content.it-IT.Projectiles.json" LogicalName="Terraria.Localization.Content.it-IT.Projectiles.json" />
+		<EmbeddedResource WithCulture="false" Type="Non-Resx" Include="Decompiled/Terraria.Localization.Content.pl-PL.Projectiles.json" LogicalName="Terraria.Localization.Content.pl-PL.Projectiles.json" />
+		<EmbeddedResource WithCulture="false" Type="Non-Resx" Include="Decompiled/Terraria.Localization.Content.pt-BR.Projectiles.json" LogicalName="Terraria.Localization.Content.pt-BR.Projectiles.json" />
+		<EmbeddedResource WithCulture="false" Type="Non-Resx" Include="Decompiled/Terraria.Localization.Content.ru-RU.Projectiles.json" LogicalName="Terraria.Localization.Content.ru-RU.Projectiles.json" />
+		<EmbeddedResource WithCulture="false" Type="Non-Resx" Include="Decompiled/Terraria.Localization.Content.zh-Hans.Projectiles.json" LogicalName="Terraria.Localization.Content.zh-Hans.Projectiles.json" />
+		<EmbeddedResource WithCulture="false" Type="Non-Resx" Include="Decompiled/Terraria.Localization.Content.de-DE.NPCs.json" LogicalName="Terraria.Localization.Content.de-DE.NPCs.json" />
+		<EmbeddedResource WithCulture="false" Type="Non-Resx" Include="Decompiled/Terraria.Localization.Content.en-US.NPCs.json" LogicalName="Terraria.Localization.Content.en-US.NPCs.json" />
+		<EmbeddedResource WithCulture="false" Type="Non-Resx" Include="Decompiled/Terraria.Localization.Content.es-ES.NPCs.json" LogicalName="Terraria.Localization.Content.es-ES.NPCs.json" />
+		<EmbeddedResource WithCulture="false" Type="Non-Resx" Include="Decompiled/Terraria.Localization.Content.fr-FR.NPCs.json" LogicalName="Terraria.Localization.Content.fr-FR.NPCs.json" />
+		<EmbeddedResource WithCulture="false" Type="Non-Resx" Include="Decompiled/Terraria.Localization.Content.it-IT.NPCs.json" LogicalName="Terraria.Localization.Content.it-IT.NPCs.json" />
+		<EmbeddedResource WithCulture="false" Type="Non-Resx" Include="Decompiled/Terraria.Localization.Content.pl-PL.NPCs.json" LogicalName="Terraria.Localization.Content.pl-PL.NPCs.json" />
+		<EmbeddedResource WithCulture="false" Type="Non-Resx" Include="Decompiled/Terraria.Localization.Content.pt-BR.NPCs.json" LogicalName="Terraria.Localization.Content.pt-BR.NPCs.json" />
+		<EmbeddedResource WithCulture="false" Type="Non-Resx" Include="Decompiled/Terraria.Localization.Content.ru-RU.NPCs.json" LogicalName="Terraria.Localization.Content.ru-RU.NPCs.json" />
+		<EmbeddedResource WithCulture="false" Type="Non-Resx" Include="Decompiled/Terraria.Localization.Content.zh-Hans.NPCs.json" LogicalName="Terraria.Localization.Content.zh-Hans.NPCs.json" />
+		<EmbeddedResource WithCulture="false" Type="Non-Resx" Include="Decompiled/Terraria.Localization.Content.en-US.Game.json" LogicalName="Terraria.Localization.Content.en-US.Game.json" />
+		<EmbeddedResource WithCulture="false" Type="Non-Resx" Include="Decompiled/Terraria.Localization.Content.de-DE.Game.json" LogicalName="Terraria.Localization.Content.de-DE.Game.json" />
+		<EmbeddedResource WithCulture="false" Type="Non-Resx" Include="Decompiled/Terraria.Localization.Content.es-ES.Game.json" LogicalName="Terraria.Localization.Content.es-ES.Game.json" />
+		<EmbeddedResource WithCulture="false" Type="Non-Resx" Include="Decompiled/Terraria.Localization.Content.fr-FR.Game.json" LogicalName="Terraria.Localization.Content.fr-FR.Game.json" />
+		<EmbeddedResource WithCulture="false" Type="Non-Resx" Include="Decompiled/Terraria.Localization.Content.it-IT.Game.json" LogicalName="Terraria.Localization.Content.it-IT.Game.json" />
+		<EmbeddedResource WithCulture="false" Type="Non-Resx" Include="Decompiled/Terraria.Localization.Content.pl-PL.Game.json" LogicalName="Terraria.Localization.Content.pl-PL.Game.json" />
+		<EmbeddedResource WithCulture="false" Type="Non-Resx" Include="Decompiled/Terraria.Localization.Content.pt-BR.Game.json" LogicalName="Terraria.Localization.Content.pt-BR.Game.json" />
+		<EmbeddedResource WithCulture="false" Type="Non-Resx" Include="Decompiled/Terraria.Localization.Content.ru-RU.Game.json" LogicalName="Terraria.Localization.Content.ru-RU.Game.json" />
+		<EmbeddedResource WithCulture="false" Type="Non-Resx" Include="Decompiled/Terraria.Localization.Content.zh-Hans.Game.json" LogicalName="Terraria.Localization.Content.zh-Hans.Game.json" />
+		<EmbeddedResource WithCulture="false" Type="Non-Resx" Include="Decompiled/Terraria.GameContent.WorldBuilding.Configuration.json" LogicalName="Terraria.GameContent.WorldBuilding.Configuration.json" />
+		<EmbeddedResource WithCulture="false" Type="Non-Resx" Include="Decompiled/Terraria.GameContent.Metadata.MaterialData.Materials.json" LogicalName="Terraria.GameContent.Metadata.MaterialData.Materials.json" />
+		<EmbeddedResource WithCulture="false" Type="Non-Resx" Include="Decompiled/Terraria.GameContent.Metadata.MaterialData.Tiles.json" LogicalName="Terraria.GameContent.Metadata.MaterialData.Tiles.json" />
+		<EmbeddedResource WithCulture="false" Type="Non-Resx" Include="Decompiled/Microsoft.Xna.Framework.RuntimeProfile" LogicalName="Microsoft.Xna.Framework.RuntimeProfile" />
+	</ItemGroup>
+</Project>
+

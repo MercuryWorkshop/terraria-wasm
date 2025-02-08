@@ -13,16 +13,27 @@ if ! [[ "$(ilspycmd --version | head -1)" =~ ^"$ILSPY" ]]; then
 	exit 1
 fi
 
-if ! [[ "$#" -eq "1" ]]; then
+terraria=$1
+if [ ! -f "$terraria" ]; then
 	echo "usage: bash tools/decompile.sh <terraria.exe>"
+	echo "No terraria.exe specified or does not exist. Guessing default paths"
+	defaults=(~/.steam/steam/steamapps/common/Terraria/Terraria.exe ~/.local/share/Steam/steamapps/common/Terraria/Terraria.exe)
+	for terraria in "${defaults[@]}"; do
+		if [ -f "$terraria" ]; then
+			echo "Found terraria.exe at $terraria"
+			break
+		fi
+	done
+	echo "Could not find terraria.exe. Please specify the path to terraria.exe as an argument."
 	exit 1
 fi
 
+
 rm -r terraria/Decompiled terraria/libs terraria/{ReLogic,Terraria} || true
 mkdir terraria/libs
-cp "$(dirname "$1")"/{FNA,SteelSeriesEngineWrapper}.dll terraria/libs/
-dotnet run --project extract-relogic/extract-relogic.csproj -- "$1" terraria/libs/
-ilspycmd --nested-directories -r terraria/libs -lv CSharp11_0 -p -o terraria/Decompiled "$1"
+cp "$(dirname "$terraria")"/{FNA,SteelSeriesEngineWrapper}.dll terraria/libs/
+dotnet run --project extract-relogic/extract-relogic.csproj -- "$terraria" terraria/libs/
+ilspycmd --nested-directories -r terraria/libs -lv CSharp11_0 -p -o terraria/Decompiled "$terraria"
 ilspycmd --nested-directories -lv CSharp11_0 -p -o terraria/Decompiled terraria/libs/ReLogic.dll
 rm -r \
 	terraria/Decompiled/{Terraria,ReLogic}.csproj \
