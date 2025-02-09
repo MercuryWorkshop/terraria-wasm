@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using DepotDownloader;
 using SteamKit2;
 using QRCoder;
+using System.Text.RegularExpressions;
 
 partial class JS
 {
@@ -55,7 +56,40 @@ partial class Program
             }
             Directory.CreateSymbolicLink("/Content", "/libsdl/Content");
 
-            AccountSettingsStore.LoadFromFile("account.config");
+            AccountSettingsStore.LoadFromFile("/libsdl/account.config");
+            DebugLog.Enabled = false;
+
+            // DebugLog.Enabled = true;
+            // DebugLog.AddListener((category, message) =>
+            // {
+            //     Console.WriteLine("[{0}] {1}", category, message);
+            // });
+
+
+            ContentDownloader.Config.RememberPassword = true;
+            // ContentDownloader.Config.UseQrCode = HasParameter(args, "-qr");
+
+            // ContentDownloader.Config.DownloadManifestOnly = HasParameter(args, "-manifest-only");
+
+
+            ContentDownloader.Config.CellID = 0;
+
+
+            ContentDownloader.Config.UsingFileList = true;
+            ContentDownloader.Config.FilesToDownload = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            ContentDownloader.Config.FilesToDownloadRegex = [
+                new Regex("Content\\/.*", RegexOptions.Compiled | RegexOptions.IgnoreCase),
+            ];
+
+            ContentDownloader.Config.InstallDirectory = "/libsdl/";
+
+            ContentDownloader.Config.VerifyAll = false;
+            ContentDownloader.Config.MaxServers = 20;
+
+
+            ContentDownloader.Config.MaxDownloads = 8;
+            ContentDownloader.Config.MaxServers = 8;
+            ContentDownloader.Config.LoginID = null;
         });
     }
 
@@ -85,45 +119,34 @@ partial class Program
     }
 
     [JSExport]
+    internal static async Task<int> InitSteamSaved()
+    {
+        try
+        {
+            if (AccountSettingsStore.Instance.LoginTokens.Keys.Count > 0)
+            {
+                string username = AccountSettingsStore.Instance.LoginTokens.Keys.GetEnumerator().Current;
+                Console.WriteLine("Using saved login token for " + username);
+
+                if (ContentDownloader.InitializeSteam3(username, null))
+                {
+                    return 0;
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex);
+            return 1;
+        }
+        return 1;
+    }
+
+    [JSExport]
     internal static async Task<int> InitSteam(string username, string password, bool qr)
     {
         try
         {
-
-
-            DebugLog.Enabled = false;
-
-            // DebugLog.Enabled = true;
-            // DebugLog.AddListener((category, message) =>
-            // {
-            //     Console.WriteLine("[{0}] {1}", category, message);
-            // });
-
-
-            ContentDownloader.Config.RememberPassword = true;
-            // ContentDownloader.Config.UseQrCode = HasParameter(args, "-qr");
-
-            // ContentDownloader.Config.DownloadManifestOnly = HasParameter(args, "-manifest-only");
-
-
-            ContentDownloader.Config.CellID = 0;
-
-
-            // use this later for stuff
-            // ContentDownloader.Config.UsingFileList = true;
-            // ContentDownloader.Config.FilesToDownload = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-            // ContentDownloader.Config.FilesToDownloadRegex = [];
-
-            ContentDownloader.Config.InstallDirectory = "/libsdl/";
-
-            ContentDownloader.Config.VerifyAll = false;
-            ContentDownloader.Config.MaxServers = 20;
-
-
-            ContentDownloader.Config.MaxDownloads = 8;
-            ContentDownloader.Config.MaxServers = 8;
-            ContentDownloader.Config.LoginID = null;
-
             ContentDownloader.Config.UseQrCode = qr;
             Steam3Session.qrCallback = (QRCodeData q) =>
             {

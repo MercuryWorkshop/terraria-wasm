@@ -181,7 +181,6 @@ export const Download: Component<{
   "on:done": () => void,
 }, {
   downloading: boolean,
-  loginstate: number,
   status: string,
   percent: number,
   input: HTMLInputElement,
@@ -191,7 +190,6 @@ export const Download: Component<{
 }> = function() {
   this.username = "";
   this.password = "";
-  this.loginstate = 0;
 
   this.css = `
 		display: flex;
@@ -256,29 +254,29 @@ export const Download: Component<{
 	`;
 
   const loginqr = async () => {
-    this.loginstate = 1;
-    let result = await initSteam(undefined, undefined, true);
+    gameState.loginstate = 1;
+    let result = await initSteam(null, null, true);
     if (result != 0) {
-      this.loginstate = 3;
+      gameState.loginstate = 3;
     } else {
-      this.loginstate = 2;
+      gameState.loginstate = 2;
     }
 
   };
 
   const loginpass = async () => {
-    this.loginstate = 1;
+    gameState.loginstate = 1;
     let result = await initSteam(this.username, this.password, false);
     if (result != 0) {
       this.username = "";
       this.password = "";
-      this.loginstate = 3;
+      gameState.loginstate = 3;
     } else {
-      this.loginstate = 2;
+      gameState.loginstate = 2;
     }
   };
   const download = async () => {
-    this.loginstate = 4;
+    this.downloading = true;
     let result = await downloadApp();
   };
 
@@ -290,7 +288,7 @@ export const Download: Component<{
         The account details are encrpyted on your device and never sent to a server. Still, beware of unofficial deployments
       </div>
 
-      {$if(use(this.loginstate, l => l == 0 || l == 3),
+      {$if(use(gameState.loginstate, l => l == 0 || l == 3),
         <div class="methods">
           <div class="tcontainer">
             <h3>Username and Password</h3>
@@ -313,17 +311,17 @@ export const Download: Component<{
         </div>
       )}
 
-      {$if(use(this.loginstate, l => l == 3),
+      {$if(use(gameState.loginstate, l => l == 3),
         <div style="color: var(--error)">Failed to log in! Try again</div>
       )}
 
-      {$if(use(this.loginstate, l => l == 3 || l == 1 || l == 4),
+      {$if(use(gameState.loginstate, l => l == 3 || l == 1 || l == 2),
         <div class="logcontainer">
           <LogView />
         </div>
       )}
 
-      {$if(use(this.loginstate, l => l == 1),
+      {$if(use(gameState.loginstate, l => l == 1),
         <div class="qrcontainer">
           <p>Since this uses a proxy, the steam app might complain about your location being wrong. Just select the location that you don't usually log in from if it asks</p>
           {$if(use(gameState.qr),
@@ -337,7 +335,7 @@ export const Download: Component<{
         </div>
       )}
 
-      {$if(use(this.loginstate, l => l == 2),
+      {$if(use(gameState.loginstate, l => l == 2),
         <div>
           <Button type="primary" icon="left" disabled={use(this.downloading)} on:click={download}>
             <Icon icon={iconEncrypted} />
@@ -346,7 +344,7 @@ export const Download: Component<{
         </div>
       )}
 
-      {$if(use(this.loginstate, l => l == 4), <Progress percent={use(this.percent)} />)}
+      {$if(use(this.downloading), <Progress percent={use(this.percent)} />)}
     </div>
   )
 }

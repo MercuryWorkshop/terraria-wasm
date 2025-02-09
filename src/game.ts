@@ -6,6 +6,7 @@ export type Log = { color: string, log: string };
 export const TIMEBUF_SIZE = 120;
 export const gameState: Stateful<{
 	ready: boolean,
+	loginstate: number,
 	playing: boolean,
 	qr: string | null,
 
@@ -15,6 +16,7 @@ export const gameState: Stateful<{
 }> = $state({
 	qr: null,
 	ready: false,
+	loginstate: 0,
 	playing: false,
 	logbuf: [],
 	timebuf: new RingBuffer<number>(TIMEBUF_SIZE)
@@ -259,10 +261,15 @@ export async function preInit() {
 	await exports.Program.PreInit();
 	console.debug("dotnet initialized");
 
+
+	if (await exports.Program.InitSteamSaved() == 0) {
+		gameState.loginstate = 2;
+	}
+
 	gameState.ready = true;
 };
 
-export async function initSteam(username?: string, password?: string, qr: boolean) {
+export async function initSteam(username: string | null, password: string | null, qr: boolean) {
 	return await exports.Program.InitSteam(username, password, qr);
 }
 export async function downloadApp() {
