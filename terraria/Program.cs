@@ -8,6 +8,8 @@ using Terraria.Initializers;
 using Terraria.Localization;
 using Terraria.Social;
 using System.Collections.Generic;
+using DepotDownloader;
+using SteamKit2;
 
 partial class Program
 {
@@ -70,6 +72,93 @@ partial class Program
             Console.Error.WriteLine(e);
             return Task.FromException(e);
         }
+    }
+
+    [JSExport]
+    internal static async Task<int> DownloadDepot(string username, string password, bool qr)
+    {
+        try
+        {
+
+
+            DebugLog.Enabled = true;
+
+            AccountSettingsStore.LoadFromFile("account.config");
+            DebugLog.Enabled = true;
+            DebugLog.AddListener((category, message) =>
+            {
+                Console.WriteLine("[{0}] {1}", category, message);
+            });
+
+
+            ContentDownloader.Config.RememberPassword = true;
+            // ContentDownloader.Config.UseQrCode = HasParameter(args, "-qr");
+
+            // ContentDownloader.Config.DownloadManifestOnly = HasParameter(args, "-manifest-only");
+
+
+            ContentDownloader.Config.CellID = 0;
+
+
+            // use this later for stuff
+            // ContentDownloader.Config.UsingFileList = true;
+            // ContentDownloader.Config.FilesToDownload = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            // ContentDownloader.Config.FilesToDownloadRegex = [];
+
+            ContentDownloader.Config.InstallDirectory = "/libsdl/";
+
+            ContentDownloader.Config.VerifyAll = false;
+            ContentDownloader.Config.MaxServers = 20;
+
+
+            ContentDownloader.Config.MaxDownloads = 8;
+            ContentDownloader.Config.MaxServers = 8;
+            ContentDownloader.Config.LoginID = null;
+
+            ContentDownloader.Config.UseQrCode = qr;
+
+
+            var depotManifestIds = new List<(uint, ulong)>();
+            // depotManifestIds.Add((105601, 8046724853517638985));
+            depotManifestIds.Add((731, 7617088375292372759));
+
+            if (ContentDownloader.InitializeSteam3(username, password))
+            {
+                try
+                {
+                    //105600
+                    await ContentDownloader.DownloadAppAsync(730, depotManifestIds, "public", null, null, null, false, false).ConfigureAwait(false);
+                }
+                catch (Exception ex) when (
+                    ex is ContentDownloaderException
+                    || ex is OperationCanceledException)
+                {
+                    Console.WriteLine(ex.Message);
+                    return 1;
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine("Download failed to due to an unhandled exception: {0}", e.Message);
+                    throw;
+                }
+                finally
+                {
+                    ContentDownloader.ShutdownSteam3();
+                }
+            }
+            else
+            {
+                Console.WriteLine("Error: InitializeSteam failed");
+                return 1;
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex);
+        }
+
+
+        return 0;
     }
 
     [JSExport]
