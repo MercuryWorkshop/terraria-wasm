@@ -10,6 +10,13 @@ using Terraria.Social;
 using System.Collections.Generic;
 using DepotDownloader;
 using SteamKit2;
+using QRCoder;
+
+partial class JS
+{
+    [JSImport("newqr", "depot.js")]
+    public static partial void newqr(string dataurl);
+}
 
 partial class Program
 {
@@ -20,6 +27,7 @@ partial class Program
 
     [DllImport("Emscripten")]
     public extern static int mount_opfs();
+
 
     static Terraria.Main game;
     public static bool firstLaunch = true;
@@ -46,6 +54,8 @@ partial class Program
                 throw new Exception("Failed to mount OPFS");
             }
             Directory.CreateSymbolicLink("/Content", "/libsdl/Content");
+
+            AccountSettingsStore.LoadFromFile("account.config");
         });
     }
 
@@ -75,7 +85,7 @@ partial class Program
     }
 
     [JSExport]
-    internal static async Task<int> DownloadDepot(string username, string password, bool qr)
+    internal static async Task<int> InitSteam(string username, string password, bool qr)
     {
         try
         {
@@ -83,7 +93,6 @@ partial class Program
 
             DebugLog.Enabled = false;
 
-            AccountSettingsStore.LoadFromFile("account.config");
             // DebugLog.Enabled = true;
             // DebugLog.AddListener((category, message) =>
             // {
@@ -116,34 +125,18 @@ partial class Program
             ContentDownloader.Config.LoginID = null;
 
             ContentDownloader.Config.UseQrCode = qr;
-
-
-            var depotManifestIds = new List<(uint, ulong)>();
-            depotManifestIds.Add((105601, 8046724853517638985));
-            // depotManifestIds.Add((731, 7617088375292372759));
+            Steam3Session.qrCallback = (QRCodeData q) =>
+            {
+                Console.WriteLine("Got QR code data");
+                PngByteQRCode png = new PngByteQRCode(q);
+                byte[] bytes = png.GetGraphic(20);
+                string dataurl = "data:image/png;base64," + Convert.ToBase64String(bytes);
+                JS.newqr(dataurl);
+            };
 
             if (ContentDownloader.InitializeSteam3(username, password))
             {
-                try
-                {
-                    await ContentDownloader.DownloadAppAsync(105600, depotManifestIds, "public", null, null, null, false, false).ConfigureAwait(false);
-                }
-                catch (Exception ex) when (
-                    ex is ContentDownloaderException
-                    || ex is OperationCanceledException)
-                {
-                    Console.WriteLine(ex.Message);
-                    return 1;
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine("Download failed to due to an unhandled exception: {0}", e.Message);
-                    throw;
-                }
-                finally
-                {
-                    ContentDownloader.ShutdownSteam3();
-                }
+                return 0;
             }
             else
             {
@@ -157,8 +150,28 @@ partial class Program
         }
 
 
-        return 0;
+        return 1;
     }
+
+    [JSExport]
+    internal static async Task<int> DownloadApp()
+    {
+        var depotManifestIds = new List<(uint, ulong)>();
+        depotManifestIds.Add((105601, 8046724853517638985));
+        // depotManifestIds.Add((731, 7617088375292372759));
+
+        try
+        {
+            await ContentDownloader.DownloadAppAsync(105600, depotManifestIds, "public", null, null, null, false, false).ConfigureAwait(false);
+            return 0;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine("Could not download app: " + ex.Message);
+            return 1;
+        }
+    }
+
 
     [JSExport]
     internal static Task Cleanup()

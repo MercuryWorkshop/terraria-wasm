@@ -7,11 +7,13 @@ export const TIMEBUF_SIZE = 120;
 export const gameState: Stateful<{
 	ready: boolean,
 	playing: boolean,
+	qr: string | null,
 
 	// these will NOT work with use()
 	logbuf: Log[],
 	timebuf: RingBuffer<number>,
 }> = $state({
+	qr: null,
 	ready: false,
 	playing: false,
 	logbuf: [],
@@ -30,11 +32,12 @@ function proxyConsole(name: string, color: string) {
 			str = "<failed to render>";
 		}
 		old(...args);
-		gameState.logbuf.push({
-			color,
-			log: `[${new Date().toISOString()}]: ${str}`
-		});
-		gameState.logbuf = gameState.logbuf;
+		gameState.logbuf = [
+			{
+				color,
+				log: `[${new Date().toISOString()}]: ${str}`
+			}
+		];
 	}
 }
 proxyConsole("error", "var(--error)");
@@ -236,6 +239,13 @@ export async function preInit() {
 		}
 	});
 
+	runtime.setModuleImports("depot.js", {
+		newqr: (qr: string) => {
+			console.log("QR DATA" + qr);
+			gameState.qr = qr;
+		}
+	});
+
 	(self as any).wasm = {
 		Module: dotnet.instance.Module,
 		dotnet,
@@ -251,6 +261,13 @@ export async function preInit() {
 
 	gameState.ready = true;
 };
+
+export async function initSteam(username?: string, password?: string, qr: boolean) {
+	return await exports.Program.InitSteam(username, password, qr);
+}
+export async function downloadApp() {
+	return await exports.Program.DownloadApp();
+}
 
 export async function play() {
 	gameState.playing = true;

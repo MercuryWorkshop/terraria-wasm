@@ -1,10 +1,11 @@
-import { Logo } from "./main";
+import { Logo, LogView } from "./main";
 import { Button, Icon, Link } from "./ui";
 import { copyFolder, countFolder, extractTar, PICKERS_UNAVAILABLE, rootFolder } from "./fs";
 
 import iconFolderOpen from "@ktibow/iconset-material-symbols/folder-open-outline";
 import iconDownload from "@ktibow/iconset-material-symbols/download";
 import iconEncrypted from "@ktibow/iconset-material-symbols/encrypted";
+import { downloadApp, downloadDepot, gameState, initSteam } from "./game";
 
 const DECRYPT_INFO = import.meta.env.VITE_DECRYPT_ENABLED ? {
   key: import.meta.env.VITE_DECRYPT_KEY,
@@ -67,7 +68,7 @@ const Intro: Component<{
       </div>
 
       <div>
-        You will need to own Terraria to play this. Make sure you have it downloaded and installed on your computer.
+        You will need to own Terraria to play this. Make sure you either own it on Steam, or have it downloaded and installed on your computer.
       </div>
 
       <div>
@@ -78,16 +79,7 @@ const Intro: Component<{
         <div class="error">
           Your browser does not support the
           {' '}<Link href="https://developer.mozilla.org/en-US/docs/Web/API/Window/showDirectoryPicker">File System Access API</Link>.{' '}
-          You will be unable to copy your Terraria assets to play or use the upload features in the filesystem viewer.
-        </div>
-        : null}
-      {DECRYPT_INFO ? null :
-        <div class="error">
-          This deployment of terraria-wasm does not have encrypted assets. You cannot download and decrypt them to play.
-        </div>}
-      {PICKERS_UNAVAILABLE && !DECRYPT_INFO ?
-        <div class="error">
-          You will have to switch browsers (to a Chromium-based one) to play as both methods of getting Terraria assets are unavailable.
+          You will be unable to copy your Terraria assets to play or use the upload features in the filesystem viewer. Please switch to a chromium based browser.
         </div>
         : null}
 
@@ -97,9 +89,9 @@ const Intro: Component<{
           <Icon icon={iconFolderOpen} />
           {PICKERS_UNAVAILABLE ? "Copying local assets is unsupported" : "Copy local assets"}
         </Button>
-        <Button on:click={() => this["on:next"]("download")} type="primary" icon="left">
+        <Button on:click={() => this["on:next"]("download")} type="primary" icon="left" disabled={false}>
           <Icon icon={iconDownload} />
-          {DECRYPT_INFO ? "Download and decrypt assets" : "Download and decrypt assets is disabled"}
+          Download Assets from Steam
         </Button>
       </div>
     </div>
@@ -189,134 +181,172 @@ export const Download: Component<{
   "on:done": () => void,
 }, {
   downloading: boolean,
+  loginstate: number,
   status: string,
   percent: number,
   input: HTMLInputElement,
+
+  username: string,
+  password: string,
 }> = function() {
+  this.username = "";
+  this.password = "";
+  this.loginstate = 0;
+
   this.css = `
 		display: flex;
 		flex-direction: column;
-		gap: 0.5rem;
+		gap: 1rem;
+		font-size: 15pt;
 
 		input[type="file"] {
 			display: none;
 		}
+
+		.methods {
+		  display: flex;
+		  gap: 1rem;
+		}
+		.methods > div {
+		  flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+
+      padding: 1rem;
+		}
+		input {
+		  color: var(--fg);
+		  background: var(--bg);
+		  border: 2px solid black;
+		  border-radius: 0.5em;
+		  padding: 0.25rem;
+
+		  font-family: Andy Bold;
+		  font-size: 18pt;
+		}
+
+		.spacer {
+		      flex: 1;
+		      margin-top: 0.5em;
+		      margin-bottom: 0.5em;
+		      border-bottom: 1px solid var(--fg);
+    }
+
+		h1, h3 {
+		  text-align: center;
+		  font-family: Andy Bold;
+      padding: 0;
+      margin: 0;
+		}
+		.logcontainer {
+		  font-size: initial;
+		}
+
+		.qrcontainer {
+		  display: flex;
+      justify-content: center;
+      flex-direction: column;
+      align-items: center;
+      width: 100%;
+		}
+		.qrcontainer img {
+		  width: 40%;
+		}
 	`;
 
-  const download = async () => {
-    const self = this;
-    let bytes = 0;
-    let keyCursor = 0;
-    let chunkCursor = 0;
-    let count = 0;
-    // const length = ("" + DECRYPT_INFO!.count).length;
-    //
-    // const inputPromise = new Promise<Uint8Array>((res, rej) => {
-    //   const fileHandler = () => {
-    //     this.input.removeEventListener("input", fileHandler);
-    //     const file = this.input.files ? this.input.files[0] : null;
-    //     if (!file) {
-    //       rej(new Error("No file was provided"));
-    //       return;
-    //     }
-    //
-    //     const reader = new FileReader();
-    //     reader.onload = () => {
-    //       res(new Uint8Array(reader.result as ArrayBuffer));
-    //     }
-    //     reader.onerror = () => {
-    //       rej(reader.error);
-    //     }
-    //     reader.readAsArrayBuffer(file);
-    //   };
-    //   this.input.addEventListener("input", fileHandler);
-    // });
-    // this.input.click();
-    // const key = await inputPromise;
-    //
-    const root = await rootFolder.getDirectoryHandle("Content", { create: true });
-    //
-    // this.downloading = true;
-    // const input = new ReadableStream({
-    //   async pull(controller) {
-    //     if (count >= DECRYPT_INFO!.count) {
-    //       controller.close();
-    //       return;
-    //     }
-    //
-    //     const path = `${DECRYPT_INFO!.path}.${("" + count).padStart(length, '0')}`;
-    //     console.log(`downloading path ${path}`);
-    //     const resp = await fetch(path);
-    //     if (!resp.body) throw new Error(`Failed to fetch ${path}`);
-    //     const reader = resp.body.getReader();
-    //
-    //     while (true) {
-    //       const { done, value } = await reader.read();
-    //       if (done || !value) break;
-    //
-    //       controller.enqueue(value);
-    //     }
-    //
-    //     count++;
-    //   },
-    // });
-    // const decrypt = new TransformStream({
-    //   async transform(chunk, controller) {
-    //     while (chunkCursor < chunk.length) {
-    //       chunk[chunkCursor] ^= key[keyCursor % key.length];
-    //       chunkCursor += 4096;
-    //       keyCursor += 4096;
-    //     }
-    //     chunkCursor -= chunk.length;
-    //     controller.enqueue(chunk);
-    //   }
-    // });
-    // const counter = new TransformStream({
-    //   transform(chunk, controller) {
-    //     bytes += chunk.length;
-    //     self.percent = bytes / DECRYPT_INFO!.size * 100;
-    //
-    //     controller.enqueue(chunk);
-    //   }
-    // });
-    // const decrypted = input.pipeThrough(decrypt).pipeThrough(counter);
+  const loginqr = async () => {
+    this.loginstate = 1;
+    let result = await initSteam(undefined, undefined, true);
+    if (result != 0) {
+      this.loginstate = 3;
+    } else {
+      this.loginstate = 2;
+    }
 
-    const decrypted = await fetch("assets.tar").then(resp => resp.body!);
-    console.log(decrypted);
-
-    let decompressed;
-    // if (DECRYPT_INFO!.compressed) {
-    // decompressed = decrypted.pipeThrough(new DecompressionStream("gzip"));
-    // } else {
-    decompressed = decrypted;
-    // }
-
-    const before = performance.now();
-    await extractTar(decompressed, root, (type, name) => {
-      console.log(`extracted ${type} "${name}"`);
-    });
-    const after = performance.now();
-    console.log(`downloaded and extracted assets in ${(after - before).toFixed(2)}ms`);
-
-    this["on:done"]();
   };
-  // <div>
-  //      {(DECRYPT_INFO!.size / (1024 * 1024)).toFixed(2)} MiB of {DECRYPT_INFO!.compressed ? "compressed" : ""} data will be downloaded and decrypted.
-  //    </div>
-  //    <div>
-  //      Select <code>{DECRYPT_INFO!.key}</code> from your Celeste install's Content directory. It will be used to decrypt the download.
-  //    </div>
-  //    {$if(use(this.status), <div class="error">
-  //      {use(this.status)}<br />You might have chosen the wrong decryption file. Please reload to try again.
-  //    </div>)}
-  //    {$if(use(this.downloading), <Progress percent={use(this.percent)} />)}
-  //    <input type="file" bind:this={use(this.input)} />
+
+  const loginpass = async () => {
+    this.loginstate = 1;
+    let result = await initSteam(this.username, this.password, false);
+    if (result != 0) {
+      this.username = "";
+      this.password = "";
+      this.loginstate = 3;
+    } else {
+      this.loginstate = 2;
+    }
+  };
+  const download = async () => {
+    this.loginstate = 4;
+    let result = await downloadApp();
+  };
+
   return (
     <div>
-      <Button type="primary" icon="left" disabled={use(this.downloading)} on:click={download}>
-        <Icon icon={iconEncrypted} />
-        Select decryption file
-      </Button>
+      <h1>Steam Login</h1>
+      <div>
+        This will log into Steam through a proxy, so that it can download Terraria assets and achievement stats <br />
+        The account details are encrpyted on your device and never sent to a server. Still, beware of unofficial deployments
+      </div>
+
+      {$if(use(this.loginstate, l => l == 0 || l == 3),
+        <div class="methods">
+          <div class="tcontainer">
+            <h3>Username and Password</h3>
+            <input bind:value={use(this.username)} placeholder="Username" />
+            <input bind:value={use(this.password)} type="password" placeholder="Password" />
+            <Button type="primary" icon="left" disabled={use(this.downloading)} on:click={loginpass}>
+              <Icon icon={iconEncrypted} />
+              Log In with Username and Password
+            </Button>
+          </div>
+          <div class="tcontainer">
+            <h3>Steam Guard QR Code</h3>
+            Requires the Steam app on your phone to be installed. <br />
+            <div style="flex: 1"></div>
+            <Button type="primary" icon="left" disabled={use(this.downloading)} on:click={loginqr}>
+              <Icon icon={iconEncrypted} />
+              Log In with QR Code
+            </Button>
+          </div>
+        </div>
+      )}
+
+      {$if(use(this.loginstate, l => l == 3),
+        <div style="color: var(--error)">Failed to log in! Try again</div>
+      )}
+
+      {$if(use(this.loginstate, l => l == 3 || l == 1 || l == 4),
+        <div class="logcontainer">
+          <LogView />
+        </div>
+      )}
+
+      {$if(use(this.loginstate, l => l == 1),
+        <div class="qrcontainer">
+          <p>Since this uses a proxy, the steam app might complain about your location being wrong. Just select the location that you don't usually log in from if it asks</p>
+          {$if(use(gameState.qr),
+            <img src={use(gameState.qr)} />
+          )}
+
+          {$if(use(gameState.qr),
+            <div>Scan this QR code with the Steam app on your phone.</div>
+          )}
+
+        </div>
+      )}
+
+      {$if(use(this.loginstate, l => l == 2),
+        <div>
+          <Button type="primary" icon="left" disabled={use(this.downloading)} on:click={download}>
+            <Icon icon={iconEncrypted} />
+            Download Assets
+          </Button>
+        </div>
+      )}
+
+      {$if(use(this.loginstate, l => l == 4), <Progress percent={use(this.percent)} />)}
     </div>
   )
 }
