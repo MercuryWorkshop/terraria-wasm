@@ -1,5 +1,5 @@
 STATICS_RELEASE=e97620f0-7022-49fe-845e-a28034d5d631
-Profile=Debug
+Profile=Release
 
 statics:
 	mkdir statics

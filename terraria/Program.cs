@@ -81,14 +81,14 @@ partial class Program
         {
 
 
-            DebugLog.Enabled = true;
+            DebugLog.Enabled = false;
 
             AccountSettingsStore.LoadFromFile("account.config");
-            DebugLog.Enabled = true;
-            DebugLog.AddListener((category, message) =>
-            {
-                Console.WriteLine("[{0}] {1}", category, message);
-            });
+            // DebugLog.Enabled = true;
+            // DebugLog.AddListener((category, message) =>
+            // {
+            //     Console.WriteLine("[{0}] {1}", category, message);
+            // });
 
 
             ContentDownloader.Config.RememberPassword = true;
@@ -119,15 +119,14 @@ partial class Program
 
 
             var depotManifestIds = new List<(uint, ulong)>();
-            // depotManifestIds.Add((105601, 8046724853517638985));
-            depotManifestIds.Add((731, 7617088375292372759));
+            depotManifestIds.Add((105601, 8046724853517638985));
+            // depotManifestIds.Add((731, 7617088375292372759));
 
             if (ContentDownloader.InitializeSteam3(username, password))
             {
                 try
                 {
-                    //105600
-                    await ContentDownloader.DownloadAppAsync(730, depotManifestIds, "public", null, null, null, false, false).ConfigureAwait(false);
+                    await ContentDownloader.DownloadAppAsync(105600, depotManifestIds, "public", null, null, null, false, false).ConfigureAwait(false);
                 }
                 catch (Exception ex) when (
                     ex is ContentDownloaderException
