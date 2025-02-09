@@ -56,13 +56,13 @@ partial class Program
             SavePath = "libsdl/tsaves";
             game = new Terraria.Main();
 
-			ThreadPool.SetMinThreads(8, 8);
-			LanguageManager.Instance.SetLanguage(GameCulture.DefaultCulture);
-			Terraria.Lang.InitializeLegacyLocalization();
-			// SocialAPI.Initialize(null);
-			LaunchInitializer.LoadParameters(game);
+            ThreadPool.SetMinThreads(8, 8);
+            LanguageManager.Instance.SetLanguage(GameCulture.DefaultCulture);
+            Terraria.Lang.InitializeLegacyLocalization();
+            SocialAPI.Initialize(SocialMode.None);
+            LaunchInitializer.LoadParameters(game);
 
-			return Task.Delay(0);
+            return Task.Delay(0);
         }
         catch (Exception e)
         {

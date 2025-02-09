@@ -1,5 +1,5 @@
 STATICS_RELEASE=e97620f0-7022-49fe-845e-a28034d5d631
-Profile=Release
+Profile=Debug
 
 statics:
 	mkdir statics
@@ -24,7 +24,7 @@ FNA:
 # targets
 
 patch: terraria/Decompiled FNA
-	bash tools/applypatches.sh
+	bash tools/applypatches.sh Vanilla
 
 clean:
 	rm -rv statics obj bin FNA node_modules
