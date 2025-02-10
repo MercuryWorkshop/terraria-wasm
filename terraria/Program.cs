@@ -12,6 +12,7 @@ using DepotDownloader;
 using SteamKit2;
 using QRCoder;
 using System.Text.RegularExpressions;
+using System.Linq;
 
 partial class JS
 {
@@ -106,6 +107,7 @@ partial class Program
             LanguageManager.Instance.SetLanguage(GameCulture.DefaultCulture);
             Terraria.Lang.InitializeLegacyLocalization();
             SocialAPI.Initialize(SocialMode.None);
+            SocialAPI.Cloud = new Terraria.Social.Custom.CloudSocialModule();
             LaunchInitializer.LoadParameters(game);
 
             return Task.Delay(0);
@@ -125,7 +127,9 @@ partial class Program
         {
             if (AccountSettingsStore.Instance.LoginTokens.Keys.Count > 0)
             {
-                string username = AccountSettingsStore.Instance.LoginTokens.Keys.GetEnumerator().Current;
+                string username = AccountSettingsStore.Instance.LoginTokens.Keys.First();
+                if (String.IsNullOrEmpty(username)) return 1;
+
                 Console.WriteLine("Using saved login token for " + username);
 
                 if (ContentDownloader.InitializeSteam3(username, null))
@@ -140,6 +144,12 @@ partial class Program
             return 1;
         }
         return 1;
+    }
+
+    [JSExport]
+    internal static async Task<bool> DownloadSteamCloud()
+    {
+        return await ContentDownloader.steam3.DownloadSteamCloud(105600, 100, "/libsdl/remote/");
     }
 
     [JSExport]
