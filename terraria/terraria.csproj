@@ -46,6 +46,7 @@
 		<NativeFileReference Include="..\statics\FNA3D.a" />
 		<NativeFileReference Include="..\statics\libmojoshader.a" />
 		<NativeFileReference Include="..\statics\FAudio.a" />
+		<NativeFileReference Include="..\statics\libcrypto.a" />
 
 		<!-- WASMFS -->
 		<NativeFileReference Include="Emscripten.c" />

@@ -1,5 +1,5 @@
-STATICS_RELEASE=e97620f0-7022-49fe-845e-a28034d5d631
-Profile=Release
+STATICS_RELEASE=c93989e1-7585-4b18-ae46-51fceedf9aeb
+Profile=Debug
 
 statics:
 	mkdir statics
@@ -7,6 +7,7 @@ statics:
 	wget https://github.com/r58Playz/FNA-WASM-Build/releases/download/$(STATICS_RELEASE)/FNA3D.a -O statics/FNA3D.a
 	wget https://github.com/r58Playz/FNA-WASM-Build/releases/download/$(STATICS_RELEASE)/libmojoshader.a -O statics/libmojoshader.a
 	wget https://github.com/r58Playz/FNA-WASM-Build/releases/download/$(STATICS_RELEASE)/SDL3.a -O statics/SDL3.a
+	wget https://github.com/r58Playz/FNA-WASM-Build/releases/download/$(STATICS_RELEASE)/libcrypto.a -O statics/libcrypto.a
 
 terraria/Decompiled:
 	bash tools/decompile.sh

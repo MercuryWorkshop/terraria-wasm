@@ -30,8 +30,8 @@ public class CloudSocialModule : Terraria.Social.Base.CloudSocialModule
     {
         lock (ioLock)
         {
-            var files = Directory.GetFiles(prefix);
-            List<string> list = new List<string>(files.Length);
+            var files = Directory.EnumerateFiles(prefix, "*", SearchOption.AllDirectories);
+            List<string> list = new List<string>();
             foreach (var file in files)
             {
                 list.Add(file.Substring(prefix.Length));

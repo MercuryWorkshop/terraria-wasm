@@ -173,66 +173,6 @@ export async function preInit() {
 	exports = await runtime.getAssemblyExports(config.mainAssemblyName);
 
 	runtime.setModuleImports("interop.js", {
-		decryptecb: (key: Uint8Array, data: Uint8Array) => {
-			const ivEncryptedWordArray = CryptoJS.lib.WordArray.create(data);
-			const keyWordArray = CryptoJS.lib.WordArray.create(key);
-
-			const decryptedIV = CryptoJS.AES.decrypt(
-				<any>{ ciphertext: ivEncryptedWordArray },
-				keyWordArray,
-				{
-					mode: CryptoJS.mode.ECB,
-					padding: CryptoJS.pad.NoPadding
-				}
-			);
-			return wordArrayToUint8Array(decryptedIV);
-		},
-		decryptcbc: (key: Uint8Array, data: Uint8Array, iv: Uint8Array) => {
-			const cbcDataWordArray = CryptoJS.lib.WordArray.create(data);
-			const keyWordArray = CryptoJS.lib.WordArray.create(key);
-			const ivWordArray = CryptoJS.lib.WordArray.create(iv);
-			const decryptedData = CryptoJS.AES.decrypt(
-				<any>{ ciphertext: cbcDataWordArray },
-				keyWordArray,
-				{
-					iv: ivWordArray,
-					mode: CryptoJS.mode.CBC,
-					padding: CryptoJS.pad.Pkcs7
-				}
-			);
-			let arr = wordArrayToUint8Array(decryptedData);
-
-			const paddingLength = arr[arr.length - 1];
-			arr = arr.slice(0, arr.length - paddingLength);
-			if (arr[arr.length - 1] == 0) {
-				arr = arr.slice(0, arr.length - 1);
-			}
-
-			return arr;
-		},
-		decryptcbc2: (key: Uint8Array, data: Uint8Array, iv: Uint8Array) => {
-			let first = performance.now();
-			const cbcDataWordArray = CryptoJS.lib.WordArray.create(data);
-			const keyWordArray = CryptoJS.lib.WordArray.create(key);
-			const ivWordArray = CryptoJS.lib.WordArray.create(iv);
-			const decryptedData = CryptoJS.AES.decrypt(
-				<any>{ ciphertext: cbcDataWordArray },
-				keyWordArray,
-				{
-					iv: ivWordArray,
-					mode: CryptoJS.mode.CBC,
-					padding: CryptoJS.pad.Pkcs7
-				}
-			);
-			const arr = wordArrayToUint8Array(decryptedData);
-			const lastByte = arr[arr.length - 1];
-			const paddingLength = lastByte;
-
-			timespentdecrypting += performance.now() - first;
-
-			return arr.slice(0, arr.length - paddingLength);
-		},
-
 		encryptrsa: (publicKeyModulusHex: string, publicKeyExponentHex: string, data: Uint8Array) => {
 			let modulus = BigInt("0x" + publicKeyModulusHex);
 			let exponent = BigInt("0x" + publicKeyExponentHex);
