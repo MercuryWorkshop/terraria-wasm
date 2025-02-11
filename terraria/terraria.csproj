@@ -48,6 +48,8 @@
 		<NativeFileReference Include="..\statics\FAudio.a" />
 		<NativeFileReference Include="..\statics\libcrypto.a" />
 
+    <NativeFileReference Include="../SteamKit2.WASM/SteamKit/SteamKit2/SteamKit2/NativeCrypto.c" />
+
 		<!-- WASMFS -->
 		<NativeFileReference Include="Emscripten.c" />
 	</ItemGroup>
