@@ -1,6 +1,14 @@
 --- terraria/Decompiled/Terraria/Player.cs
 +++ terraria/Terraria/Player.cs
-@@ -51191,15 +51191,12 @@
+@@ -35,6 +35,7 @@
+ using Terraria.UI.Gamepad;
+ using Terraria.Utilities;
+ using Terraria.WorldBuilding;
++using System.Linq;
+ 
+ namespace Terraria;
+ 
+@@ -51191,15 +51192,12 @@
  		{
  			FileUtilities.Copy(path, path + ".bak", isCloudSave);
  		}
@@ -17,13 +25,24 @@
  		stream.Flush();
  		if (isCloudSave && SocialAPI.Cloud != null)
  		{
-@@ -51507,12 +51504,9 @@
+@@ -51507,12 +51505,19 @@
  		bool gotToReadName = false;
  		try
  		{
 -			RijndaelManaged rijndaelManaged = new RijndaelManaged();
 -			rijndaelManaged.Padding = PaddingMode.None;
- 			using (MemoryStream stream = new MemoryStream(FileUtilities.ReadAllBytes(playerPath, cloudSave)))
+-			using (MemoryStream stream = new MemoryStream(FileUtilities.ReadAllBytes(playerPath, cloudSave)))
++			byte[] ciphertext = FileUtilities.ReadAllBytes(playerPath, cloudSave);
++			byte[] plaintext = new byte[ciphertext.Length];
++			byte[] key = ENCRYPTION_KEY.ToArray();
++			
++			unsafe {
++				fixed (byte *pCiphertext = ciphertext, pPlaintext = plaintext, piv = key) {
++					int newlen = NativeCrypto.AesDecryptCbc(key, key.Length, piv, pCiphertext, ciphertext.Length, pPlaintext);
++					Array.Resize(ref plaintext, newlen);
++				}
++			}
++			using (MemoryStream stream = new MemoryStream(plaintext))
  			{
 -				using CryptoStream input = new CryptoStream(stream, rijndaelManaged.CreateDecryptor(ENCRYPTION_KEY, ENCRYPTION_KEY), CryptoStreamMode.Read);
 -				using BinaryReader binaryReader = new BinaryReader(input);
@@ -31,3 +50,15 @@
  				int num = binaryReader.ReadInt32();
  				if (num >= 135)
  				{
+@@ -51536,8 +51541,10 @@
+ 			playerFileData.Player = player;
+ 			return playerFileData;
+ 		}
+-		catch
++		catch (Exception ex)
+ 		{
++			Console.WriteLine("Failed to load player data");
++			Console.WriteLine(ex);
+ 		}
+ 		Player player2 = new Player();
+ 		player2.loadStatus = 2;
