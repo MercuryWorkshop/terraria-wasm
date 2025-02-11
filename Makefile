@@ -20,15 +20,13 @@ FNA:
 	cd FNA && git checkout 3ee5399 && git apply ../FNA.patch
 	cp FNA/lib/SDL3-CS/SDL3/SDL3.Legacy.cs SDL3.Legacy.cs
 
-
-
 # targets
 
 patch: terraria/Decompiled FNA
 	bash tools/applypatches.sh Vanilla
 
 clean:
-	rm -rv statics obj bin FNA node_modules
+	rm -rvf statics obj bin FNA node_modules || true
 
 build: statics node_modules FNA terraria/Decompiled
 	if [ $(Profile) = "Debug" ]; then\
