@@ -8,14 +8,15 @@
  
  namespace Terraria;
  
-@@ -51191,15 +51192,12 @@
+@@ -51191,19 +51192,33 @@
  		{
  			FileUtilities.Copy(path, path + ".bak", isCloudSave);
  		}
 -		RijndaelManaged rijndaelManaged = new RijndaelManaged();
- 		using Stream stream = (isCloudSave ? ((Stream)new MemoryStream(2000)) : ((Stream)new FileStream(path, FileMode.Create)));
+-		using Stream stream = (isCloudSave ? ((Stream)new MemoryStream(2000)) : ((Stream)new FileStream(path, FileMode.Create)));
 -		using CryptoStream cryptoStream = new CryptoStream(stream, rijndaelManaged.CreateEncryptor(ENCRYPTION_KEY, ENCRYPTION_KEY), CryptoStreamMode.Write);
 -		using BinaryWriter binaryWriter = new BinaryWriter(cryptoStream);
++		using Stream stream = ((Stream)new MemoryStream(2000));
 +		using BinaryWriter binaryWriter = new BinaryWriter(stream);
  		binaryWriter.Write(279);
  		playerFile.Metadata.Write(binaryWriter);
@@ -23,9 +24,31 @@
  		binaryWriter.Flush();
 -		cryptoStream.FlushFinalBlock();
  		stream.Flush();
++
++		byte[] plaintext = ((MemoryStream)stream).ToArray();
++		byte[] key = ENCRYPTION_KEY.ToArray();
++		byte[] iv = ENCRYPTION_KEY.ToArray();
++		byte[] ciphertext = new byte[plaintext.Length + 128]; // padding
++		int byteswritten = 0;
++
++		unsafe {
++			fixed (byte *pPlaintext = plaintext, piv = iv, pdata = ciphertext) {
++				byteswritten = NativeCrypto.AesEncryptCbc(key, key.Length, piv, pPlaintext, plaintext.Length, pdata);
++			}
++		}
++
  		if (isCloudSave && SocialAPI.Cloud != null)
  		{
-@@ -51507,12 +51505,19 @@
+-			SocialAPI.Cloud.Write(playerFile.Path, ((MemoryStream)stream).ToArray());
++			SocialAPI.Cloud.Write(playerFile.Path, ciphertext, byteswritten);
++		} else {
++			var fs = File.Open(path, FileMode.Create, FileAccess.Write);
++			fs.Write(ciphertext, 0, byteswritten);
++			fs.Close();
+ 		}
+ 	}
+ 
+@@ -51507,12 +51522,19 @@
  		bool gotToReadName = false;
  		try
  		{
@@ -50,7 +73,7 @@
  				int num = binaryReader.ReadInt32();
  				if (num >= 135)
  				{
-@@ -51536,8 +51541,10 @@
+@@ -51536,8 +51558,10 @@
  			playerFileData.Player = player;
  			return playerFileData;
  		}
