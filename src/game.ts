@@ -1,5 +1,4 @@
 import { RingBuffer } from "ring-buffer-ts";
-import CryptoJS from "crypto-js";
 import { libcurl } from "libcurl.js";
 
 export type Log = { color: string, log: string };
@@ -133,17 +132,6 @@ function encryptRSA(data: Uint8Array, n: bigint, e: bigint): Uint8Array {
 		Array.from(hex.match(/.{2}/g) || []).map((byte) => parseInt(byte, 16))
 	);
 }
-let timespentdecrypting = 0;
-
-function wordArrayToUint8Array(wordarray: any) {
-	var len = wordarray.words.length,
-		view = new DataView(new ArrayBuffer(len * 4)),
-		i = 0;
-	for (; i < len; i++) {
-		view.setInt32(i * 4, wordarray.words[i], false);
-	}
-	return new Uint8Array(view.buffer);
-}
 
 const wisp_url = "wss://anura.pro/wisp/";
 export async function preInit() {
@@ -202,9 +190,9 @@ export async function preInit() {
 	console.debug("dotnet initialized");
 
 
-	if (await exports.Program.InitSteamSaved() == 0) {
-		gameState.loginstate = 2;
-	}
+	// if (await exports.Program.InitSteamSaved() == 0) {
+	// 	gameState.loginstate = 2;
+	// }
 
 	gameState.ready = true;
 };
