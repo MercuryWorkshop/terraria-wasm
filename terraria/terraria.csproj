@@ -155,5 +155,43 @@
 		<EmbeddedResource WithCulture="false" Type="Non-Resx" Include="Decompiled/Terraria.GameContent.Metadata.MaterialData.Tiles.json" LogicalName="Terraria.GameContent.Metadata.MaterialData.Tiles.json" />
 		<EmbeddedResource WithCulture="false" Type="Non-Resx" Include="Decompiled/Microsoft.Xna.Framework.RuntimeProfile" LogicalName="Microsoft.Xna.Framework.RuntimeProfile" />
 	</ItemGroup>
+
+
+
+	<!-- do not touch unless you like debugging -->
+	<Target Name="ChangeClang" DependsOnTargets="_InitializeCommonProperties" BeforeTargets="_SetupEmscripten">
+		<PropertyGroup>
+			<EmscriptenSdkToolsPath>$(MSBuildProjectDirectory)\..\emsdk\upstream\</EmscriptenSdkToolsPath>
+			<EmscriptenUpstreamBinPath>$(MSBuildProjectDirectory)\..\emsdk\upstream\bin\</EmscriptenUpstreamBinPath>
+			<EmscriptenUpstreamEmscriptenPath>$(MSBuildProjectDirectory)\..\emsdk\upstream\emscripten\</EmscriptenUpstreamEmscriptenPath>
+			<EmscriptenNodeToolsPath>$(MSBuildProjectDirectory)\..\emsdk\node\20.18.0_64bit\bin\node</EmscriptenNodeToolsPath>
+			<WasmClang>$(MSBuildProjectDirectory)\..\emsdk\upstream\emscripten\emcc</WasmClang>
+		</PropertyGroup>
+		<ItemGroup>
+			<EmscriptenPrependPATH Remove="/usr/share/dotnet/packs/*" />
+			<EmscriptenPrependPATH Include="$(EmscriptenSdkToolsPath)" />
+			<EmscriptenPrependPATH Include="$(EmscriptenUpstreamBinPath)" />
+			<EmscriptenPrependPATH Include="$([MSBuild]::NormalizeDirectory($(EmscriptenSdkToolsPath), 'emscripten'))" />
+			<EmscriptenPrependPATH Include="$(EmscriptenNodeToolsPath)" />
+		</ItemGroup>
+	</Target>
+
+	<Target Name="ChangeClang2" DependsOnTargets="_GenerateManagedToNative" BeforeTargets="_WasmCompileNativeSourceFiles">
+		<PropertyGroup>
+			<EmscriptenSdkToolsPath>$(MSBuildProjectDirectory)\..\emsdk\upstream\</EmscriptenSdkToolsPath>
+			<EmscriptenUpstreamBinPath>$(MSBuildProjectDirectory)\..\emsdk\upstream\bin\</EmscriptenUpstreamBinPath>
+			<EmscriptenUpstreamEmscriptenPath>$(MSBuildProjectDirectory)\..\emsdk\upstream\emscripten\</EmscriptenUpstreamEmscriptenPath>
+			<EmscriptenNodeToolsPath>$(MSBuildProjectDirectory)\..\emsdk\node\20.18.0_64bit\bin\node</EmscriptenNodeToolsPath>
+			<WasmClang>$(MSBuildProjectDirectory)\..\emsdk\upstream\emscripten\emcc</WasmClang>
+		</PropertyGroup>
+		<ItemGroup>
+			<EmscriptenPrependPATH Remove="/usr/share/dotnet/packs/*" />
+			<EmscriptenPrependPATH Include="$(EmscriptenSdkToolsPath)" />
+			<EmscriptenPrependPATH Include="$(EmscriptenUpstreamBinPath)" />
+			<EmscriptenPrependPATH Include="$([MSBuild]::NormalizeDirectory($(EmscriptenSdkToolsPath), 'emscripten'))" />
+			<EmscriptenPrependPATH Include="$(EmscriptenNodeToolsPath)" />
+			<EmscriptenEnvVars Include="PATH=$(EmscriptenSdkToolsPath):$(EmscriptenUpstreamBinPath):$([MSBuild]::NormalizeDirectory($(EmscriptenSdkToolsPath), 'emscripten')):$(EmscriptenNodeToolsPath):$(PATH)" />
+		</ItemGroup>
+	</Target>
 </Project>
 
