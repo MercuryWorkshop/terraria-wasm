@@ -3,6 +3,7 @@
 /statics
 /Content/
 /nuget
+/emsdk
 
 
 /node_modules

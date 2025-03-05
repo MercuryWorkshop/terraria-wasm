@@ -133,7 +133,7 @@ function encryptRSA(data: Uint8Array, n: bigint, e: bigint): Uint8Array {
 	);
 }
 
-const wisp_url = "wss://anura.pro/wisp/";
+const wisp_url = "wss://anura.pro/";
 export async function preInit() {
 
 

@@ -11,12 +11,6 @@ importers:
       '@ktibow/iconset-material-symbols':
         specifier: ^0.0.1733470085
         version: 0.0.1733470085
-      '@types/crypto-js':
-        specifier: ^4.2.2
-        version: 4.2.2
-      crypto-js:
-        specifier: ^4.2.0
-        version: 4.2.0
       dreamland:
         specifier: ^0.0.25
         version: 0.0.25
@@ -311,9 +305,6 @@ packages:
     cpu: [x64]
     os: [win32]
 
-  '@types/crypto-js@4.2.2':
-    resolution: {integrity: sha512-sDOLlVbHhXpAUAL0YHDUUwDZf3iN4Bwi4W6a0W0b+QcAezUbRtH4FVb+9J4h+XFPW7l/gQ9F8qC7P+Ec4k8QVQ==}
-
   '@types/estree@1.0.6':
     resolution: {integrity: sha512-AYnb1nQyY49te+VRAVgmzfcgjYS91mY5P0TKUDCLEM+gNnA+3T6rWITXRLYCpahpqSQbN5cE+gHpnPyXjHWxcw==}
 
@@ -331,9 +322,6 @@ packages:
 
   bare-events@2.5.4:
     resolution: {integrity: sha512-+gFfDkR8pj4/TrWCGUGWmJIkBwuxPS5F+a5yWjOHQt2hHvNZd5YLzadjmDUtFmMM4y429bnKLa8bYBMHcYdnQA==}
-
-  crypto-js@4.2.0:
-    resolution: {integrity: sha512-KALDyEYgpY+Rlob/iriUtjV6d5Eq+Y191A5g4UqLAi8CyGP9N1+FdVbkc1SxKc2r4YAYqG8JzO2KGL+AizD70Q==}
 
   dreamland@0.0.25:
     resolution: {integrity: sha512-REhB1T/6do8R7nwa/B0+ie0tTWY97cLsfPwmmqSHOMCu2Qw+cVSWhqTDB1Boklqg9Z8qfRkmGU/rknu0R48QWw==}
@@ -605,8 +593,6 @@ snapshots:
   '@rollup/rollup-win32-x64-msvc@4.34.0':
     optional: true
 
-  '@types/crypto-js@4.2.2': {}
-
   '@types/estree@1.0.6': {}
 
   '@types/node@22.13.0':
@@ -623,8 +609,6 @@ snapshots:
 
   bare-events@2.5.4:
     optional: true
-
-  crypto-js@4.2.0: {}
 
   dreamland@0.0.25: {}
 

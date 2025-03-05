@@ -1,5 +1,6 @@
 STATICS_RELEASE=c93989e1-7585-4b18-ae46-51fceedf9aeb
 Profile=Debug
+DOTNETFLAGS=--nodereuse:false
 
 statics:
 	mkdir statics
@@ -26,6 +27,7 @@ emsdk:
 	./emsdk/emsdk activate 3.1.56
 	python3 ./sanitizeemsdk.py "$(shell realpath ./emsdk/)"
 	patch -p1 --directory emsdk/upstream/emscripten/ < emsdk.patch
+	rm -rvf emsdk/upstream/emscripten/cache/*
 
 # targets
 
@@ -44,7 +46,7 @@ build: statics node_modules FNA terraria/Decompiled emsdk
 		cp SDL3.Legacy.cs FNA/lib/SDL3-CS/SDL3/SDL3.Legacy.cs;\
 	fi
 	rm -r public/_framework bin/$(Profile)/net9.0/publish/wwwroot/_framework || true
-	cd terraria && dotnet publish -c $(Profile) -v diag
+	cd terraria && dotnet publish -c $(Profile) -v diag $(DOTNETFLAGS)
 	cp -r terraria/bin/$(Profile)/net9.0/publish/wwwroot/_framework public/_framework
 	# microsoft messed up
 	sed -i 's/FS_createPath("\/","usr\/share",!0,!0)/FS_createPath("\/usr","share",!0,!0)/' public/_framework/dotnet.runtime.*.js
