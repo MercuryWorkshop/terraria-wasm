@@ -170,7 +170,7 @@ const Copy: Component<{
       {$if(use(this.copying), <Progress percent={use(this.percent)} />)}
       <Button on:click={opfs} type="primary" icon="left" disabled={use(this.copying)}>
         <Icon icon={iconFolderOpen} />
-        Select Celeste Content directory
+        Select Terraria Content directory
       </Button>
       {$if(use(this.status), <div class="error">{use(this.status)}</div>)}
     </div>
