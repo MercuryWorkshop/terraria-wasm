@@ -48,6 +48,7 @@ partial class Program
     {
         return Task.Run(() =>
         {
+        try {
             Console.WriteLine("calling mount_opfs");
             int ret = mount_opfs();
             Console.WriteLine($"called mount_opfs: {ret}");
@@ -91,6 +92,9 @@ partial class Program
             ContentDownloader.Config.MaxDownloads = 8;
             ContentDownloader.Config.MaxServers = 8;
             ContentDownloader.Config.LoginID = null;
+        } catch (Exception ex){
+            Console.WriteLine(ex);
+        }
         });
     }
 

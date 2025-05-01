@@ -140,7 +140,7 @@ export async function preInit() {
 	console.debug("initializing dotnet");
 	const runtime = await dotnet.withConfig({
 		pthreadPoolInitialSize: 16,
-	}).create();
+	}).withMainAssembly("terraria").create();
 
 	console.log("loading libcurl");
 	await libcurl.load_wasm("https://cdn.jsdelivr.net/npm/libcurl.js@0.6.20/libcurl.wasm");
@@ -186,7 +186,7 @@ export async function preInit() {
 
 	console.debug("PreInit...");
 	await runtime.runMain();
-	await exports.Program.PreInit();
+	// await exports.Program.PreInit();
 	console.debug("dotnet initialized");
 
 

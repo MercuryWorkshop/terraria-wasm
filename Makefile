@@ -1,5 +1,5 @@
 STATICS_RELEASE=c93989e1-7585-4b18-ae46-51fceedf9aeb
-Profile=Debug
+Profile=Release
 DOTNETFLAGS=--nodereuse:false
 
 statics:
@@ -8,6 +8,7 @@ statics:
 	wget https://github.com/r58Playz/FNA-WASM-Build/releases/download/$(STATICS_RELEASE)/FNA3D.a -O statics/FNA3D.a
 	wget https://github.com/r58Playz/FNA-WASM-Build/releases/download/$(STATICS_RELEASE)/libmojoshader.a -O statics/libmojoshader.a
 	wget https://github.com/r58Playz/FNA-WASM-Build/releases/download/$(STATICS_RELEASE)/SDL3.a -O statics/SDL3.a
+	wget https://github.com/r58Playz/FNA-WASM-Build/releases/download/$(STATICS_RELEASE)/dotnet.zip -O statics/dotnet.zip
 	wget https://github.com/r58Playz/FNA-WASM-Build/releases/download/$(STATICS_RELEASE)/libcrypto.a -O statics/libcrypto.a
 
 terraria/Decompiled:
@@ -46,15 +47,21 @@ build: statics node_modules FNA terraria/Decompiled emsdk
 		cp SDL3.Legacy.cs FNA/lib/SDL3-CS/SDL3/SDL3.Legacy.cs;\
 	fi
 	rm -r public/_framework bin/$(Profile)/net9.0/publish/wwwroot/_framework || true
-	cd terraria && dotnet publish -c $(Profile) -v diag $(DOTNETFLAGS)
-	cp -r terraria/bin/$(Profile)/net9.0/publish/wwwroot/_framework public/_framework
+
+	#
+	NUGET_PACKAGES="$(shell realpath .)/nuget" dotnet restore terraria $(DOTNETFLAGS)
+	# bash replaceruntime.sh
+	NUGET_PACKAGES="$(shell realpath .)/nuget" dotnet publish terraria -c $(Profile) $(DOTNETFLAGS)
+	#
+
+	cp -r terraria/bin/$(Profile)/net9.0-browser/browser-wasm public/_framework
 	# microsoft messed up
-	sed -i 's/FS_createPath("\/","usr\/share",!0,!0)/FS_createPath("\/usr","share",!0,!0)/' public/_framework/dotnet.runtime.*.js
+	sed -i 's/FS_createPath("\/","usr\/share",!0,!0)/FS_createPath("\/usr","share",!0,!0)/' public/_framework/dotnet.runtime.js
 	# sdl messed up
-	sed -i 's/!window.matchMedia/!self.matchMedia/' public/_framework/dotnet.native.*.js
+	sed -i 's/!window.matchMedia/!self.matchMedia/' public/_framework/dotnet.native.js
 	# emscripten sucks
-	sed -i 's/var offscreenCanvases={};/var offscreenCanvases={};if(globalThis.window\&\&!window.TRANSFERRED_CANVAS){transferredCanvasNames=[".canvas"];window.TRANSFERRED_CANVAS=true;}/' public/_framework/dotnet.native.*.js
-	sed -i 's/var offscreenCanvases = {};/var offscreenCanvases={};if(globalThis.window\&\&!window.TRANSFERRED_CANVAS){transferredCanvasNames=[".canvas"];window.TRANSFERRED_CANVAS=true;}/' public/_framework/dotnet.native.*.js
+	sed -i 's/var offscreenCanvases={};/var offscreenCanvases={};if(globalThis.window\&\&!window.TRANSFERRED_CANVAS){transferredCanvasNames=[".canvas"];window.TRANSFERRED_CANVAS=true;}/' public/_framework/dotnet.native.js
+	sed -i 's/var offscreenCanvases = {};/var offscreenCanvases={};if(globalThis.window\&\&!window.TRANSFERRED_CANVAS){transferredCanvasNames=[".canvas"];window.TRANSFERRED_CANVAS=true;}/' public/_framework/dotnet.native.js
 
 serve: build
 	pnpm dev

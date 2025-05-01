@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.WebAssembly">
+<Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup Condition="'$(Configuration)' == 'Debug'">
 		<RunAOTCompilation>false</RunAOTCompilation>
 	</PropertyGroup>
@@ -11,7 +11,8 @@
 
 
 	<PropertyGroup>
-		<TargetFramework>net9.0</TargetFramework>
+		<TargetFramework>net9.0-browser</TargetFramework>
+		<OutputType>Exe</OutputType>
 		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 		<EnableUnsafeBinaryFormatterSerialization>true</EnableUnsafeBinaryFormatterSerialization>
 		<Nullable>disable</Nullable>
@@ -38,16 +39,42 @@
 		<EmccLinkOptimizationFlag>-O3</EmccLinkOptimizationFlag>
 		<EmccCompileOptimizationFlag>-O3</EmccCompileOptimizationFlag>
 		<EmccEnvironment>web,worker</EmccEnvironment>
-		<WasmCachePath>$(MSBuildProjectDirectory)\..\emsdk\upstream\emscripten\cache\</WasmCachePath>
+
+
+    <RuntimeIdentifier>browser-wasm</RuntimeIdentifier>
+ 		<ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <DotNetJsApi>true</DotNetJsApi>
+    <PublishTrimmed>true</PublishTrimmed>
+    <InvariantGlobalization>true</InvariantGlobalization>
+    <NativeDebugSymbols>false</NativeDebugSymbols>
+    <StackTraceSupport>false</StackTraceSupport>
+    <DebugType>none</DebugType>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <IlcHostPackagePath Condition="'$([MSBuild]::IsOSPlatform(&quot;Windows&quot;))' == 'true'">$(Pkgruntime_win-x64_Microsoft_DotNet_ILCompiler_LLVM)</IlcHostPackagePath>
+    <IlcHostPackagePath Condition="'$([MSBuild]::IsOSPlatform(&quot;Windows&quot;))' == 'false'">$(Pkgruntime_linux-x64_Microsoft_DotNet_ILCompiler_LLVM)</IlcHostPackagePath>
+    <UseAppHost>false</UseAppHost>
+    <UsingBrowserRuntimeWorkload>false</UsingBrowserRuntimeWorkload>
+    <UsingWasiRuntimeWorkload>false</UsingWasiRuntimeWorkload>
+    <UsingEmscriptenWorkload>true</UsingEmscriptenWorkload>
+    <RestoreAdditionalProjectSources>
+      https://api.nuget.org/v3/index.json;
+      https://pkgs.dev.azure.com/dnceng/public/_packaging/dotnet-experimental/nuget/v3/index.json;
+    </RestoreAdditionalProjectSources>
 	</PropertyGroup>
 
 	<ItemGroup>
 		<!-- FNA -->
-		<NativeFileReference Include="..\statics\SDL3.a" />
-		<NativeFileReference Include="..\statics\FNA3D.a" />
-		<NativeFileReference Include="..\statics\libmojoshader.a" />
-		<NativeFileReference Include="..\statics\FAudio.a" />
-		<NativeFileReference Include="..\statics\libcrypto.a" />
+  	<DirectPInvoke Include="SDL3" />
+  	<DirectPInvoke Include="FNA3D" />
+  	<DirectPInvoke Include="libmojoshader" />
+  	<DirectPInvoke Include="FAudio" />
+  	<DirectPInvoke Include="libcrypto" />
+		<NativeLibrary Include="..\statics\SDL3.a" />
+		<NativeLibrary Include="..\statics\FNA3D.a" />
+		<NativeLibrary Include="..\statics\libmojoshader.a" />
+		<NativeLibrary Include="..\statics\FAudio.a" />
+		<NativeLibrary Include="..\statics\libcrypto.a" />
 
     <NativeFileReference Include="../SteamKit2.WASM/SteamKit/SteamKit2/SteamKit2/NativeCrypto.c" />
 
@@ -159,40 +186,26 @@
 
 
 
-	<!-- do not touch unless you like debugging -->
-	<Target Name="ChangeClang" DependsOnTargets="_InitializeCommonProperties" BeforeTargets="_SetupEmscripten">
-		<PropertyGroup>
-			<EmscriptenSdkToolsPath>$(MSBuildProjectDirectory)\..\emsdk\upstream\</EmscriptenSdkToolsPath>
-			<EmscriptenUpstreamBinPath>$(MSBuildProjectDirectory)\..\emsdk\upstream\bin\</EmscriptenUpstreamBinPath>
-			<EmscriptenUpstreamEmscriptenPath>$(MSBuildProjectDirectory)\..\emsdk\upstream\emscripten\</EmscriptenUpstreamEmscriptenPath>
-			<EmscriptenNodeToolsPath>$(MSBuildProjectDirectory)\..\emsdk\node\20.18.0_64bit\bin\node</EmscriptenNodeToolsPath>
-			<WasmClang>$(MSBuildProjectDirectory)\..\emsdk\upstream\emscripten\emcc</WasmClang>
-		</PropertyGroup>
-		<ItemGroup>
-			<EmscriptenPrependPATH Remove="/usr/share/dotnet/packs/*" />
-			<EmscriptenPrependPATH Include="$(EmscriptenSdkToolsPath)" />
-			<EmscriptenPrependPATH Include="$(EmscriptenUpstreamBinPath)" />
-			<EmscriptenPrependPATH Include="$([MSBuild]::NormalizeDirectory($(EmscriptenSdkToolsPath), 'emscripten'))" />
-			<EmscriptenPrependPATH Include="$(EmscriptenNodeToolsPath)" />
-		</ItemGroup>
-	</Target>
+  <PropertyGroup>
+    <EmccExtraArgs>$(EmccExtraArgs) -lcompiler_rt-wasm-sjlj</EmccExtraArgs>
+    <EmccFlags>$(EmccFlags) -O3</EmccFlags>
+  </PropertyGroup>
 
-	<Target Name="ChangeClang2" DependsOnTargets="_GenerateManagedToNative" BeforeTargets="_WasmCompileNativeSourceFiles">
-		<PropertyGroup>
-			<EmscriptenSdkToolsPath>$(MSBuildProjectDirectory)\..\emsdk\upstream\</EmscriptenSdkToolsPath>
-			<EmscriptenUpstreamBinPath>$(MSBuildProjectDirectory)\..\emsdk\upstream\bin\</EmscriptenUpstreamBinPath>
-			<EmscriptenUpstreamEmscriptenPath>$(MSBuildProjectDirectory)\..\emsdk\upstream\emscripten\</EmscriptenUpstreamEmscriptenPath>
-			<EmscriptenNodeToolsPath>$(MSBuildProjectDirectory)\..\emsdk\node\20.18.0_64bit\bin\node</EmscriptenNodeToolsPath>
-			<WasmClang>$(MSBuildProjectDirectory)\..\emsdk\upstream\emscripten\emcc</WasmClang>
-		</PropertyGroup>
-		<ItemGroup>
-			<EmscriptenPrependPATH Remove="/usr/share/dotnet/packs/*" />
-			<EmscriptenPrependPATH Include="$(EmscriptenSdkToolsPath)" />
-			<EmscriptenPrependPATH Include="$(EmscriptenUpstreamBinPath)" />
-			<EmscriptenPrependPATH Include="$([MSBuild]::NormalizeDirectory($(EmscriptenSdkToolsPath), 'emscripten'))" />
-			<EmscriptenPrependPATH Include="$(EmscriptenNodeToolsPath)" />
-			<EmscriptenEnvVars Include="PATH=$(EmscriptenSdkToolsPath):$(EmscriptenUpstreamBinPath):$([MSBuild]::NormalizeDirectory($(EmscriptenSdkToolsPath), 'emscripten')):$(EmscriptenNodeToolsPath):$(PATH)" />
-		</ItemGroup>
-	</Target>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.DotNet.ILCompiler.LLVM" Version="10.0.0-*" />
+    <PackageReference Condition="'$([MSBuild]::IsOSPlatform(&quot;Windows&quot;))' == 'true'" Include="runtime.win-x64.Microsoft.DotNet.ILCompiler.LLVM" Version="10.0.0-*" />
+    <PackageReference Condition="'$([MSBuild]::IsOSPlatform(&quot;Windows&quot;))' == 'false'" Include="runtime.linux-x64.Microsoft.DotNet.ILCompiler.LLVM" Version="10.0.0-*" />
+  </ItemGroup>
+  
+  <PropertyGroup>
+    <ExecutableExtensionName Condition="'$([MSBuild]::IsOSPlatform(&quot;Windows&quot;))' == 'true'">.exe</ExecutableExtensionName>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <EmscriptenEnvVars Include="DOTNET_EMSCRIPTEN_LLVM_ROOT=$(EmscriptenUpstreamBinPath)" />
+    <EmscriptenEnvVars Include="DOTNET_EMSCRIPTEN_BINARYEN_ROOT=$(EmscriptenSdkToolsPath)" />
+    <EmscriptenEnvVars Include="DOTNET_EMSCRIPTEN_NODE_JS=$(EmscriptenNodeBinPath)node$(ExecutableExtensionName)" />
+    <EmscriptenEnvVars Include="EM_CACHE=$(EmscriptenCacheSdkCacheDir)" />
+  </ItemGroup>
 </Project>
 
