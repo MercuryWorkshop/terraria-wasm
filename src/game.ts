@@ -135,12 +135,25 @@ function encryptRSA(data: Uint8Array, n: bigint, e: bigint): Uint8Array {
 
 const wisp_url = "wss://anura.pro/";
 export async function preInit() {
-
-
 	console.debug("initializing dotnet");
-	const runtime = await dotnet.withConfig({
-		pthreadPoolInitialSize: 16,
-	}).create();
+	const runtime = await dotnet
+		.withConfig({
+			pthreadPoolInitialSize: 16,
+		})
+		.withRuntimeOptions([
+			// jit functions quickly and jit more functions
+			`--jiterpreter-minimum-trace-hit-count=${500}`,
+			// monitor jitted functions for less time
+			`--jiterpreter-trace-monitoring-period=${100}`,
+			// reject less funcs
+			`--jiterpreter-trace-monitoring-max-average-penalty=${150}`,
+			// increase jit function limits
+			`--jiterpreter-wasm-bytes-limit=${64 * 1024 * 1024}`,
+			`--jiterpreter-table-size=${16 * 1024}`,
+			// print jit stats
+			`--jiterpreter-stats-enabled`
+		])
+		.create();
 
 	console.log("loading libcurl");
 	await libcurl.load_wasm("https://cdn.jsdelivr.net/npm/libcurl.js@0.6.20/libcurl.wasm");

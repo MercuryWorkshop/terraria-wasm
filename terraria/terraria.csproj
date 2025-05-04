@@ -1,15 +1,4 @@
 <Project Sdk="Microsoft.NET.Sdk.WebAssembly">
-	<PropertyGroup Condition="'$(Configuration)' == 'Debug'">
-		<RunAOTCompilation>false</RunAOTCompilation>
-	</PropertyGroup>
-	<PropertyGroup Condition="'$(Configuration)' == 'Release'">
-		<RunAOTCompilation>true</RunAOTCompilation>
-	</PropertyGroup>
-	<ItemGroup Condition="'$(Configuration)' == 'Release'">
-		<WasmOptConfigurationFlags Include="--converge -O4 -Oz"></WasmOptConfigurationFlags>
-	</ItemGroup>
-
-
 	<PropertyGroup>
 		<TargetFramework>net9.0</TargetFramework>
 		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
@@ -31,15 +20,23 @@
 		<WasmEnableWebcil>false</WasmEnableWebcil>
 
 		<WasmBitcodeCompileOptimizationFlag>-O3</WasmBitcodeCompileOptimizationFlag>
-		<WasmNativeStrip>true</WasmNativeStrip>
-		<WasmNativeDebugSymbols>false</WasmNativeDebugSymbols>
+		<WasmNativeStrip>false</WasmNativeStrip>
+		<WasmNativeDebugSymbols>true</WasmNativeDebugSymbols>
 
-		<EmccExtraLDFlags>-sMIN_WEBGL_VERSION=2 -sWASMFS -sOFFSCREENCANVAS_SUPPORT</EmccExtraLDFlags>
+		<WebAssemblyEnableStreamingResponse>true</WebAssemblyEnableStreamingResponse>
+
+		<!-- MAXIMUM_MEMORY is 4GiB - 1 wasm page (64kib) -->
+		<EmccExtraLDFlags>-sMIN_WEBGL_VERSION=2 -sWASMFS -sOFFSCREENCANVAS_SUPPORT -sSUPPORT_LONGJMP=wasm -sMAXIMUM_MEMORY=4294901760</EmccExtraLDFlags>
 		<EmccLinkOptimizationFlag>-O3</EmccLinkOptimizationFlag>
 		<EmccCompileOptimizationFlag>-O3</EmccCompileOptimizationFlag>
 		<EmccEnvironment>web,worker</EmccEnvironment>
+
 		<WasmCachePath>$(MSBuildProjectDirectory)\..\emsdk\upstream\emscripten\cache\</WasmCachePath>
 	</PropertyGroup>
+
+	<ItemGroup>
+		<WasmOptConfigurationFlags Include="--converge -O4 -Oz"></WasmOptConfigurationFlags>
+	</ItemGroup>
 
 	<ItemGroup>
 		<!-- FNA -->
@@ -49,7 +46,7 @@
 		<NativeFileReference Include="..\statics\FAudio.a" />
 		<NativeFileReference Include="..\statics\libcrypto.a" />
 
-    <NativeFileReference Include="../SteamKit2.WASM/SteamKit/SteamKit2/SteamKit2/NativeCrypto.c" />
+		<NativeFileReference Include="../SteamKit2.WASM/SteamKit/SteamKit2/SteamKit2/NativeCrypto.c" />
 
 		<!-- WASMFS -->
 		<NativeFileReference Include="Emscripten.c" />
@@ -63,7 +60,7 @@
 		<ProjectReference Include="../SteamKit2.WASM/SteamKit/SteamKit2/SteamKit2/SteamKit2.csproj" />
 
 
-    <PackageReference Include="QRCoder" Version="1.6.0" />
+		<PackageReference Include="QRCoder" Version="1.6.0" />
 		<PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
 		<PackageReference Include="Newtonsoft.Json.Bson" Version="1.0.3" />
 		<PackageReference Include="DotNetZip" Version="1.16.0" />

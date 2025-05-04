@@ -1,5 +1,5 @@
-STATICS_RELEASE=c93989e1-7585-4b18-ae46-51fceedf9aeb
-Profile=Debug
+STATICS_RELEASE=a427b168-8052-4050-a1ae-4b59f5bfb69d
+Profile=Release
 DOTNETFLAGS=--nodereuse:false
 
 statics:
@@ -9,6 +9,7 @@ statics:
 	wget https://github.com/r58Playz/FNA-WASM-Build/releases/download/$(STATICS_RELEASE)/libmojoshader.a -O statics/libmojoshader.a
 	wget https://github.com/r58Playz/FNA-WASM-Build/releases/download/$(STATICS_RELEASE)/SDL3.a -O statics/SDL3.a
 	wget https://github.com/r58Playz/FNA-WASM-Build/releases/download/$(STATICS_RELEASE)/libcrypto.a -O statics/libcrypto.a
+	wget https://github.com/r58Playz/FNA-WASM-Build/releases/download/$(STATICS_RELEASE)/dotnet.zip -O statics/dotnet.zip
 
 terraria/Decompiled:
 	bash tools/decompile.sh
@@ -17,8 +18,8 @@ node_modules:
 	pnpm i
 
 FNA:
-	git clone https://github.com/FNA-XNA/FNA --recursive
-	cd FNA && git checkout 3ee5399 && git apply ../FNA.patch
+	git clone https://github.com/FNA-XNA/FNA --recursive -b 25.02
+	cd FNA && git apply ../FNA.patch
 	cp FNA/lib/SDL3-CS/SDL3/SDL3.Legacy.cs SDL3.Legacy.cs
 
 emsdk:
@@ -35,26 +36,22 @@ patch: terraria/Decompiled FNA
 	bash tools/applypatches.sh Vanilla
 
 clean:
-	rm -rvf statics obj bin FNA node_modules emsdk || true
+	rm -rvf statics terraria/obj terraria/bin FNA node_modules emsdk nuget || true
 
 build: statics node_modules FNA terraria/Decompiled emsdk
-	if [ $(Profile) = "Debug" ]; then\
-		sed 's/\[DllImport(nativeLibName, EntryPoint = "SDL_CreateWindow", CallingConvention = CallingConvention\.Cdecl)\]/[DllImport(nativeLibName, EntryPoint = "SDL__CreateWindow", CallingConvention = CallingConvention.Cdecl)]/' < SDL3.Legacy.cs |\
-		sed '/\[DllImport(nativeLibName, CallingConvention = CallingConvention.Cdecl)\]/ { N; s|\(\[DllImport(nativeLibName, CallingConvention = CallingConvention.Cdecl)\]\)\n\(.*SDL_GetWindowFlags.*\)|[DllImport(nativeLibName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "SDL__GetWindowFlags")]\n\2| }'\
-		> FNA/lib/SDL3-CS/SDL3/SDL3.Legacy.cs;\
-	else\
-		cp SDL3.Legacy.cs FNA/lib/SDL3-CS/SDL3/SDL3.Legacy.cs;\
-	fi
+	sed 's/\[DllImport(nativeLibName, EntryPoint = "SDL_CreateWindow", CallingConvention = CallingConvention\.Cdecl)\]/[DllImport(nativeLibName, EntryPoint = "SDL__CreateWindow", CallingConvention = CallingConvention.Cdecl)]/' < SDL3.Legacy.cs |\
+	sed '/\[DllImport(nativeLibName, CallingConvention = CallingConvention.Cdecl)\]/ { N; s|\(\[DllImport(nativeLibName, CallingConvention = CallingConvention.Cdecl)\]\)\n\(.*SDL_GetWindowFlags.*\)|[DllImport(nativeLibName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "SDL__GetWindowFlags")]\n\2| }'\
+	> FNA/lib/SDL3-CS/SDL3/SDL3.Legacy.cs;
 	rm -r public/_framework bin/$(Profile)/net9.0/publish/wwwroot/_framework || true
-	cd terraria && dotnet publish -c $(Profile) -v diag $(DOTNETFLAGS)
+#
+	NUGET_PACKAGES="$(shell realpath .)/nuget" dotnet restore terraria $(DOTNETFLAGS)
+	bash replaceruntime.sh
+	NUGET_PACKAGES="$(shell realpath .)/nuget" dotnet publish terraria -c Release $(DOTNETFLAGS)
+#
 	cp -r terraria/bin/$(Profile)/net9.0/publish/wwwroot/_framework public/_framework
-	# microsoft messed up
-	sed -i 's/FS_createPath("\/","usr\/share",!0,!0)/FS_createPath("\/usr","share",!0,!0)/' public/_framework/dotnet.runtime.*.js
-	# sdl messed up
-	sed -i 's/!window.matchMedia/!self.matchMedia/' public/_framework/dotnet.native.*.js
 	# emscripten sucks
-	sed -i 's/var offscreenCanvases={};/var offscreenCanvases={};if(globalThis.window\&\&!window.TRANSFERRED_CANVAS){transferredCanvasNames=[".canvas"];window.TRANSFERRED_CANVAS=true;}/' public/_framework/dotnet.native.*.js
-	sed -i 's/var offscreenCanvases = {};/var offscreenCanvases={};if(globalThis.window\&\&!window.TRANSFERRED_CANVAS){transferredCanvasNames=[".canvas"];window.TRANSFERRED_CANVAS=true;}/' public/_framework/dotnet.native.*.js
+	sed -i 's/var offscreenCanvases \?= \?{};/var offscreenCanvases={};if(globalThis.window\&\&!window.TRANSFERRED_CANVAS){transferredCanvasNames=[".canvas"];window.TRANSFERRED_CANVAS=true;}/' public/_framework/dotnet.native.*.js
+	sed -i 's/this.appendULeb(32768)/this.appendULeb(65535)/' public/_framework/dotnet.runtime.*.js
 
 serve: build
 	pnpm dev
