@@ -17,8 +17,8 @@ node_modules:
 	pnpm i
 
 FNA:
-	git clone https://github.com/FNA-XNA/FNA --recursive
-	cd FNA && git checkout 3ee5399 && git apply ../FNA.patch
+	git clone https://github.com/FNA-XNA/FNA --recursive -b 25.02
+	cd FNA && git apply ../FNA.patch
 	cp FNA/lib/SDL3-CS/SDL3/SDL3.Legacy.cs SDL3.Legacy.cs
 
 emsdk:
