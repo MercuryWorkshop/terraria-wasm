@@ -21,23 +21,15 @@ FNA:
 	cd FNA && git apply ../FNA.patch
 	cp FNA/lib/SDL3-CS/SDL3/SDL3.Legacy.cs SDL3.Legacy.cs
 
-emsdk:
-	git clone https://github.com/emscripten-core/emsdk
-	./emsdk/emsdk install 3.1.56
-	./emsdk/emsdk activate 3.1.56
-	python3 ./sanitizeemsdk.py "$(shell realpath ./emsdk/)"
-	patch -p1 --directory emsdk/upstream/emscripten/ < emsdk.patch
-	rm -rvf emsdk/upstream/emscripten/cache/*
-
 # targets
 
 patch: terraria/Decompiled FNA
 	bash tools/applypatches.sh Vanilla
 
 clean:
-	rm -rvf statics obj bin FNA node_modules emsdk || true
+	rm -rvf statics terraria/obj terraria/bin FNA node_modules || true
 
-build: statics node_modules FNA terraria/Decompiled emsdk
+build: statics node_modules FNA terraria/Decompiled
 	if [ $(Profile) = "Debug" ]; then\
 		sed 's/\[DllImport(nativeLibName, EntryPoint = "SDL_CreateWindow", CallingConvention = CallingConvention\.Cdecl)\]/[DllImport(nativeLibName, EntryPoint = "SDL__CreateWindow", CallingConvention = CallingConvention.Cdecl)]/' < SDL3.Legacy.cs |\
 		sed '/\[DllImport(nativeLibName, CallingConvention = CallingConvention.Cdecl)\]/ { N; s|\(\[DllImport(nativeLibName, CallingConvention = CallingConvention.Cdecl)\]\)\n\(.*SDL_GetWindowFlags.*\)|[DllImport(nativeLibName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "SDL__GetWindowFlags")]\n\2| }'\
