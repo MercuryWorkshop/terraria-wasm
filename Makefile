@@ -37,7 +37,7 @@ build: statics node_modules FNA terraria/Decompiled
 	else\
 		cp SDL3.Legacy.cs FNA/lib/SDL3-CS/SDL3/SDL3.Legacy.cs;\
 	fi
-	rm -r public/_framework bin/$(Profile)/net9.0/publish/wwwroot/_framework || true
+	rm -r public/_framework terraria/bin/$(Profile)/net9.0/publish/wwwroot/_framework || true
 	cd terraria && dotnet publish -c $(Profile) -v diag $(DOTNETFLAGS)
 	cp -r terraria/bin/$(Profile)/net9.0/publish/wwwroot/_framework public/_framework
 	# microsoft messed up
@@ -47,6 +47,8 @@ build: statics node_modules FNA terraria/Decompiled
 	# emscripten sucks
 	sed -i 's/var offscreenCanvases={};/var offscreenCanvases={};if(globalThis.window\&\&!window.TRANSFERRED_CANVAS){transferredCanvasNames=[".canvas"];window.TRANSFERRED_CANVAS=true;}/' public/_framework/dotnet.native.*.js
 	sed -i 's/var offscreenCanvases = {};/var offscreenCanvases={};if(globalThis.window\&\&!window.TRANSFERRED_CANVAS){transferredCanvasNames=[".canvas"];window.TRANSFERRED_CANVAS=true;}/' public/_framework/dotnet.native.*.js
+	# emscripten sucks. like a lot
+	bash fixwasm.sh
 
 serve: build
 	pnpm dev

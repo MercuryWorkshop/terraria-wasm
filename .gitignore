@@ -1,5 +1,7 @@
 /extract-relogic/bin
 /extract-relogic/obj
+/patch/bin
+/patch/obj
 /statics
 /Content/
 /nuget
