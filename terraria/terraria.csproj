@@ -5,10 +5,6 @@
 	<PropertyGroup Condition="'$(Configuration)' == 'Release'">
 		<RunAOTCompilation>true</RunAOTCompilation>
 	</PropertyGroup>
-	<ItemGroup Condition="'$(Configuration)' == 'Release'">
-		<WasmOptConfigurationFlags Include="--converge -O4 -Oz"></WasmOptConfigurationFlags>
-	</ItemGroup>
-
 
 	<PropertyGroup>
 		<TargetFramework>net9.0</TargetFramework>
@@ -31,8 +27,8 @@
 		<WasmEnableWebcil>false</WasmEnableWebcil>
 
 		<WasmBitcodeCompileOptimizationFlag>-O3</WasmBitcodeCompileOptimizationFlag>
-		<WasmNativeStrip>true</WasmNativeStrip>
-		<WasmNativeDebugSymbols>false</WasmNativeDebugSymbols>
+		<WasmNativeStrip>false</WasmNativeStrip>
+		<WasmNativeDebugSymbols>true</WasmNativeDebugSymbols>
 
 		<EmccExtraLDFlags>-sMIN_WEBGL_VERSION=2 -sWASMFS -sOFFSCREENCANVAS_SUPPORT</EmccExtraLDFlags>
 		<EmccLinkOptimizationFlag>-O3</EmccLinkOptimizationFlag>
@@ -49,7 +45,7 @@
 		<NativeFileReference Include="..\statics\FAudio.a" />
 		<NativeFileReference Include="..\statics\libcrypto.a" />
 
-    <NativeFileReference Include="../SteamKit2.WASM/SteamKit/SteamKit2/SteamKit2/NativeCrypto.c" />
+		<NativeFileReference Include="../SteamKit2.WASM/SteamKit/SteamKit2/SteamKit2/NativeCrypto.c" />
 
 		<!-- WASMFS -->
 		<NativeFileReference Include="Emscripten.c" />
@@ -59,11 +55,9 @@
 		<Compile Remove="Decompiled\**\*" />
 		<Compile Remove="extract-relogic\**\*" />
 		<ProjectReference Include="..\FNA\FNA.Core.csproj" />
-		<ProjectReference Include="../SteamKit2.WASM/DepotDownloader/DepotDownloader.csproj" />
-		<ProjectReference Include="../SteamKit2.WASM/SteamKit/SteamKit2/SteamKit2/SteamKit2.csproj" />
-
-
-    <PackageReference Include="QRCoder" Version="1.6.0" />
+		<ProjectReference Include="..\SteamKit2.WASM\DepotDownloader\DepotDownloader.csproj" />
+		<ProjectReference Include="..\SteamKit2.WASM\SteamKit\SteamKit2\SteamKit2\SteamKit2.csproj" />
+		<PackageReference Include="QRCoder" Version="1.6.0" />
 		<PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
 		<PackageReference Include="Newtonsoft.Json.Bson" Version="1.0.3" />
 		<PackageReference Include="DotNetZip" Version="1.16.0" />
