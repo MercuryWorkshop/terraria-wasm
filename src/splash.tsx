@@ -1,21 +1,14 @@
-import { Logo, LogView } from "./main";
-import { Button, Icon, Link } from "./ui";
-import { copyFolder, countFolder, extractTar, PICKERS_UNAVAILABLE, rootFolder } from "./fs";
+import { Logo, LogView, NAME } from "./main";
+import { Button, Icon, Link } from "./ui/Button";
+import { copyFolder, countFolder, extractTar, PICKERS_UNAVAILABLE, rootFolder, TAR_TYPES  } from "./fs";
 
 import iconFolderOpen from "@ktibow/iconset-material-symbols/folder-open-outline";
+import iconFolderZip from "@ktibow/iconset-material-symbols/folder-zip-outline";
 import iconDownload from "@ktibow/iconset-material-symbols/download";
+import iconArchive from "@ktibow/iconset-material-symbols/archive";
 import iconEncrypted from "@ktibow/iconset-material-symbols/encrypted";
-import { downloadApp, downloadDepot, gameState, initSteam } from "./game";
+import { downloadApp, downloadDepot, gameState, initSteam, realFetch } from "./game";
 
-const DECRYPT_INFO = import.meta.env.VITE_DECRYPT_ENABLED ? {
-  key: import.meta.env.VITE_DECRYPT_KEY,
-  path: import.meta.env.VITE_DECRYPT_PATH,
-  compressed: import.meta.env.VITE_DECRYPT_PATH.endsWith(".gz"),
-  size: parseInt(import.meta.env.VITE_DECRYPT_SIZE),
-  count: parseInt(import.meta.env.VITE_DECRYPT_COUNT),
-} : null;
-
-(self as any).decrypt = DECRYPT_INFO;
 
 const validateDirectory = async (directory: FileSystemDirectoryHandle) => {
   if (directory.name != "Content") {
@@ -67,9 +60,14 @@ const Intro: Component<{
         It needs around 0.6GB of memory and will probably not work on low-end devices.
       </div>
 
-      <div>
-        You will need to own Terraria to play this. Make sure you either own it on Steam, or have it downloaded and installed on your computer.
-      </div>
+      {!import.meta.env.VITE_SIMPLE_DOWNLOAD ?
+        <div>
+          You will need to own Terraria to play this. Make sure you either own it on Steam, or have it downloaded and installed on your computer.
+        </div> :
+        <div>
+          Note: this is an unofficial deployment of terraria-wasm, not endorsed by Mercury Workshop. You can find the official deployment at <Link href="https://terrariaworkshop.com">Terraria Workshop</Link>
+        </div>
+      }
 
       <div>
         A <Link href="https://mercurywork.shop">Mercury Workshop</Link> Project. Ported by <Link href="https://velzie.rip">velzie</Link>
@@ -85,14 +83,26 @@ const Intro: Component<{
 
       <div style="flex: 1"></div>
       <div class="buttons">
-        <Button on:click={() => this["on:next"]("copy")} type="primary" icon="left" disabled={PICKERS_UNAVAILABLE}>
-          <Icon icon={iconFolderOpen} />
-          {PICKERS_UNAVAILABLE ? "Copying local assets is unsupported" : "Copy local assets"}
-        </Button>
-        <Button on:click={() => this["on:next"]("download")} type="primary" icon="left" disabled={false}>
-          <Icon icon={iconDownload} />
-          Download Assets from Steam
-        </Button>
+        {import.meta.env.VITE_SIMPLE_DOWNLOAD ?
+          <Button on:click={() => this["on:next"]("simpledownload")} type="primary" icon="left" disabled={false}>
+            <Icon icon={iconDownload} />
+            Download Terraria
+          </Button> :
+        <>
+          <Button on:click={() => this["on:next"]("copy")} type="primary" icon="left" disabled={PICKERS_UNAVAILABLE}>
+            <Icon icon={iconFolderOpen} />
+            {PICKERS_UNAVAILABLE ? "Copying local assets is unsupported" : "Copy local assets"}
+          </Button>
+          <Button on:click={() => this["on:next"]("download")} type="primary" icon="left" disabled={false}>
+            <Icon icon={iconDownload} />
+            Download Assets from Steam
+          </Button>
+          <Button on:click={() => this["on:next"]("extract")} type="primary" icon="left" disabled={false}>
+            <Icon icon={iconArchive} />
+            Upload Archive
+          </Button>
+        </>
+        }
       </div>
     </div>
   )
@@ -175,6 +185,144 @@ const Copy: Component<{
       {$if(use(this.status), <div class="error">{use(this.status)}</div>)}
     </div>
   )
+}
+
+const Extract: Component<{
+	"on:done": () => void,
+}, {
+	extracting: boolean,
+	status: string,
+	percent: number,
+}> = function() {
+	this.css = `
+		/* hacky */
+		.center svg {
+			transform: translateY(15%);
+		}
+	`;
+
+	const opfs = async () => {
+		const files = await showOpenFilePicker({
+			excludeAcceptAllOption: true,
+			types: TAR_TYPES,
+		});
+		const fileHandle = files[0];
+
+		const file = await fileHandle.getFile();
+
+		let parsedSize = 0;
+		const fileSize = file.size;
+
+		const stream = file.stream();
+		const reader = stream.getReader();
+		const self = this;
+		let progressStream = new ReadableStream({
+			async pull(controller) {
+				const { value, done } = await reader.read();
+
+				if (!value || done) {
+					controller.close();
+				} else {
+					controller.enqueue(value);
+
+					parsedSize += value.byteLength;
+					self.percent = parsedSize / fileSize * 100;
+				}
+			},
+		});
+
+		this.extracting = true;
+
+		if (fileHandle.name.endsWith(".gz")) progressStream = progressStream.pipeThrough(new DecompressionStream("gzip"));
+		await extractTar(progressStream, rootFolder, (type, name) => console.log(`untarred ${type} ${name}`));
+
+		this.extracting = false;
+
+		this["on:done"]();
+	}
+
+	return (
+		<div class="step">
+			<p class="center">
+				Select a {NAME} exported .tar archive of the root directory.
+				You can create this on a browser with {NAME} already set-up by clicking the archive button (<Icon icon={iconArchive} />) in the filesystem explorer while in the root directory.
+			</p>
+			{$if(use(this.extracting), <Progress percent={use(this.percent)} />)}
+			<Button on:click={opfs} type="primary" icon="left" disabled={use(this.extracting)}>
+				<Icon icon={iconFolderZip} />
+				Select {NAME} archive
+			</Button>
+			{$if(use(this.status), <div class="error">{use(this.status)}</div>)}
+		</div>
+	)
+}
+
+const SimpleDownload: Component<{
+	"on:done": () => void,
+}, {
+	extracting: boolean,
+	status: string,
+	percent: number,
+}> = function() {
+	this.css = `
+		/* hacky */
+		.center svg {
+			transform: translateY(15%);
+		}
+	`;
+
+	this.mount = async () => {
+  	try {
+      let url = new URL(import.meta.env.VITE_SIMPLE_DOWNLOAD_FILE, location.href).href;
+      let file = await realFetch(url);
+      console.log(file);
+      if (file.status != 200) {
+        throw new Error(`Failed to download file: ${file.status} ${file.statusText}`);
+      }
+     	let parsedSize = 0;
+  		const fileSize = parseInt(file.headers.get("Content-Length")!);
+      const stream = file.body!;
+  		const reader = stream.getReader();
+  		const self = this;
+  		let progressStream = new ReadableStream({
+  			async pull(controller) {
+  				const { value, done } = await reader.read();
+
+  				if (!value || done) {
+  					controller.close();
+  				} else {
+  					controller.enqueue(value);
+
+  					parsedSize += value.byteLength;
+  					self.percent = parsedSize / fileSize * 100;
+  				}
+  			},
+  		});
+
+  		this.extracting = true;
+
+  		if (url.endsWith(".gz")) progressStream = progressStream.pipeThrough(new DecompressionStream("gzip"));
+  		await extractTar(progressStream, rootFolder, (type, name) => console.log(`untarred ${type} ${name}`));
+
+  		this.extracting = false;
+
+  		this["on:done"]();
+   } catch (e) {
+      this.status = `Failed to download file: ${e}`;
+      this.extracting = false;
+      console.error(e);
+    }
+	}
+
+	return (
+		<div class="step">
+			<p class="center">
+			 Downloading {NAME} from the server
+			</p>
+			{$if(use(this.extracting), <Progress percent={use(this.percent)} />)}
+			{$if(use(this.status), <div class="error">{use(this.status)}</div>)}
+		</div>
+	)
 }
 
 export const Download: Component<{
@@ -352,7 +500,7 @@ export const Download: Component<{
 export const Splash: Component<{
   "on:next": () => void,
 }, {
-  next: "" | "copy" | "download",
+  next: "" | "copy" | "download" | "extract" | "simpledownload",
 }> = function() {
   this.css = `
 		position: relative;
@@ -419,7 +567,11 @@ export const Splash: Component<{
               return <Intro on:next={(x) => this.next = x} />;
             } else if (x === "copy") {
               return <Copy on:done={this["on:next"]} />;
-            } else {
+            } else if (x === "extract") {
+              return <Extract on:done={this["on:next"]} />;
+            } else if (x === "simpledownload") {
+              return <SimpleDownload on:done={this["on:next"]} />;
+            } else if (x === "download" ){
               return <Download on:done={this["on:next"]} />;
             }
           })}

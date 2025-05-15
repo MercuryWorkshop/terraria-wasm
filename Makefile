@@ -1,5 +1,5 @@
 STATICS_RELEASE=c93989e1-7585-4b18-ae46-51fceedf9aeb
-Profile=Debug
+Profile=Release
 DOTNETFLAGS=--nodereuse:false
 
 statics:

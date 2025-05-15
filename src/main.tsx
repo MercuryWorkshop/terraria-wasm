@@ -1,5 +1,5 @@
 import { gameState, play, preInit, TIMEBUF_SIZE } from "./game";
-import { Button, Dialog, Icon, Link } from "./ui";
+
 import { store } from "./store";
 import { OpfsExplorer } from "./fs";
 
@@ -9,6 +9,9 @@ import iconLightMode from "@ktibow/iconset-material-symbols/light-mode";
 import iconDarkMode from "@ktibow/iconset-material-symbols/dark-mode";
 import iconFolderOpen from "@ktibow/iconset-material-symbols/folder-open";
 import iconTrophy from "@ktibow/iconset-material-symbols/trophy";
+import { Dialog } from "./ui/Dialog";
+import { Button, Icon, Link } from "./ui/Button";
+export const NAME = "Terraria";
 
 export const Logo: Component<{}, {}> = function() {
 	this.css = `
@@ -184,7 +187,7 @@ const GameView: Component<{ canvas: HTMLCanvasElement }, {}> = function() {
 		div {
 			font-size: 2rem;
 			font-weight: 570;
-			
+
 			display: flex;
 			flex-direction: column;
 			align-items: center;
