@@ -250,7 +250,7 @@
  
  	public static void OpenCharacterSelectUI()
  	{
-@@ -62938,22 +62846,7 @@
+@@ -62938,105 +62846,60 @@
  	public static void SetDisplayMode(int width, int height, bool fullscreen)
  	{
  		bool flag = false;
@@ -274,10 +274,19 @@
  		bool flag2 = false;
  		int num3;
  		int num4;
-@@ -62970,14 +62863,6 @@
- 					TryPickingDefaultUIScale(800f);
- 				}
- 			}
+-		if (screenBorderless || screenMaximized || graphics.IsFullScreen || fullscreen)
+-		{
+-			bool flag3 = false;
+-			if (PlayerInput.SteamDeckIsUsed)
+-			{
+-				flag3 = true;
+-				if (!fullscreen && !graphics.IsFullScreen)
+-				{
+-					width = 1280;
+-					height = 800;
+-					TryPickingDefaultUIScale(800f);
+-				}
+-			}
 -			if (Platform.IsWindows)
 -			{
 -				form.MinimumSize = new Size(0, 0);
@@ -286,13 +295,19 @@
 -					SetDisplayModeAsBorderless(ref width, ref height, form);
 -				}
 -			}
- 			if (width > maxScreenW)
- 			{
- 				float num = (float)height / (float)width;
-@@ -62991,52 +62876,30 @@
- 				width = (int)(num2 * (float)height);
- 			}
- 			PlayerInput.RawMouseScale = new Vector2((float)width / (float)instance.Window.ClientBounds.Width, (float)height / (float)instance.Window.ClientBounds.Height);
+-			if (width > maxScreenW)
+-			{
+-				float num = (float)height / (float)width;
+-				width = maxScreenW;
+-				height = (int)(num * (float)width);
+-			}
+-			if (height > maxScreenH)
+-			{
+-				float num2 = (float)width / (float)height;
+-				height = maxScreenH;
+-				width = (int)(num2 * (float)height);
+-			}
+-			PlayerInput.RawMouseScale = new Vector2((float)width / (float)instance.Window.ClientBounds.Width, (float)height / (float)instance.Window.ClientBounds.Height);
 -			if (!graphics.IsFullScreen)
 -			{
 -				num3 = Math.Max(graphics.PreferredBackBufferWidth, graphics.GraphicsDevice.Viewport.Width);
@@ -304,24 +319,55 @@
 -			}
 -			else
 -			{
-+			// if (!graphics.IsFullScreen)
-+			// {
-+			// 	num3 = Math.Max(graphics.PreferredBackBufferWidth, graphics.GraphicsDevice.Viewport.Width);
-+			// 	num4 = Math.Max(graphics.PreferredBackBufferHeight, graphics.GraphicsDevice.Viewport.Height);
-+			// 	if (num3 != graphics.PreferredBackBufferWidth || num4 != graphics.PreferredBackBufferHeight)
-+			// 	{
-+			// 		flag2 = true;
-+			// 	}
-+			// }
-+			// else
-+			// {
- 				num3 = graphics.PreferredBackBufferWidth;
- 				num4 = graphics.PreferredBackBufferHeight;
+-				num3 = graphics.PreferredBackBufferWidth;
+-				num4 = graphics.PreferredBackBufferHeight;
 -			}
-+			// }
- 		}
- 		else
- 		{
+-		}
+-		else
+-		{
++		// if (screenBorderless || screenMaximized || graphics.IsFullScreen || fullscreen)
++		// {
++		// 	bool flag3 = false;
++		// 	if (PlayerInput.SteamDeckIsUsed)
++		// 	{
++		// 		flag3 = true;
++		// 		if (!fullscreen && !graphics.IsFullScreen)
++		// 		{
++		// 			width = 1280;
++		// 			height = 800;
++		// 			TryPickingDefaultUIScale(800f);
++		// 		}
++		// 	}
++		// 	if (width > maxScreenW)
++		// 	{
++		// 		float num = (float)height / (float)width;
++		// 		width = maxScreenW;
++		// 		height = (int)(num * (float)width);
++		// 	}
++		// 	if (height > maxScreenH)
++		// 	{
++		// 		float num2 = (float)width / (float)height;
++		// 		height = maxScreenH;
++		// 		width = (int)(num2 * (float)height);
++		// 	}
++		// 	PlayerInput.RawMouseScale = new Vector2((float)width / (float)instance.Window.ClientBounds.Width, (float)height / (float)instance.Window.ClientBounds.Height);
++		// 	// if (!graphics.IsFullScreen)
++		// 	// {
++		// 		num3 = Math.Max(graphics.PreferredBackBufferWidth, graphics.GraphicsDevice.Viewport.Width);
++		// 		num4 = Math.Max(graphics.PreferredBackBufferHeight, graphics.GraphicsDevice.Viewport.Height);
++		// 		if (num3 != graphics.PreferredBackBufferWidth || num4 != graphics.PreferredBackBufferHeight)
++		// 		{
++		// 			flag2 = true;
++		// 		}
++		// 	// }
++		// 	// else
++		// 	// {
++		// 		// num3 = graphics.PreferredBackBufferWidth;
++		// 		// num4 = graphics.PreferredBackBufferHeight;
++		// 	// }
++		// }
++		// else
++		// {
  			PlayerInput.RawMouseScale = Vector2.One;
 -			if (Platform.IsWindows)
 -			{
@@ -337,7 +383,7 @@
  			num3 = graphics.GraphicsDevice.Viewport.Width;
  			num4 = graphics.GraphicsDevice.Viewport.Height;
  			flag2 = graphics.PreferredBackBufferWidth != graphics.GraphicsDevice.Viewport.Width || graphics.PreferredBackBufferHeight != graphics.GraphicsDevice.Viewport.Height;
- 		}
+-		}
 -		if (Platform.IsWindows && !fullscreen && !flag2)
 -		{
 -			if (form.ClientSize.Width < graphics.PreferredBackBufferWidth)
@@ -351,6 +397,7 @@
 -				flag2 = true;
 -			}
 -		}
++		// }
  		width &= 0x7FFFFFFE;
  		height &= 0x7FFFFFFE;
  		width = Math.Max(width, minScreenW);
