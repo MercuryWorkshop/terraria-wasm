@@ -219,7 +219,7 @@ export async function play() {
 
   const before = performance.now();
   console.debug("Init...");
-  await exports.Program.Init();
+  await exports.Program.Init(window.outerWidth, window.outerHeight);
   const after = performance.now();
   console.debug(`Init : ${(after - before).toFixed(2)}ms`);
 

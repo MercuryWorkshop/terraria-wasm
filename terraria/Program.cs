@@ -13,6 +13,7 @@ using SteamKit2;
 using QRCoder;
 using System.Text.RegularExpressions;
 using System.Linq;
+using SDL3;
 
 partial class JS
 {
@@ -95,13 +96,13 @@ partial class Program
     }
 
     [JSExport]
-    internal static Task Init()
+    internal static Task Init(int width, int height)
     {
         try
         {
             Microsoft.Xna.Framework.Content.ContentTypeReaderMetaTypeManager.BackupType = typeof(ReLogic.Graphics.DynamicSpriteFontReader);
             SavePath = "libsdl/tsaves";
-            game = new Terraria.Main();
+            game = new Terraria.Main(width, height);
 
             ThreadPool.SetMinThreads(8, 8);
             LanguageManager.Instance.SetLanguage(GameCulture.DefaultCulture);

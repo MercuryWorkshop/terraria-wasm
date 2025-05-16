@@ -16,7 +16,16 @@
  using ReLogic.Utilities;
  using Terraria.Achievements;
  using Terraria.Audio;
-@@ -282,10 +280,6 @@
+@@ -77,6 +75,8 @@
+ 
+ public class Main : Game
+ {
++    public static int realWindowWidth;
++    public static int realWindowHeight;
+ 	public delegate void OnPlayerSelected(PlayerFileData player);
+ 
+ 	public static class CurrentFrameFlags
+@@ -282,10 +282,6 @@
  
  	public static Main instance;
  
@@ -27,7 +36,7 @@
  	public static Camera Camera = new Camera();
  
  	public static IPlayerRenderer PlayerRenderer = new LegacyPlayerRenderer();
-@@ -747,9 +741,9 @@
+@@ -747,9 +743,9 @@
  
  	public static int desiredWorldTilesUpdateRate = 1;
  
@@ -39,7 +48,7 @@
  
  	public static int minScreenW = 800;
  
-@@ -3427,21 +3421,6 @@
+@@ -3427,21 +3423,6 @@
  
  	private static void TrySupporting8K()
  	{
@@ -61,7 +70,7 @@
  	}
  
  	public static void AnglerQuestSwap()
-@@ -3906,24 +3885,6 @@
+@@ -3906,24 +3887,6 @@
  		}
  		PendingBorderlessState = screenBorderless;
  		screenBorderlessPendingResizes = (screenBorderless ? 6 : 0);
@@ -86,7 +95,7 @@
  		int currentValue2 = graphics.PreferredBackBufferWidth;
  		int currentValue3 = graphics.PreferredBackBufferHeight;
  		configuration.Get("DisplayWidth", ref currentValue2);
-@@ -4277,10 +4238,6 @@
+@@ -4277,10 +4240,6 @@
  				{
  					terrariasFixedTiming = binaryReader.ReadBoolean();
  				}
@@ -97,7 +106,7 @@
  				if (num >= 4)
  				{
  					int width = binaryReader.ReadInt32();
-@@ -4773,18 +4730,10 @@
+@@ -4773,18 +4732,10 @@
  
  	public void NeverSleep()
  	{
@@ -116,7 +125,7 @@
  	}
  
  	public void DedServ()
-@@ -4794,14 +4743,6 @@
+@@ -4794,14 +4745,6 @@
  		if (autoShutdown)
  		{
  			string lpWindowName = (Console.Title = "terraria" + rand.Next(int.MaxValue));
@@ -131,7 +140,19 @@
  		}
  		else
  		{
-@@ -5910,7 +5851,6 @@
+@@ -5757,8 +5700,10 @@
+ 		}
+ 	}
+ 
+-	public Main()
++	public Main(int width, int height)
+ 	{
++	realWindowWidth = width;
++	realWindowHeight = height;
+ 		instance = this;
+ 		UnpausedUpdateSeed = (ulong)Guid.NewGuid().GetHashCode();
+ 		base.Exiting += Main_Exiting;
+@@ -5910,7 +5855,6 @@
  		MinimapFrameManagerInstance.BindTo(preferences);
  		BigBossProgressBar.BindTo(preferences);
  		ResourceSetsManager.BindTo(preferences);
@@ -139,7 +160,7 @@
  		Terraria.Graphics.Effects.Filters.Scene.BindTo(preferences);
  		if (SocialAPI.Cloud != null)
  		{
-@@ -6065,12 +6005,6 @@
+@@ -6065,12 +6009,6 @@
  			WorldGen.EveryTileFrame();
  			player[myPlayer].Spawn(PlayerSpawnContext.SpawningIntoWorld);
  		}
@@ -152,7 +173,7 @@
  		if (!dedServ)
  		{
  			SoundID.FillAccessMap();
-@@ -9829,9 +9763,6 @@
+@@ -9829,9 +9767,6 @@
  		_achievementAdvisor = new AchievementAdvisor();
  		OpenRecent();
  		UILinksInitializer.Load();
@@ -162,7 +183,7 @@
  		CacheSupportedDisplaySizes();
  		if (autoJoin)
  		{
-@@ -9917,7 +9848,6 @@
+@@ -9917,7 +9852,6 @@
  		}
  		AssetSourceController.UseResourcePacks(AssetInitializer.CreateResourcePackList(base.Services));
  		AssetInitializer.LoadSplashAssets(asyncLoadForSounds: true);
@@ -170,7 +191,7 @@
  		_gameContentLoadProcess = LoadContent_Deferred();
  	}
  
-@@ -15630,8 +15560,6 @@
+@@ -15630,8 +15564,6 @@
  		{
  			UpdateAudio();
  			GlobalTimeWrappedHourly = (float)(gameTime.TotalGameTime.TotalSeconds % 3600.0);
@@ -179,7 +200,7 @@
  			return;
  		}
  		PartySky.MultipleSkyWorkaroundFix = true;
-@@ -15736,8 +15664,6 @@
+@@ -15736,8 +15668,6 @@
  		DoUpdate_AutoSave();
  		if (!dedServ)
  		{
@@ -188,7 +209,7 @@
  			if (superFast)
  			{
  				base.IsFixedTimeStep = false;
-@@ -15930,18 +15856,7 @@
+@@ -15930,18 +15860,7 @@
  				logoScale = 1f;
  			}
  			UpdateOldNPCShop();
@@ -208,7 +229,7 @@
  			if (!hasFocus && netMode == 0)
  			{
  				if (!Platform.IsOSX)
-@@ -16101,10 +16016,6 @@
+@@ -16101,10 +16020,6 @@
  		{
  			DoUpdateInWorld(_worldUpdateTimeTester);
  		}
@@ -219,7 +240,7 @@
  	}
  
  	internal static void UpdateCreativeGameModeOverride()
-@@ -44855,7 +44766,6 @@
+@@ -44855,7 +44770,6 @@
  
  	private static void TryDisposingEverything()
  	{
@@ -227,7 +248,7 @@
  		CaptureManager.Instance.Dispose();
  		audioSystem.Dispose();
  	}
-@@ -49159,13 +49069,10 @@
+@@ -49159,13 +49073,10 @@
  	private static bool IsBorderlessDisplayAvailable()
  	{
  		bool result = false;
@@ -242,7 +263,7 @@
  	private static void SetDisplayModeAsBorderless(ref int width, ref int height, Form form)
  	{
  		if (screenBorderless && !graphics.IsFullScreen && screenBorderlessPendingResizes > 0)
-@@ -49196,6 +49103,7 @@
+@@ -49196,6 +49107,7 @@
  		form.Location = new System.Drawing.Point(0, 0);
  		form.FormBorderStyle = FormBorderStyle.None;
  	}
@@ -250,9 +271,13 @@
  
  	public static void OpenCharacterSelectUI()
  	{
-@@ -62938,105 +62846,60 @@
+@@ -62937,111 +62849,69 @@
+ 
  	public static void SetDisplayMode(int width, int height, bool fullscreen)
  	{
++	   width = realWindowWidth;
++	   height = realWindowHeight;
++	
  		bool flag = false;
 -		Form form = null;
 -		if (Platform.IsWindows)
@@ -400,8 +425,16 @@
 +		// }
  		width &= 0x7FFFFFFE;
  		height &= 0x7FFFFFFE;
- 		width = Math.Max(width, minScreenW);
-@@ -63069,20 +62932,6 @@
+-		width = Math.Max(width, minScreenW);
+-		height = Math.Max(height, minScreenH);
+-		if (graphics.IsFullScreen != fullscreen)
++        width = realWindowWidth;
++        height = realWindowHeight;
++        if (graphics.IsFullScreen != fullscreen)
+ 		{
+ 			graphics.PreferredBackBufferWidth = width;
+ 			graphics.PreferredBackBufferHeight = height;
+@@ -63069,20 +62939,6 @@
  			PendingResolutionWidth = screenWidth;
  			PendingResolutionHeight = screenHeight;
  			PlayerInput.CacheOriginalScreenDimensions();

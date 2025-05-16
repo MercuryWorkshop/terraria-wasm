@@ -35,6 +35,7 @@ rm -r terraria/Decompiled terraria/libs terraria/{ReLogic,Terraria} || true
 mkdir terraria/libs
 cp "$(dirname "$terraria")"/{FNA,SteelSeriesEngineWrapper}.dll terraria/libs/
 dotnet run --project extract-relogic/extract-relogic.csproj -- "$terraria" terraria/libs/
+echo "if ilspy asks you to update it, do NOT LISTEN"
 ilspycmd --nested-directories -r terraria/libs -lv CSharp11_0 -p -o terraria/Decompiled "$terraria"
 ilspycmd --nested-directories -lv CSharp11_0 -p -o terraria/Decompiled terraria/libs/ReLogic.dll
 rm -r \
