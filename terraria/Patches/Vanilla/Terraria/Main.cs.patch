@@ -289,7 +289,37 @@
  			if (width > maxScreenW)
  			{
  				float num = (float)height / (float)width;
-@@ -63009,34 +62894,12 @@
+@@ -62991,52 +62876,30 @@
+ 				width = (int)(num2 * (float)height);
+ 			}
+ 			PlayerInput.RawMouseScale = new Vector2((float)width / (float)instance.Window.ClientBounds.Width, (float)height / (float)instance.Window.ClientBounds.Height);
+-			if (!graphics.IsFullScreen)
+-			{
+-				num3 = Math.Max(graphics.PreferredBackBufferWidth, graphics.GraphicsDevice.Viewport.Width);
+-				num4 = Math.Max(graphics.PreferredBackBufferHeight, graphics.GraphicsDevice.Viewport.Height);
+-				if (num3 != graphics.PreferredBackBufferWidth || num4 != graphics.PreferredBackBufferHeight)
+-				{
+-					flag2 = true;
+-				}
+-			}
+-			else
+-			{
++			// if (!graphics.IsFullScreen)
++			// {
++			// 	num3 = Math.Max(graphics.PreferredBackBufferWidth, graphics.GraphicsDevice.Viewport.Width);
++			// 	num4 = Math.Max(graphics.PreferredBackBufferHeight, graphics.GraphicsDevice.Viewport.Height);
++			// 	if (num3 != graphics.PreferredBackBufferWidth || num4 != graphics.PreferredBackBufferHeight)
++			// 	{
++			// 		flag2 = true;
++			// 	}
++			// }
++			// else
++			// {
+ 				num3 = graphics.PreferredBackBufferWidth;
+ 				num4 = graphics.PreferredBackBufferHeight;
+-			}
++			// }
+ 		}
  		else
  		{
  			PlayerInput.RawMouseScale = Vector2.One;
