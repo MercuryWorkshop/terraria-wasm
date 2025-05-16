@@ -102,23 +102,15 @@ const TopBar: Component<{
 			</div>
 			<div class="expand" />
 			<div class="group">
-				<Button on:click={() => this.achievementsOpen = true} icon="full" type="normal" disabled={false}>
+				{/* <Button on:click={() => this.achievementsOpen = true} icon="full" type="normal" disabled={false}>
 					<Icon icon={iconTrophy} />
-				</Button>
+				</Button> */}
 				<Button on:click={() => this.fsOpen = true} icon="full" type="normal" disabled={false}>
 					<Icon icon={iconFolderOpen} />
 				</Button>
-				<Button on:click={() => {
-					if (store.theme === "light") {
-						store.theme = "dark";
-					} else {
-						store.theme = "light";
-					}
-				}} icon="full" type="normal" disabled={false}>
-					<Icon icon={use(store.theme, x => x === "light" ? iconDarkMode : iconLightMode)} />
-				</Button>
 				<Button on:click={async () => {
 					try {
+					  navigator.keyboard.lock();
 						await this.canvas.requestFullscreen({ navigationUI: "hide" });
 					} catch { }
 				}} icon="full" type="normal" disabled={use(gameState.playing, x => !x)}>
