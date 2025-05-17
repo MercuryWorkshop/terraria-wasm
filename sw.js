@@ -7,15 +7,19 @@ self.addEventListener("fetch", (event) => {
         }
         let req = await caches.match(event.request);
         if (req) {
-          return req;
+          let headers = new Headers(req.headers);
+          if (headers.get("Cross-Origin-Embedder-Policy") != "require-corp")
+            headers.append("Cross-Origin-Embedder-Policy", "require-corp");
+          if (headers.get("Cross-Origin-Opener-Policy") != "same-origin")
+            headers.append("Cross-Origin-Opener-Policy", "same-origin");
+
+          return new Response(req.body, {
+            status: req.status,
+            statusText: req.statusText,
+            headers: headers,
+          });
         }
         req = await fetch(event.request);
-        if (new URL(event.request.url).origin == location.origin) {
-          if (req.headers.get("Cross-Origin-Embedder-Policy") != "require-corp")
-            req.headers.append("Cross-Origin-Embedder-Policy", "require-corp");
-          if (req.headers.get("Cross-Origin-Opener-Policy") != "same-origin")
-            req.headers.append("Cross-Origin-Opener-Policy", "same-origin");
-        }
         return req;
       } catch (e) {
         console.log("error", e);
