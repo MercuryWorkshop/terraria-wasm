@@ -1,7 +1,7 @@
 {
   "mainAssemblyName": "terraria",
   "resources": {
-    "hash": "sha256-V7MKpXyRVI6a2AZg9sQx8lHxIVb2B5ovNKYiBjfj2S4=",
+    "hash": "sha256-N6QpnRsHFsEpuM/olppwP4N0G4paI0CC03hw58d5I3g=",
     "fingerprinting": {
       "CsvHelper.3nwd0yg8jo.dll": "CsvHelper.dll",
       "DepotDownloader.kwzsf4pptn.dll": "DepotDownloader.dll",
@@ -20,7 +20,7 @@
       "protobuf-net.Core.9cn3m4azxo.dll": "protobuf-net.Core.dll",
       "protobuf-net.ripp589a7z.dll": "protobuf-net.dll",
       "QRCoder.4j53o3igzi.dll": "QRCoder.dll",
-      "SteamKit2.ccwcegvsby.dll": "SteamKit2.dll",
+      "SteamKit2.5p696cll57.dll": "SteamKit2.dll",
       "Steamworks.NET.d7kco8hunl.dll": "Steamworks.NET.dll",
       "System.Collections.Concurrent.77keru240q.dll": "System.Collections.Concurrent.dll",
       "System.Collections.y4sy5p2c5n.dll": "System.Collections.dll",
@@ -97,9 +97,9 @@
       "System.Xml.Linq.du5ff8lic8.dll": "System.Xml.Linq.dll",
       "System.Xml.ReaderWriter.0tbmg2y0jx.dll": "System.Xml.ReaderWriter.dll",
       "System.Xml.XDocument.htc7u8fv08.dll": "System.Xml.XDocument.dll",
-      "terraria.49xog5wgdu.dll": "terraria.dll",
+      "terraria.htgijktbe2.dll": "terraria.dll",
       "dotnet.native.5ueb4eu8qt.js": "dotnet.native.js",
-      "dotnet.native.f0fy192khg.wasm": "dotnet.native.wasm",
+      "dotnet.native.6p12adq9gl.wasm": "dotnet.native.wasm",
       "dotnet.native.worker.ratb5i3t1q.mjs": "dotnet.native.worker.mjs",
       "dotnet.js": "dotnet.js",
       "dotnet.runtime.5c6f0nk6pn.js": "dotnet.runtime.js",
@@ -117,7 +117,7 @@
       "dotnet.runtime.5c6f0nk6pn.js": "sha256-K7ZYHNXugg/WCes4vr/G2kIL9jVYLTp09vdmdi0N+W8="
     },
     "wasmNative": {
-      "dotnet.native.f0fy192khg.wasm": "sha256-RLlxrxT8WVTLKuBMjUZkFqx9cLWJE2fqjueX/h/cSow="
+      "dotnet.native.6p12adq9gl.wasm": "sha256-KW6ZTimkDGxtUXWtfPxq+Zqr25cu32gYa5DFHftfgDI="
     },
     "icu": {
       "icudt_CJK.tjcz0u77k5.dat": "sha256-SZLtQnRc0JkwqHab0VUVP7T3uBPSeYzxzDnpxPpUnHk=",
@@ -142,7 +142,7 @@
       "protobuf-net.Core.9cn3m4azxo.dll": "sha256-6V7bKCkF16A96zwudwc6fAFCOy/OT29RLkbq5RQ3czM=",
       "protobuf-net.ripp589a7z.dll": "sha256-c6JQSc553GtiWfg8Brx9MssuhC8v14om6QCyWqjyQbY=",
       "QRCoder.4j53o3igzi.dll": "sha256-wGKXAbWMJMEX8utiVd8mMc5gs3pRkKHQL9VMwg/UfrI=",
-      "SteamKit2.ccwcegvsby.dll": "sha256-RNMggKf0JEDUTO6W6hcIpghKB4vrjOW3VstdNU8AQBo=",
+      "SteamKit2.5p696cll57.dll": "sha256-12+HU21JMuKMiGYj4s73lIYR/TtBuXO+oPYGjwoUqb8=",
       "Steamworks.NET.d7kco8hunl.dll": "sha256-t0bUWDUguI+CaC+O68ooS5pKocQLy6dgNilgqhulpSM=",
       "System.Collections.Concurrent.77keru240q.dll": "sha256-PU+T6hxxGwnHlqIrNcqPx+0xNruW1NBICDyEhQA0xW4=",
       "System.Collections.y4sy5p2c5n.dll": "sha256-DvSinzA7gJTEWJkPK0LfLipF6Wc5cgmXRHlZ33S3x+s=",
@@ -219,7 +219,7 @@
       "System.Xml.Linq.du5ff8lic8.dll": "sha256-VSqJeJldsekyVFSkhjDVBQLuEdQDcGhtyXqtBaxiMNM=",
       "System.Xml.ReaderWriter.0tbmg2y0jx.dll": "sha256-vKIZkKYNHx6dqENt+YVqNWLpnA54O2V86uiGXkWzdmU=",
       "System.Xml.XDocument.htc7u8fv08.dll": "sha256-WxVZ2DR1OE62ATJpd7JxF8C7uUQ8YMkfJsJDB0EJvdM=",
-      "terraria.49xog5wgdu.dll": "sha256-WAJss9fjLC9sqlUTE6kajfG4VSjRLhPfV4QnFrNwWcQ="
+      "terraria.htgijktbe2.dll": "sha256-pXjAQXuAJUxBvhoWYKupKzmpKwnzyfwCMpa9sfT23sA="
     },
     "assembly": {}
   },
