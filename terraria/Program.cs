@@ -52,7 +52,6 @@ partial class Program
     [JSExport]
     internal static Task PreInit()
     {
-        TryCreateDirectory("/libsdl/remote/");
         return Task.Run(() =>
         {
             Console.WriteLine("calling mount_opfs");
@@ -63,6 +62,7 @@ partial class Program
                 throw new Exception("Failed to mount OPFS");
             }
             Directory.CreateSymbolicLink("/Content", "/libsdl/Content");
+            TryCreateDirectory("/libsdl/remote/");
 
             AccountSettingsStore.LoadFromFile("/libsdl/account.config");
             DebugLog.Enabled = false;
