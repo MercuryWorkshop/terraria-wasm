@@ -1,12 +1,12 @@
 export const TextField: Component<{
-    "on:keydown"?: (() => void) | ((e: KeyboardEvent) => void);
-    value: string;
-    placeholder?: string;
-    class?: string;
-    type?: string;
-}, {}> = function () {
+	"on:keydown"?: (() => void) | ((e: KeyboardEvent) => void);
+	value: string;
+	placeholder?: string;
+	class?: string;
+	type?: string;
+}, {}> = function() {
 
-    this.css = `
+	this.css = `
     border: 0.1rem solid var(--surface1);
     border-radius: 4rem;
     background: var(--bg-sub);
@@ -30,7 +30,7 @@ export const TextField: Component<{
     }
   `;
 
-    return (
-        <input type={this.type || "text"} class={`component-textfield ${this.class}`} placeholder={`${this.placeholder}`} bind:value={use(this.value)} on:keydown={(this["on:keydown"] || (() => { }))} />
-    );
+	return (
+		<input type={this.type || "text"} class={`component-textfield ${this.class}`} placeholder={`${this.placeholder}`} bind:value={use(this.value)} on:keydown={(this["on:keydown"] || (() => { }))} />
+	);
 };

@@ -2,6 +2,8 @@
 set -euo pipefail
 shopt -s inherit_errexit
 
+SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
+
 which ilspycmd &> /dev/null || {
 	echo "Please install ilspycmd."
 	exit 1
@@ -38,9 +40,9 @@ dotnet run --project extract-relogic/extract-relogic.csproj -- "$terraria" terra
 echo "if ilspy asks you to update it, do NOT LISTEN"
 ilspycmd --nested-directories -r terraria/libs -lv CSharp11_0 -p -o terraria/Decompiled "$terraria"
 ilspycmd --nested-directories -lv CSharp11_0 -p -o terraria/Decompiled terraria/libs/ReLogic.dll
+
 rm -r \
 	terraria/Decompiled/{Terraria,ReLogic}.csproj \
 	terraria/Decompiled/ReLogic/{{OS,Localization/IME}/Windows,Localization/IME/WindowsIme.cs,Peripherals} \
 	terraria/Decompiled/Terraria/{Social/WeGame,Initializers/ChromaInitializer.cs,GameContent/{RGB,ChromaHotkeyPainter.cs},Net/WeGameAddress.cs,{Control,Program,LinuxLaunch}.cs}
-cp terraria/Decompiled/app.ico public/
-cp -r terraria/Decompiled/{ReLogic,Terraria} terraria/
+bash "$SCRIPT_DIR/copydecompiled.sh"

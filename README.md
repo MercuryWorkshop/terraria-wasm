@@ -14,6 +14,7 @@ Cross-Origin-Opener-Policy: same-origin
 ```
 
 # I want to build this
+
 ## Prerequisites
 - A x86_64 Linux system
 - dotnet 9.0.4
@@ -25,30 +26,32 @@ it's recommended to install ilspycmd using the .NET CLI
 ```bash
 dotnet tool install --global ilspycmd --version 9.0.0.7889
 ```
+
 ## Building
 1. Clone the repository (make sure you use --recursive!!)
 2. Decompile Terraria
 ```bash
 bash tools/decompile.sh ~/.local/share/Steam/steamapps/common/Terraria/Terraria.exe
 ```
-3. Apply Patches
-```bash
-bash tools/applypatches.sh Vanilla
-```
-4. Build the project
+3. Build the project
 ```bash
 make serve
 ```
 
 To build the frontend for production, run:
 ```bash
-pnpm vite build
+make publish
 ```
+
 <!--
 To build with simple download (where the game assets are downloaded from the server)
 ```
-VITE_SIMPLE_DOWNLOAD=true VITE_SIMPLE_DOWNLOAD_FILE=/terraria-wasm.tar pnpm vite build
+VITE_SIMPLE_DOWNLOAD=true VITE_SIMPLE_DOWNLOAD_FILE=/terraria-wasm.tar make publish
 ```
 and create a tar of the game assets, then put terraria-wasm.tar in `public/` (not static/, static refers to archive files)
 
 Do not publicly host the game assets without permission from Re-Logic. This is for personal use only. -->
+
+# I want to add mods
+Right now performance is not good enough in dotnet interpreted mode, which is required for [the MonoMod WASM port](https://github.com/r58Playz/MonoMod) to function.
+Eventually it might be possible with improvements to the dotnet wasm jit or a "mixed aot" mode allowing for better FNA performance, but for now it isn't feasible

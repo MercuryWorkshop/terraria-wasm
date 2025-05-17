@@ -28,6 +28,7 @@ export const Button: Component<
 		type: "primary" | "normal" | "listitem" | "listaction";
 		icon: "full" | "left" | "none";
 		disabled: boolean;
+		title?: string;
 	},
 	{
 		children: any;
@@ -116,6 +117,7 @@ export const Button: Component<
 				on:click={this["on:click"]}
 				class={`tcontainer icon-${this.icon} type-${this.type} ${this.class}`}
 				disabled={use(this.disabled)}
+				title={use(this.title)}
 			>
 				{use(this.children)}
 			</button>

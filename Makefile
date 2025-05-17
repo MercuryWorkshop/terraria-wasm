@@ -21,15 +21,17 @@ FNA:
 	cd FNA && git apply ../FNA.patch
 	cp FNA/lib/SDL3-CS/SDL3/SDL3.Legacy.cs SDL3.Legacy.cs
 
+deps: statics node_modules FNA terraria/Decompiled
+
 # targets
 
-patch: terraria/Decompiled FNA
-	bash tools/applypatches.sh Vanilla
-
 clean:
-	rm -rvf statics terraria/obj terraria/bin FNA node_modules || true
+	rm -rvf statics {terraria,SteamKit2.WASM/SteamKit/SteamKit2/SteamKit2,SteamKit2.WASM/protobuf-net/src/protobuf-net.Core}/{bin,obj} FNA node_modules || true
 
-build: statics node_modules FNA terraria/Decompiled
+build: deps
+	bash tools/copydecompiled.sh
+	bash tools/applypatches.sh Vanilla
+#
 	if [ $(Profile) = "Debug" ]; then\
 		sed 's/\[DllImport(nativeLibName, EntryPoint = "SDL_CreateWindow", CallingConvention = CallingConvention\.Cdecl)\]/[DllImport(nativeLibName, EntryPoint = "SDL__CreateWindow", CallingConvention = CallingConvention.Cdecl)]/' < SDL3.Legacy.cs |\
 		sed '/\[DllImport(nativeLibName, CallingConvention = CallingConvention.Cdecl)\]/ { N; s|\(\[DllImport(nativeLibName, CallingConvention = CallingConvention.Cdecl)\]\)\n\(.*SDL_GetWindowFlags.*\)|[DllImport(nativeLibName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "SDL__GetWindowFlags")]\n\2| }'\
@@ -37,9 +39,11 @@ build: statics node_modules FNA terraria/Decompiled
 	else\
 		cp SDL3.Legacy.cs FNA/lib/SDL3-CS/SDL3/SDL3.Legacy.cs;\
 	fi
+#
 	rm -r public/_framework terraria/bin/$(Profile)/net9.0/publish/wwwroot/_framework || true
 	cd terraria && dotnet publish -c $(Profile) -v diag $(DOTNETFLAGS)
 	cp -r terraria/bin/$(Profile)/net9.0/publish/wwwroot/_framework public/_framework
+#
 	# microsoft messed up
 	sed -i 's/FS_createPath("\/","usr\/share",!0,!0)/FS_createPath("\/usr","share",!0,!0)/' public/_framework/dotnet.runtime.*.js
 	# sdl messed up
@@ -53,5 +57,8 @@ build: statics node_modules FNA terraria/Decompiled
 serve: build
 	pnpm dev
 
+publish: build
+	pnpm build
 
-.PHONY: patch clean build serve
+
+.PHONY: clean build serve

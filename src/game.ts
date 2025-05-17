@@ -1,4 +1,5 @@
 import { RingBuffer } from "ring-buffer-ts";
+// @ts-ignore
 import { libcurl } from "libcurl.js";
 
 export type Log = { color: string; log: string };
@@ -49,7 +50,6 @@ proxyConsole("debug", "var(--fg6)");
 
 function hookfmod() {
   let contexts: AudioContext[] = [];
-
   let ctx = AudioContext;
   (AudioContext as any) = function () {
     let context = new ctx();
@@ -101,7 +101,7 @@ if (import.meta.env.PROD) {
 }
 const wasm = await eval(`import("/_framework/dotnet.js")`);
 const dotnet = wasm.dotnet;
-window.wasm = wasm;
+(window as any).wasm = wasm;
 let exports: any;
 
 // the funny custom rsa
