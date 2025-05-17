@@ -51,7 +51,7 @@ function hookfmod() {
   let contexts: AudioContext[] = [];
 
   let ctx = AudioContext;
-  (AudioContext as any) = function() {
+  (AudioContext as any) = function () {
     let context = new ctx();
 
     contexts.push(context);
@@ -62,19 +62,43 @@ function hookfmod() {
     for (let context of contexts) {
       try {
         await context.resume();
-      } catch { }
+      } catch {}
     }
   });
   window.addEventListener("blur", async () => {
     for (let context of contexts) {
       try {
         await context.suspend();
-      } catch { }
+      } catch {}
     }
   });
 }
 hookfmod();
 
+if (import.meta.env.PROD) {
+  try {
+    if (!crossOriginIsolated) {
+      console.log("not crossoriginisolated: using service worker");
+    }
+    const registration = await navigator.serviceWorker.register("/sw.js", {
+      scope: "/",
+    });
+    if (registration.installing) {
+      console.log("Service worker installing");
+    } else if (registration.waiting) {
+      console.log("Service worker installed");
+    } else if (registration.active) {
+      if (!crossOriginIsolated) {
+        console.log("not crossoriginisolated, reloading");
+        setTimeout(() => location.reload(), 100);
+      }
+    }
+  } catch (error) {
+    console.error(`Registration failed with ${error}`);
+  }
+} else {
+  console.log("dev build: won't register service worker");
+}
 const wasm = await eval(`import("/_framework/dotnet.js")`);
 const dotnet = wasm.dotnet;
 window.wasm = wasm;
@@ -109,15 +133,15 @@ function encryptRSA(data: Uint8Array, n: bigint, e: bigint): Uint8Array {
 
     return BigInt(
       "0x" +
-      [
-        "00",
-        "02",
-        ...padding.map((byte) => byte.toString(16).padStart(2, "0")),
-        "00",
-        ...Array.from(messageBytes).map((byte: any) =>
-          byte.toString(16).padStart(2, "0"),
-        ),
-      ].join(""),
+        [
+          "00",
+          "02",
+          ...padding.map((byte) => byte.toString(16).padStart(2, "0")),
+          "00",
+          ...Array.from(messageBytes).map((byte: any) =>
+            byte.toString(16).padStart(2, "0"),
+          ),
+        ].join(""),
     );
   };
   const paddedMessage = pkcs1v15Pad(data, n);
