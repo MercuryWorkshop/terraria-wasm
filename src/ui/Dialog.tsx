@@ -2,10 +2,10 @@ import iconClose from "@ktibow/iconset-material-symbols/close";
 import { Button, Icon } from "./Button";
 
 export const Dialog: Component<
-  { name: string; open: boolean },
-  { children: any[] }
-> = function () {
-  this.css = `
+	{ name: string; open: boolean },
+	{ children: any[] }
+> = function() {
+	this.css = `
 		display: flex;
 		flex-direction: column;
 		gap: 0.8rem;
@@ -75,34 +75,34 @@ export const Dialog: Component<
 
 		.expand { flex: 1 }
 	`;
-  this.mount = () => {
-    const root = this.root as HTMLDialogElement;
-    useChange([this.open], () => {
-      if (this.open) {
-        root.showModal();
-      } else {
-        root.close();
-      }
-    });
-  };
-  return (
-    <dialog class="component-dialog">
-      <div class="header">
-        <h2>{this.name}</h2>
-        <div class="expand" />
-        <Button
-          on:click={() => {
-            this.open = false;
-          }}
-          type="normal"
-          icon="full"
-          disabled={false}
-          title={"Close"}
-        >
-          <Icon icon={iconClose} />
-        </Button>
-      </div>
-      <div class="children">{this.children}</div>
-    </dialog>
-  );
+	this.mount = () => {
+		const root = this.root as HTMLDialogElement;
+		useChange([this.open], () => {
+			if (this.open) {
+				root.showModal();
+			} else {
+				root.close();
+			}
+		});
+	};
+	return (
+		<dialog class="component-dialog">
+			<div class="header">
+				<h2>{this.name}</h2>
+				<div class="expand" />
+				<Button
+					on:click={() => {
+						this.open = false;
+					}}
+					type="normal"
+					icon="full"
+					disabled={false}
+					title={"Close"}
+				>
+					<Icon icon={iconClose} />
+				</Button>
+			</div>
+			<div class="children">{this.children}</div>
+		</dialog>
+	);
 };

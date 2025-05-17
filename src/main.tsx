@@ -1,14 +1,10 @@
 import { gameState, play, preInit, TIMEBUF_SIZE } from "./game";
 
-import { store } from "./store";
 import { OpfsExplorer } from "./fs";
 
 import iconPlayArrow from "@ktibow/iconset-material-symbols/play-arrow";
 import iconFullscreen from "@ktibow/iconset-material-symbols/fullscreen";
-import iconLightMode from "@ktibow/iconset-material-symbols/light-mode";
-import iconDarkMode from "@ktibow/iconset-material-symbols/dark-mode";
 import iconFolderOpen from "@ktibow/iconset-material-symbols/folder-open";
-import iconTrophy from "@ktibow/iconset-material-symbols/trophy";
 import { Dialog } from "./ui/Dialog";
 import { Button, Icon, Link } from "./ui/Button";
 export const NAME = "Terraria";
@@ -110,7 +106,7 @@ const TopBar: Component<{
 				</Button>
 				<Button on:click={async () => {
 					try {
-					  navigator.keyboard.lock();
+						(navigator as any).keyboard.lock();
 						await this.canvas.requestFullscreen({ navigationUI: "hide" });
 					} catch { }
 				}} icon="full" type="normal" disabled={use(gameState.playing, x => !x)}>
