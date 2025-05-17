@@ -164,6 +164,7 @@ const Copy: Component<{
     console.debug(`copy took ${(after - before).toFixed(2)}ms`);
 
     await new Promise(r => setTimeout(r, 250));
+    await rootFolder.getFileHandle(".ContentExists", { create: true });
     this["on:done"]();
   }
 
@@ -241,6 +242,7 @@ const Extract: Component<{
 
 		this.extracting = false;
 
+		await rootFolder.getFileHandle(".ContentExists", { create: true });
 		this["on:done"]();
 	}
 
@@ -308,7 +310,7 @@ const SimpleDownload: Component<{
       await extractTar(progressStream, rootFolder, (type, name) => { });
 
   		this.extracting = false;
-
+      await rootFolder.getFileHandle(".ContentExists", { create: true });
   		this["on:done"]();
    } catch (e) {
       this.status = `Failed to download file: ${e}`;
