@@ -16,6 +16,7 @@
 		"rollup-plugin-node-polyfills": "^0.2.1",
 		"streamx-webstream": "^1.2.12",
 		"tar-stream": "^3.1.7",
+		"vite-plugin-html": "^3.2.2",
 		"xxhashjs": "^0.2.2"
 	},
 	"devDependencies": {

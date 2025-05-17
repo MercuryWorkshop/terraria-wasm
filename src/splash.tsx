@@ -55,9 +55,9 @@ const Intro: Component<{
   return (
     <div>
       <div>
-        This is a port of <Link href="https://terraria.org">Terraria</Link> to the browser. Frontend and build system is heavily based on r58's <Link href="https://github.com/MercuryWorkshop/celeste-wasm">Celeste browser port</Link>
+        This is a port of <Link href="https://terraria.org">Terraria</Link> to the browser with WebAssembly. Frontend and build system is heavily based on r58's <Link href="https://github.com/MercuryWorkshop/celeste-wasm">Celeste browser port</Link>
         <br />
-        It needs around 0.6GB of memory and will probably not work on low-end devices.
+        Want to know how this was made? Check the <Link href="https://velzie.rip/blog/celeste-wasm/">writeup</Link>!
       </div>
 
       {!import.meta.env.VITE_SIMPLE_DOWNLOAD ?
@@ -65,7 +65,7 @@ const Intro: Component<{
           You will need to own Terraria to play this. Make sure you either own it on Steam, or have it downloaded and installed on your computer.
         </div> :
         <div>
-          Note: this is an unofficial deployment of terraria-wasm, not endorsed by Mercury Workshop. You can find the official deployment at <Link href="https://terrariaworkshop.com">Terraria Workshop</Link>
+          THIS IS AN UNOFFICIAL DEPLOYMENT OF Terrarium. I (velzie) AM NOT HOSTING THE GAME CONTENT HERE. You can find the official deployment <Link href="https://terrariaworkshop.com">here</Link>
         </div>
       }
 
@@ -82,6 +82,9 @@ const Intro: Component<{
         : null}
 
       <div style="flex: 1"></div>
+      <div>
+        You will need to install Terraria to your browser with one of the following methods:
+      </div>
       <div class="buttons">
         {import.meta.env.VITE_SIMPLE_DOWNLOAD ?
           <Button on:click={() => this["on:next"]("simpledownload")} type="primary" icon="left" disabled={false}>
@@ -302,7 +305,7 @@ const SimpleDownload: Component<{
   		this.extracting = true;
 
   		if (url.endsWith(".gz")) progressStream = progressStream.pipeThrough(new DecompressionStream("gzip"));
-  		await extractTar(progressStream, rootFolder, (type, name) => console.log(`untarred ${type} ${name}`));
+      await extractTar(progressStream, rootFolder, (type, name) => { });
 
   		this.extracting = false;
 

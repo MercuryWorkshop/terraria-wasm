@@ -42,7 +42,7 @@ export const Logo: Component<{}, {}> = function() {
 	return (
 		<div>
 			<img src="/app.ico" />
-			<span>terraria-wasm</span>
+			<span>terrarium</span>
 			<div class="extras">
 				<span>v1.4.0.0</span>
 			</div>

@@ -23,6 +23,11 @@ partial class JS
 
 partial class Program
 {
+    private static void TryCreateDirectory(string path)
+    {
+        if (!Directory.Exists(path))
+            Directory.CreateDirectory(path);
+    }
     private static void Main()
     {
         Console.WriteLine("Hi!");
@@ -47,6 +52,7 @@ partial class Program
     [JSExport]
     internal static Task PreInit()
     {
+        TryCreateDirectory("/libsdl/remote/");
         return Task.Run(() =>
         {
             Console.WriteLine("calling mount_opfs");

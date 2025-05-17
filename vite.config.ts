@@ -1,8 +1,9 @@
 import { defineConfig } from "vite";
 import { dreamlandPlugin } from "vite-plugin-dreamland";
+import { createHtmlPlugin } from 'vite-plugin-html'
 
 export default defineConfig({
-	plugins: [dreamlandPlugin()],
+	plugins: [dreamlandPlugin(), createHtmlPlugin()],
 	base: "./",
 	server: {
 		headers: {
