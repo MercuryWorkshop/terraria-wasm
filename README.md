@@ -3,6 +3,7 @@
 A port of Terraria to the browser using WebAssembly and [fna-wasm-threads](https://github.com/r58Playz/fna-wasm-threads)
 
 Read the [writeup](https://velzie.rip/blog/celeste-wasm) for more information on how this works.
+![image](https://github.com/user-attachments/assets/dae455c5-7eec-4473-9951-babc8a1b402e)
 
 
 # I want to host this on my website
