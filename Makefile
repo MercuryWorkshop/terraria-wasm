@@ -12,6 +12,9 @@ statics:
 
 terraria/Decompiled:
 	bash tools/decompile.sh
+terraria/Terraria: terraria/Decompiled
+	bash tools/copydecompiled.sh
+	bash tools/applypatches.sh Vanilla
 
 node_modules:
 	pnpm i
@@ -21,7 +24,7 @@ FNA:
 	cd FNA && git apply ../FNA.patch
 	cp FNA/lib/SDL3-CS/SDL3/SDL3.Legacy.cs SDL3.Legacy.cs
 
-deps: statics node_modules FNA terraria/Decompiled
+deps: statics node_modules FNA terraria/Terraria
 
 # targets
 
@@ -29,9 +32,6 @@ clean:
 	rm -rvf statics {terraria,SteamKit2.WASM/SteamKit/SteamKit2/SteamKit2,SteamKit2.WASM/protobuf-net/src/protobuf-net.Core}/{bin,obj} FNA node_modules || true
 
 build: deps
-	bash tools/copydecompiled.sh
-	bash tools/applypatches.sh Vanilla
-#
 	if [ $(Profile) = "Debug" ]; then\
 		sed 's/\[DllImport(nativeLibName, EntryPoint = "SDL_CreateWindow", CallingConvention = CallingConvention\.Cdecl)\]/[DllImport(nativeLibName, EntryPoint = "SDL__CreateWindow", CallingConvention = CallingConvention.Cdecl)]/' < SDL3.Legacy.cs |\
 		sed '/\[DllImport(nativeLibName, CallingConvention = CallingConvention.Cdecl)\]/ { N; s|\(\[DllImport(nativeLibName, CallingConvention = CallingConvention.Cdecl)\]\)\n\(.*SDL_GetWindowFlags.*\)|[DllImport(nativeLibName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "SDL__GetWindowFlags")]\n\2| }'\
