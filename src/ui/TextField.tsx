@@ -9,11 +9,12 @@ export const TextField: Component<{
 	this.css = `
     border: 0.1rem solid var(--surface1);
     border-radius: 4rem;
-    background: var(--bg-sub);
-    padding: 0.5em;
+    padding: 0.5rem;
     font-family: var(--font-body);
     padding-left: 0.75rem;
     transition: all 0.1s ease;
+	color: var(--fg);
+	font-size: 1.25rem;
 
     &:hover {
       transition: all 0.1s ease;
@@ -31,6 +32,6 @@ export const TextField: Component<{
   `;
 
 	return (
-		<input type={this.type || "text"} class={`component-textfield ${this.class}`} placeholder={`${this.placeholder}`} bind:value={use(this.value)} on:keydown={(this["on:keydown"] || (() => { }))} />
+		<input type={this.type || "text"} class={`component-textfield ${this.class} tcontainer`} placeholder={`${this.placeholder}`} bind:value={use(this.value)} on:keydown={(this["on:keydown"] || (() => { }))} />
 	);
 };

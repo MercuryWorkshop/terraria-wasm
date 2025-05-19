@@ -8,6 +8,8 @@ import iconDownload from "@ktibow/iconset-material-symbols/download";
 import iconArchive from "@ktibow/iconset-material-symbols/archive";
 import iconEncrypted from "@ktibow/iconset-material-symbols/encrypted";
 import { downloadApp, gameState, initSteam, realFetch } from "./game";
+import { TextField } from "./ui/TextField";
+import { store } from "./store";
 
 
 const validateDirectory = async (directory: FileSystemDirectoryHandle) => {
@@ -556,6 +558,15 @@ export const Splash: Component<{
 			display: flex;
 			justify-content: center;
 		}
+
+		.wisp {
+			display: flex;
+			gap: 0.5em;
+			align-items: center;
+		}
+		.wisp input {
+			flex: 1;
+		}
 	`;
 
 	this.next = "";
@@ -580,6 +591,10 @@ export const Splash: Component<{
 							return <Download on:done={this["on:next"]} />;
 						}
 					})}
+					<div class="wisp">
+						<span>Wisp Proxy Server:</span>
+						<TextField bind:value={use(store.wisp)} />
+					</div>
 				</div>
 			</div>
 		</div>

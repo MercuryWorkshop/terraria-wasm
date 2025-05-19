@@ -1,6 +1,7 @@
 import { RingBuffer } from "ring-buffer-ts";
 // @ts-ignore
 import { libcurl } from "libcurl.js";
+import { store } from "./store";
 
 export type Log = { color: string; log: string };
 export const TIMEBUF_SIZE = 120;
@@ -159,7 +160,6 @@ function encryptRSA(data: Uint8Array, n: bigint, e: bigint): Uint8Array {
 }
 
 export const realFetch = window.fetch;
-const wisp_url = "wss://staging2.velzie.rip/";
 export async function preInit() {
   console.debug("initializing dotnet");
   const runtime = await dotnet
@@ -172,11 +172,13 @@ export async function preInit() {
   await libcurl.load_wasm(
     "https://cdn.jsdelivr.net/npm/libcurl.js@0.6.20/libcurl.wasm",
   );
-  libcurl.set_websocket(wisp_url);
+  libcurl.set_websocket(store.wisp);
+
+  useChange([store.wisp], () => libcurl.set_websocket(store.wisp));
 
   window.WebSocket = new Proxy(WebSocket, {
     construct(t, a, n) {
-      if (a[0] === wisp_url) return Reflect.construct(t, a, n);
+      if (a[0] === store.wisp) return Reflect.construct(t, a, n);
 
       return new libcurl.WebSocket(...a);
     },
