@@ -1,7 +1,7 @@
 {
   "mainAssemblyName": "terraria",
   "resources": {
-    "hash": "sha256-M+sa4Oq5frxZcs5i/nSSsTUuw7M0McFsZaaM+twA8io=",
+    "hash": "sha256-hHFMYV6VD3Iy5dMXfMdfWo8zCvIuTmDisaoDqYYPWUE=",
     "fingerprinting": {
       "CsvHelper.9hpxi8g9qm.wasm": "CsvHelper.wasm",
       "DepotDownloader.t2s9n47qc6.wasm": "DepotDownloader.wasm",
@@ -97,9 +97,9 @@
       "System.Xml.Linq.mixoc3e4x3.wasm": "System.Xml.Linq.wasm",
       "System.Xml.ReaderWriter.thjis4417r.wasm": "System.Xml.ReaderWriter.wasm",
       "System.Xml.XDocument.6g3slob686.wasm": "System.Xml.XDocument.wasm",
-      "terraria.mvk0o81nzm.wasm": "terraria.wasm",
+      "terraria.zwlppu3emt.wasm": "terraria.wasm",
       "dotnet.native.5ueb4eu8qt.js": "dotnet.native.js",
-      "dotnet.native.kmisgziv7q.wasm": "dotnet.native.wasm",
+      "dotnet.native.85fjqcgak5.wasm": "dotnet.native.wasm",
       "dotnet.native.worker.ratb5i3t1q.mjs": "dotnet.native.worker.mjs",
       "dotnet.js": "dotnet.js",
       "dotnet.runtime.5c6f0nk6pn.js": "dotnet.runtime.js",
@@ -117,7 +117,7 @@
       "dotnet.runtime.5c6f0nk6pn.js": "sha256-K7ZYHNXugg/WCes4vr/G2kIL9jVYLTp09vdmdi0N+W8="
     },
     "wasmNative": {
-      "dotnet.native.kmisgziv7q.wasm": "sha256-lcUN+QL9u5msGqX8ZIfeBmgjwMHXY+AWsZib9s+aX9E="
+      "dotnet.native.85fjqcgak5.wasm": "sha256-U49rqc1FFG/yBDkY74DseIh6s+hQLEkCEBhjyuzI4M4="
     },
     "icu": {
       "icudt_CJK.tjcz0u77k5.dat": "sha256-SZLtQnRc0JkwqHab0VUVP7T3uBPSeYzxzDnpxPpUnHk=",
@@ -219,7 +219,7 @@
       "System.Xml.Linq.mixoc3e4x3.wasm": "sha256-UugB5P9eGQHDIgrdxmssbIT8HjAPz0j6jk7e8xF0pOE=",
       "System.Xml.ReaderWriter.thjis4417r.wasm": "sha256-zyC92BCru93safqR1y46PYE51QGDm0MLmJluf+Pbmnk=",
       "System.Xml.XDocument.6g3slob686.wasm": "sha256-ijpnwEcGWICQYTtFnWbvpN+ZRnv0ni++N4DK8RgE68Q=",
-      "terraria.mvk0o81nzm.wasm": "sha256-snFufTXLzQklzN6qtXd3smJMJ+dEAEmpXsbxMEhU1nQ="
+      "terraria.zwlppu3emt.wasm": "sha256-zSNfIhZPM4a+/5IOJX7rb49ypHAcJauAW7K1K8gTItA="
     },
     "assembly": {}
   },
