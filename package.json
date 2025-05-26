@@ -5,7 +5,8 @@
 	"type": "module",
 	"scripts": {
 		"build": "tsc && vite build",
-		"dev": "vite"
+		"dev": "vite",
+		"format": "prettier -w ."
 	},
 	"dependencies": {
 		"@ktibow/iconset-material-symbols": "^0.0.1747426012",
@@ -24,6 +25,7 @@
 		"@types/wicg-file-system-access": "^2023.10.6",
 		"typescript": "^5.8.3",
 		"vite": "^6.3.5",
-		"vite-plugin-dreamland": "^1.2.1"
+		"vite-plugin-dreamland": "^1.2.1",
+		"prettier": "^3.5.3"
 	}
 }

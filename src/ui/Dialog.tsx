@@ -4,7 +4,7 @@ import { Button, Icon } from "./Button";
 export const Dialog: Component<
 	{ name: string; open: boolean },
 	{ children: any[] }
-> = function() {
+> = function () {
 	this.css = `
 		display: flex;
 		flex-direction: column;

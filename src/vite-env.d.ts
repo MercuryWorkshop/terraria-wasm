@@ -1,10 +1,10 @@
 /// <reference types="vite/client" />
 
 interface ImportMetaEnv {
-  readonly VITE_SIMPLE_DOWNLOAD: string
-  readonly VITE_SIMPLE_DOWNLOAD_FILE: string
+	readonly VITE_SIMPLE_DOWNLOAD: string;
+	readonly VITE_SIMPLE_DOWNLOAD_FILE: string;
 }
 
 interface ImportMeta {
-  readonly env: ImportMetaEnv
+	readonly env: ImportMetaEnv;
 }

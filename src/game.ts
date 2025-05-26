@@ -52,7 +52,7 @@ proxyConsole("debug", "var(--fg6)");
 function hookfmod() {
 	let contexts: AudioContext[] = [];
 	let ctx = AudioContext;
-	(AudioContext as any) = function() {
+	(AudioContext as any) = function () {
 		let context = new ctx();
 
 		contexts.push(context);
@@ -63,14 +63,14 @@ function hookfmod() {
 		for (let context of contexts) {
 			try {
 				await context.resume();
-			} catch { }
+			} catch {}
 		}
 	});
 	window.addEventListener("blur", async () => {
 		for (let context of contexts) {
 			try {
 				await context.suspend();
-			} catch { }
+			} catch {}
 		}
 	});
 }
@@ -134,15 +134,15 @@ function encryptRSA(data: Uint8Array, n: bigint, e: bigint): Uint8Array {
 
 		return BigInt(
 			"0x" +
-			[
-				"00",
-				"02",
-				...padding.map((byte) => byte.toString(16).padStart(2, "0")),
-				"00",
-				...Array.from(messageBytes).map((byte: any) =>
-					byte.toString(16).padStart(2, "0"),
-				),
-			].join(""),
+				[
+					"00",
+					"02",
+					...padding.map((byte) => byte.toString(16).padStart(2, "0")),
+					"00",
+					...Array.from(messageBytes).map((byte: any) =>
+						byte.toString(16).padStart(2, "0")
+					),
+				].join("")
 		);
 	};
 	const paddedMessage = pkcs1v15Pad(data, n);
@@ -155,7 +155,7 @@ function encryptRSA(data: Uint8Array, n: bigint, e: bigint): Uint8Array {
 
 	// ????
 	return new Uint8Array(
-		Array.from(hex.match(/.{2}/g) || []).map((byte) => parseInt(byte, 16)),
+		Array.from(hex.match(/.{2}/g) || []).map((byte) => parseInt(byte, 16))
 	);
 }
 
@@ -171,7 +171,7 @@ export async function preInit() {
 
 	console.log("loading libcurl");
 	await libcurl.load_wasm(
-		"https://cdn.jsdelivr.net/npm/libcurl.js@0.6.20/libcurl.wasm",
+		"https://cdn.jsdelivr.net/npm/libcurl.js@0.6.20/libcurl.wasm"
 	);
 	libcurl.set_websocket(store.wisp);
 
@@ -194,7 +194,7 @@ export async function preInit() {
 		encryptrsa: (
 			publicKeyModulusHex: string,
 			publicKeyExponentHex: string,
-			data: Uint8Array,
+			data: Uint8Array
 		) => {
 			let modulus = BigInt("0x" + publicKeyModulusHex);
 			let exponent = BigInt("0x" + publicKeyExponentHex);
@@ -233,7 +233,7 @@ export async function preInit() {
 export async function initSteam(
 	username: string | null,
 	password: string | null,
-	qr: boolean,
+	qr: boolean
 ) {
 	return await exports.Program.InitSteam(username, password, qr);
 }

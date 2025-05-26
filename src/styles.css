@@ -15,11 +15,15 @@ html {
 	width: 100%;
 	height: 100%;
 
-	--font-body: 'Andy Bold', -apple-system, system-ui, BlinkMacSystemFont, "Segoe UI",
+	--font-body:
+		"Andy Bold", -apple-system, system-ui, BlinkMacSystemFont, "Segoe UI",
 		Roboto, "Helvetica Neue", Arial, sans-serif;
-	--font-display: 'Inter Tight', 'Inter', -apple-system, system-ui, BlinkMacSystemFont, "Segoe UI",
-		Roboto, "Helvetica Neue", Arial, sans-serif;
-	--font-mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+	--font-display:
+		"Inter Tight", "Inter", -apple-system, system-ui, BlinkMacSystemFont,
+		"Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+	--font-mono:
+		"IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+		"Liberation Mono", "Courier New", monospace;
 
 	font-family: var(--font-body);
 }
@@ -78,9 +82,7 @@ html {
 
 @font-face {
 	font-family: "Andy Bold";
-	src:
-		local("Andy Bold"),
-		url("/AndyBold.ttf"),
+	src: local("Andy Bold"), url("/AndyBold.ttf");
 }
 
 h1,

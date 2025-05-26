@@ -1,24 +1,25 @@
 import type { IconifyIcon } from "@iconify/types";
 
-export const Icon: Component<{ icon: IconifyIcon; class?: string; }, {}> = function() {
-	// @ts-expect-error
-	this._leak = true;
-	this.mount = () => {
-		this.root.innerHTML = this.icon.body;
-		useChange([this.icon], () => {
+export const Icon: Component<{ icon: IconifyIcon; class?: string }, {}> =
+	function () {
+		// @ts-expect-error
+		this._leak = true;
+		this.mount = () => {
 			this.root.innerHTML = this.icon.body;
-		});
+			useChange([this.icon], () => {
+				this.root.innerHTML = this.icon.body;
+			});
+		};
+		return (
+			<svg
+				width="1em"
+				height="1em"
+				viewBox={use`0 0 ${this.icon.width} ${this.icon.height}`}
+				xmlns="http://www.w3.org/2000/svg"
+				class={`component-icon ${this.class}`}
+			></svg>
+		);
 	};
-	return (
-		<svg
-			width="1em"
-			height="1em"
-			viewBox={use`0 0 ${this.icon.width} ${this.icon.height}`}
-			xmlns="http://www.w3.org/2000/svg"
-			class={`component-icon ${this.class}`}
-		></svg>
-	);
-};
 
 export const Button: Component<
 	{
@@ -33,7 +34,7 @@ export const Button: Component<
 	{
 		children: any;
 	}
-> = function() {
+> = function () {
 	// @ts-expect-error
 	this._leak = true;
 	this.css = `
@@ -124,6 +125,11 @@ export const Button: Component<
 		</div>
 	);
 };
-export const Link: Component<{ href: string; }, { children: any[]; }> = function() {
-	return <a href={this.href} class="component-link" target="_blank">{this.children}</a>;
-};
+export const Link: Component<{ href: string }, { children: any[] }> =
+	function () {
+		return (
+			<a href={this.href} class="component-link" target="_blank">
+				{this.children}
+			</a>
+		);
+	};

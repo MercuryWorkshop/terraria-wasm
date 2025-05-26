@@ -1,6 +1,13 @@
 import { LogView, NAME } from "./main";
 import { Button, Icon, Link } from "./ui/Button";
-import { copyFolder, countFolder, extractTar, PICKERS_UNAVAILABLE, rootFolder, TAR_TYPES } from "./fs";
+import {
+	copyFolder,
+	countFolder,
+	extractTar,
+	PICKERS_UNAVAILABLE,
+	rootFolder,
+	TAR_TYPES,
+} from "./fs";
 
 import iconFolderOpen from "@ktibow/iconset-material-symbols/folder-open-outline";
 import iconFolderZip from "@ktibow/iconset-material-symbols/folder-zip-outline";
@@ -11,7 +18,6 @@ import { downloadApp, gameState, initSteam, realFetch } from "./game";
 import { TextField } from "./ui/TextField";
 import { store } from "./store";
 
-
 const validateDirectory = async (directory: FileSystemDirectoryHandle) => {
 	if (directory.name != "Content") {
 		return "Directory name is not Content";
@@ -20,15 +26,20 @@ const validateDirectory = async (directory: FileSystemDirectoryHandle) => {
 		try {
 			await directory.getDirectoryHandle(child, { create: false });
 		} catch {
-			return `Failed to find subdirectory ${child}`
+			return `Failed to find subdirectory ${child}`;
 		}
 	}
 	return "";
 };
 
-const Intro: Component<{
-	"on:next": (type: "copy" | "download" | "simpledownload" | "extract") => void,
-}, {}> = function() {
+const Intro: Component<
+	{
+		"on:next": (
+			type: "copy" | "download" | "simpledownload" | "extract"
+		) => void;
+	},
+	{}
+> = function () {
 	this.css = `
 		display: flex;
 		flex-direction: column;
@@ -57,63 +68,102 @@ const Intro: Component<{
 	return (
 		<div>
 			<div>
-				This is a port of <Link href="https://terraria.org">Terraria</Link> to the browser with WebAssembly. Frontend and build system is heavily based on r58's <Link href="https://github.com/MercuryWorkshop/celeste-wasm">Celeste browser port</Link>
+				This is a port of <Link href="https://terraria.org">Terraria</Link> to
+				the browser with WebAssembly. Frontend and build system is heavily based
+				on r58's{" "}
+				<Link href="https://github.com/MercuryWorkshop/celeste-wasm">
+					Celeste browser port
+				</Link>
 				<br />
-				Want to know how this was made? Check the <Link href="https://velzie.rip/blog/celeste-wasm/">writeup</Link>!
+				Want to know how this was made? Check the{" "}
+				<Link href="https://velzie.rip/blog/celeste-wasm/">writeup</Link>!
 			</div>
 
-			{!import.meta.env.VITE_SIMPLE_DOWNLOAD ?
+			{!import.meta.env.VITE_SIMPLE_DOWNLOAD ? (
 				<div>
-					You will need to own Terraria to play this. Make sure you either own it on Steam, or have it downloaded and installed on your computer.
-				</div> :
-				<div>
-					THIS IS AN UNOFFICIAL DEPLOYMENT OF Terrarium. I (velzie) AM NOT HOSTING THE GAME CONTENT HERE. You can find the official deployment <Link href="https://terrariaworkshop.com">here</Link>
+					You will need to own Terraria to play this. Make sure you either own
+					it on Steam, or have it downloaded and installed on your computer.
 				</div>
-			}
+			) : (
+				<div>
+					THIS IS AN UNOFFICIAL DEPLOYMENT OF Terrarium. I (velzie) AM NOT
+					HOSTING THE GAME CONTENT HERE. You can find the official deployment{" "}
+					<Link href="https://terrariaworkshop.com">here</Link>
+				</div>
+			)}
 
 			<div>
-				A <Link href="https://mercurywork.shop">Mercury Workshop</Link> Project. Ported by <Link href="https://velzie.rip">velzie</Link>
+				A <Link href="https://mercurywork.shop">Mercury Workshop</Link> Project.
+				Ported by <Link href="https://velzie.rip">velzie</Link>
 			</div>
 
-			{PICKERS_UNAVAILABLE ?
+			{PICKERS_UNAVAILABLE ? (
 				<div class="error">
-					Your browser does not support the
-					{' '}<Link href="https://developer.mozilla.org/en-US/docs/Web/API/Window/showDirectoryPicker">File System Access API</Link>.{' '}
-					You will be unable to copy your Terraria assets to play or use the upload features in the filesystem viewer. Please switch to a chromium based browser.
+					Your browser does not support the{" "}
+					<Link href="https://developer.mozilla.org/en-US/docs/Web/API/Window/showDirectoryPicker">
+						File System Access API
+					</Link>
+					. You will be unable to copy your Terraria assets to play or use the
+					upload features in the filesystem viewer. Please switch to a chromium
+					based browser.
 				</div>
-				: null}
+			) : null}
 
 			<div style="flex: 1"></div>
 			<div>
-				You will need to install Terraria to your browser with one of the following methods:
+				You will need to install Terraria to your browser with one of the
+				following methods:
 			</div>
 			<div class="buttons">
-				{import.meta.env.VITE_SIMPLE_DOWNLOAD ?
-					<Button on:click={() => this["on:next"]("simpledownload")} type="primary" icon="left" disabled={false}>
+				{import.meta.env.VITE_SIMPLE_DOWNLOAD ? (
+					<Button
+						on:click={() => this["on:next"]("simpledownload")}
+						type="primary"
+						icon="left"
+						disabled={false}
+					>
 						<Icon icon={iconDownload} />
 						Download Terraria
-					</Button> : /* @ts-expect-error */
+					</Button> /* @ts-expect-error */
+				) : (
 					<>
-						<Button on:click={() => this["on:next"]("copy")} type="primary" icon="left" disabled={PICKERS_UNAVAILABLE}>
+						<Button
+							on:click={() => this["on:next"]("copy")}
+							type="primary"
+							icon="left"
+							disabled={PICKERS_UNAVAILABLE}
+						>
 							<Icon icon={iconFolderOpen} />
-							{PICKERS_UNAVAILABLE ? "Copying local assets is unsupported" : "Copy local assets"}
+							{PICKERS_UNAVAILABLE
+								? "Copying local assets is unsupported"
+								: "Copy local assets"}
 						</Button>
-						<Button on:click={() => this["on:next"]("download")} type="primary" icon="left" disabled={false}>
+						<Button
+							on:click={() => this["on:next"]("download")}
+							type="primary"
+							icon="left"
+							disabled={false}
+						>
 							<Icon icon={iconDownload} />
 							Download Assets from Steam
 						</Button>
-						<Button on:click={() => this["on:next"]("extract")} type="primary" icon="left" disabled={false}>
+						<Button
+							on:click={() => this["on:next"]("extract")}
+							type="primary"
+							icon="left"
+							disabled={false}
+						>
 							<Icon icon={iconArchive} />
 							Upload Archive
 						</Button>
 					</>
-				}
+				)}
 			</div>
 		</div>
-	)
-}
+	);
+};
 
-const Progress: Component<{ percent: number }, {}> = function() {
+const Progress: Component<{ percent: number }, {}> = function () {
 	this.css = `
 		background: var(--surface1);
 		border-radius: 1rem;
@@ -128,17 +178,22 @@ const Progress: Component<{ percent: number }, {}> = function() {
 	`;
 
 	return (
-		<div><div class="bar" style={use`width:${this.percent}%`} /></div>
-	)
-}
+		<div>
+			<div class="bar" style={use`width:${this.percent}%`} />
+		</div>
+	);
+};
 
-const Copy: Component<{
-	"on:done": () => void,
-}, {
-	copying: boolean,
-	status: string,
-	percent: number,
-}> = function() {
+const Copy: Component<
+	{
+		"on:done": () => void;
+	},
+	{
+		copying: boolean;
+		status: string;
+		percent: number;
+	}
+> = function () {
 	this.css = `
 		display: flex;
 		flex-direction: column;
@@ -159,47 +214,65 @@ const Copy: Component<{
 		const before = performance.now();
 		await copyFolder(directory, rootFolder, (x) => {
 			cnt++;
-			this.percent = cnt / max * 100;
-			console.debug(`copied ${x}: ${(cnt / max * 100).toFixed(2)}`);
+			this.percent = (cnt / max) * 100;
+			console.debug(`copied ${x}: ${((cnt / max) * 100).toFixed(2)}`);
 		});
 		const after = performance.now();
 		console.debug(`copy took ${(after - before).toFixed(2)}ms`);
 
-		await new Promise(r => setTimeout(r, 250));
+		await new Promise((r) => setTimeout(r, 250));
 		await rootFolder.getFileHandle(".ContentExists", { create: true });
 		this["on:done"]();
-	}
+	};
 
 	return (
 		<div>
 			<div>
-				Select your Terraria install's Content directory. It will be copied to browser storage and can be removed in the file manager.
+				Select your Terraria install's Content directory. It will be copied to
+				browser storage and can be removed in the file manager.
 			</div>
 			<div>
-				The Content directory for Steam installs of Terraria is usually located in one of these locations:
+				The Content directory for Steam installs of Terraria is usually located
+				in one of these locations:
 				<ul>
-					<li><code>~/.steam/root/steamapps/common/Terraria </code></li>
-					<li><code>C:\Program Files (x86)\Steam\steamapps\common\Terraria </code></li>
-					<li><code>~/Library/Application Support/Steam/steamapps/common/Terraria</code></li>
+					<li>
+						<code>~/.steam/root/steamapps/common/Terraria </code>
+					</li>
+					<li>
+						<code>C:\Program Files (x86)\Steam\steamapps\common\Terraria </code>
+					</li>
+					<li>
+						<code>
+							~/Library/Application Support/Steam/steamapps/common/Terraria
+						</code>
+					</li>
 				</ul>
 			</div>
 			{$if(use(this.copying), <Progress percent={use(this.percent)} />)}
-			<Button on:click={opfs} type="primary" icon="left" disabled={use(this.copying)}>
+			<Button
+				on:click={opfs}
+				type="primary"
+				icon="left"
+				disabled={use(this.copying)}
+			>
 				<Icon icon={iconFolderOpen} />
 				Select Terraria Content directory
 			</Button>
 			{$if(use(this.status), <div class="error">{use(this.status)}</div>)}
 		</div>
-	)
-}
+	);
+};
 
-const Extract: Component<{
-	"on:done": () => void,
-}, {
-	extracting: boolean,
-	status: string,
-	percent: number,
-}> = function() {
+const Extract: Component<
+	{
+		"on:done": () => void;
+	},
+	{
+		extracting: boolean;
+		status: string;
+		percent: number;
+	}
+> = function () {
 	this.css = `
 		/* hacky */
 		.center svg {
@@ -232,45 +305,60 @@ const Extract: Component<{
 					controller.enqueue(value);
 
 					parsedSize += value.byteLength;
-					self.percent = parsedSize / fileSize * 100;
+					self.percent = (parsedSize / fileSize) * 100;
 				}
 			},
 		});
 
 		this.extracting = true;
 
-		if (fileHandle.name.endsWith(".gz")) progressStream = progressStream.pipeThrough(new DecompressionStream("gzip"));
-		await extractTar(progressStream, rootFolder, (type, name) => console.log(`untarred ${type} ${name}`));
+		if (fileHandle.name.endsWith(".gz"))
+			progressStream = progressStream.pipeThrough(
+				new DecompressionStream("gzip")
+			);
+		await extractTar(progressStream, rootFolder, (type, name) =>
+			console.log(`untarred ${type} ${name}`)
+		);
 
 		this.extracting = false;
 
 		await rootFolder.getFileHandle(".ContentExists", { create: true });
 		this["on:done"]();
-	}
+	};
 
 	return (
 		<div class="step">
 			<p class="center">
-				Select a {NAME} exported .tar archive of the root directory.
-				You can create this on a browser with {NAME} already set-up by clicking the archive button (<Icon icon={iconArchive} />) in the filesystem explorer while in the root directory.
+				Select a {NAME} exported .tar archive of the root directory. You can
+				create this on a browser with {NAME} already set-up by clicking the
+				archive button (<Icon icon={iconArchive} />) in the filesystem explorer
+				while in the root directory.
 			</p>
 			{$if(use(this.extracting), <Progress percent={use(this.percent)} />)}
-			<Button on:click={opfs} type="primary" icon="left" disabled={use(this.extracting)}>
+			<Button
+				on:click={opfs}
+				type="primary"
+				icon="left"
+				disabled={use(this.extracting)}
+			>
 				<Icon icon={iconFolderZip} />
 				Select {NAME} archive
 			</Button>
 			{$if(use(this.status), <div class="error">{use(this.status)}</div>)}
 		</div>
-	)
-}
+	);
+};
 
-const SimpleDownload: Component<{
-	"on:done": () => void,
-}, {
-	extracting: boolean,
-	status: string,
-	percent: number,
-}> = function() {
+const SimpleDownload: Component<
+	{
+		"on:done": () => void;
+	},
+	{
+		extracting: boolean;
+		status: string;
+		percent: number;
+	}
+> = function () {
 	this.css = `
 		/* hacky */
 		.center svg {
@@ -280,11 +368,16 @@ const SimpleDownload: Component<{
 
 	this.mount = async () => {
 		try {
-			let url = new URL(import.meta.env.VITE_SIMPLE_DOWNLOAD_FILE, location.href).href;
+			let url = new URL(
+				import.meta.env.VITE_SIMPLE_DOWNLOAD_FILE,
+				location.href
+			).href;
 			let file = await realFetch(url);
 			console.log(file);
 			if (file.status != 200) {
-				throw new Error(`Failed to download file: ${file.status} ${file.statusText}`);
+				throw new Error(
+					`Failed to download file: ${file.status} ${file.statusText}`
+				);
 			}
 			let parsedSize = 0;
 			const fileSize = parseInt(file.headers.get("Content-Length")!);
@@ -301,15 +394,20 @@ const SimpleDownload: Component<{
 						controller.enqueue(value);
 
 						parsedSize += value.byteLength;
-						self.percent = parsedSize / fileSize * 100;
+						self.percent = (parsedSize / fileSize) * 100;
 					}
 				},
 			});
 
 			this.extracting = true;
 
-			if (url.endsWith(".gz")) progressStream = progressStream.pipeThrough(new DecompressionStream("gzip"));
-			await extractTar(progressStream, rootFolder, (type, name) => { console.log(`extracted ${type} ${name}`) });
+			if (url.endsWith(".gz"))
+				progressStream = progressStream.pipeThrough(
+					new DecompressionStream("gzip")
+				);
+			await extractTar(progressStream, rootFolder, (type, name) => {
+				console.log(`extracted ${type} ${name}`);
+			});
 
 			this.extracting = false;
 			await rootFolder.getFileHandle(".ContentExists", { create: true });
@@ -319,30 +417,31 @@ const SimpleDownload: Component<{
 			this.extracting = false;
 			console.error(e);
 		}
-	}
+	};
 
 	return (
 		<div class="step">
-			<p class="center">
-				Downloading {NAME} from the server
-			</p>
+			<p class="center">Downloading {NAME} from the server</p>
 			{$if(use(this.extracting), <Progress percent={use(this.percent)} />)}
 			{$if(use(this.status), <div class="error">{use(this.status)}</div>)}
 		</div>
-	)
-}
+	);
+};
 
-export const Download: Component<{
-	"on:done": () => void,
-}, {
-	downloading: boolean,
-	status: string,
-	percent: number,
-	input: HTMLInputElement,
+export const Download: Component<
+	{
+		"on:done": () => void;
+	},
+	{
+		downloading: boolean;
+		status: string;
+		percent: number;
+		input: HTMLInputElement;
 
-	username: string,
-	password: string,
-}> = function() {
+		username: string;
+		password: string;
+	}
+> = function () {
 	this.username = "";
 	this.password = "";
 
@@ -416,7 +515,6 @@ export const Download: Component<{
 		} else {
 			gameState.loginstate = 2;
 		}
-
 	};
 
 	const loginpass = async () => {
@@ -439,17 +537,29 @@ export const Download: Component<{
 		<div>
 			<h1>Steam Login</h1>
 			<div>
-				This will log into Steam through a proxy, so that it can download Terraria assets and achievement stats <br />
-				The account details are encrpyted on your device and never sent to a server. Still, beware of unofficial deployments
+				This will log into Steam through a proxy, so that it can download
+				Terraria assets and achievement stats <br />
+				The account details are encrpyted on your device and never sent to a
+				server. Still, beware of unofficial deployments
 			</div>
 
-			{$if(use(gameState.loginstate, l => l == 0 || l == 3),
+			{$if(
+				use(gameState.loginstate, (l) => l == 0 || l == 3),
 				<div class="methods">
 					<div class="tcontainer">
 						<h3>Username and Password</h3>
 						<input bind:value={use(this.username)} placeholder="Username" />
-						<input bind:value={use(this.password)} type="password" placeholder="Password" />
-						<Button type="primary" icon="left" disabled={use(this.downloading)} on:click={loginpass}>
+						<input
+							bind:value={use(this.password)}
+							type="password"
+							placeholder="Password"
+						/>
+						<Button
+							type="primary"
+							icon="left"
+							disabled={use(this.downloading)}
+							on:click={loginpass}
+						>
 							<Icon icon={iconEncrypted} />
 							Log In with Username and Password
 						</Button>
@@ -458,7 +568,12 @@ export const Download: Component<{
 						<h3>Steam Guard QR Code</h3>
 						Requires the Steam app on your phone to be installed. <br />
 						<div style="flex: 1"></div>
-						<Button type="primary" icon="left" disabled={use(this.downloading)} on:click={loginqr}>
+						<Button
+							type="primary"
+							icon="left"
+							disabled={use(this.downloading)}
+							on:click={loginqr}
+						>
 							<Icon icon={iconEncrypted} />
 							Log In with QR Code
 						</Button>
@@ -466,33 +581,44 @@ export const Download: Component<{
 				</div>
 			)}
 
-			{$if(use(gameState.loginstate, l => l == 3),
+			{$if(
+				use(gameState.loginstate, (l) => l == 3),
 				<div style="color: var(--error)">Failed to log in! Try again</div>
 			)}
 
-			{$if(use(gameState.loginstate, l => l == 3 || l == 1 || l == 2),
+			{$if(
+				use(gameState.loginstate, (l) => l == 3 || l == 1 || l == 2),
 				<div class="logcontainer">
 					<LogView />
 				</div>
 			)}
 
-			{$if(use(gameState.loginstate, l => l == 1),
+			{$if(
+				use(gameState.loginstate, (l) => l == 1),
 				<div class="qrcontainer">
-					<p>Since this uses a proxy, the steam app might complain about your location being wrong. Just select the location that you don't usually log in from if it asks</p>
-					{$if(use(gameState.qr),
-						<img src={use(gameState.qr)} />
-					)}
+					<p>
+						Since this uses a proxy, the steam app might complain about your
+						location being wrong. Just select the location that you don't
+						usually log in from if it asks
+					</p>
+					{$if(use(gameState.qr), <img src={use(gameState.qr)} />)}
 
-					{$if(use(gameState.qr),
+					{$if(
+						use(gameState.qr),
 						<div>Scan this QR code with the Steam app on your phone.</div>
 					)}
-
 				</div>
 			)}
 
-			{$if(use(gameState.loginstate, l => l == 2),
+			{$if(
+				use(gameState.loginstate, (l) => l == 2),
 				<div>
-					<Button type="primary" icon="left" disabled={use(this.downloading)} on:click={download}>
+					<Button
+						type="primary"
+						icon="left"
+						disabled={use(this.downloading)}
+						on:click={download}
+					>
 						<Icon icon={iconEncrypted} />
 						Download Assets
 					</Button>
@@ -501,14 +627,17 @@ export const Download: Component<{
 
 			{$if(use(this.downloading), <Progress percent={use(this.percent)} />)}
 		</div>
-	)
-}
+	);
+};
 
-export const Splash: Component<{
-	"on:next": () => void,
-}, {
-	next: "" | "copy" | "download" | "extract" | "simpledownload",
-}> = function() {
+export const Splash: Component<
+	{
+		"on:next": () => void;
+	},
+	{
+		next: "" | "copy" | "download" | "extract" | "simpledownload";
+	}
+> = function () {
 	this.css = `
 		position: relative;
 
@@ -578,9 +707,9 @@ export const Splash: Component<{
 			<div class="main">
 				<img src="logo.png" />
 				<div class="container tcontainer">
-					{use(this.next, x => {
+					{use(this.next, (x) => {
 						if (!x) {
-							return <Intro on:next={(x) => this.next = x} />;
+							return <Intro on:next={(x) => (this.next = x)} />;
 						} else if (x === "copy") {
 							return <Copy on:done={this["on:next"]} />;
 						} else if (x === "extract") {
@@ -598,5 +727,5 @@ export const Splash: Component<{
 				</div>
 			</div>
 		</div>
-	)
-}
+	);
+};

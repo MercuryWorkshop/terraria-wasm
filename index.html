@@ -1,26 +1,28 @@
 <!doctype html>
 <html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<link rel="icon" href="/app.ico" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<meta property="og:title" content="Terrarium" />
+		<meta
+			property="og:description"
+			content="Terraria port for WebAssembly. Play Terraria online in the browser."
+		/>
+		<meta
+			name="description"
+			content="Terraria port for WebAssembly. Play Terraria online in the browser."
+		/>
+		<link rel="canonical" href="https://terraria.mercurywork.shop" />
 
-<head>
-	<meta charset="UTF-8" />
-	<link rel="icon" href="/app.ico" />
-	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-	<meta property="og:title" content="Terrarium" />
-	<meta property="og:description"
-		content="Terraria port for WebAssembly. Play Terraria online in the browser." />
-	<meta name="description"
-		content="Terraria port for WebAssembly. Play Terraria online in the browser." />
-	<link rel="canonical" href="https://terraria.mercurywork.shop" />
+		<% if (process.env.VITE_SIMPLE_DOWNLOAD) { %>
+		<meta name="robots" content="noindex, nofollow" />
+		<% } %>
+		<title>Terrarium</title>
+	</head>
 
-	<% if (process.env.VITE_SIMPLE_DOWNLOAD) { %>
-	   <meta name="robots" content="noindex, nofollow" />
-	<% } %>
-	<title>Terrarium</title>
-</head>
-
-<body>
-	<div id="app"></div>
-	<script type="module" src="/src/app.tsx"></script>
-</body>
-
+	<body>
+		<div id="app"></div>
+		<script type="module" src="/src/app.tsx"></script>
+	</body>
 </html>

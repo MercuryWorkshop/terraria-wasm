@@ -7,13 +7,13 @@ import { hasContent } from "./fs";
 const initialHasContent = await hasContent();
 
 const App: Component<
-  {},
-  {
-    el: HTMLElement;
-    showInstructions: boolean;
-  }
+	{},
+	{
+		el: HTMLElement;
+		showInstructions: boolean;
+	}
 > = function () {
-  this.css = `
+	this.css = `
 		position: relative;
 
 		div {
@@ -33,32 +33,32 @@ const App: Component<
 		}
 	`;
 
-  const next = () => {
-    this.el.addEventListener("animationend", this.el.remove);
-    this.el.style.animation = "fadeout 0.5s ease";
-  };
+	const next = () => {
+		this.el.addEventListener("animationend", this.el.remove);
+		this.el.style.animation = "fadeout 0.5s ease";
+	};
 
-  return (
-    <div id="app" class={"dark"}>
-      {initialHasContent ? null : (
-        <div id="splash" bind:this={use(this.el)}>
-          <Splash on:next={next} />
-        </div>
-      )}
-      <div id="main">
-        <Main />
-      </div>
-    </div>
-  );
+	return (
+		<div id="app" class={"dark"}>
+			{initialHasContent ? null : (
+				<div id="splash" bind:this={use(this.el)}>
+					<Splash on:next={next} />
+				</div>
+			)}
+			<div id="main">
+				<Main />
+			</div>
+		</div>
+	);
 };
 
 const root = document.getElementById("app")!;
 try {
-  root.replaceWith(<App />);
-  navigator.serviceWorker.register("/sw.js", {
-    scope: "/",
-  });
+	root.replaceWith(<App />);
+	navigator.serviceWorker.register("/sw.js", {
+		scope: "/",
+	});
 } catch (err) {
-  console.log(err);
-  root.replaceWith(document.createTextNode(`Failed to load: ${err}`));
+	console.log(err);
+	root.replaceWith(document.createTextNode(`Failed to load: ${err}`));
 }

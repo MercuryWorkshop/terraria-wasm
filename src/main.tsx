@@ -9,7 +9,7 @@ import { Dialog } from "./ui/Dialog";
 import { Button, Icon, Link } from "./ui/Button";
 export const NAME = "Terraria";
 
-export const Logo: Component<{}, {}> = function() {
+export const Logo: Component<{}, {}> = function () {
 	this.css = `
 		display: flex;
 		align-items: center;
@@ -43,14 +43,17 @@ export const Logo: Component<{}, {}> = function() {
 				<span>v1.4.0.0</span>
 			</div>
 		</div>
-	)
-}
+	);
+};
 
-const TopBar: Component<{
-	canvas: HTMLCanvasElement,
-	fsOpen: boolean,
-	achievementsOpen: boolean,
-}, { allowPlay: boolean, fps: HTMLElement }> = function() {
+const TopBar: Component<
+	{
+		canvas: HTMLCanvasElement;
+		fsOpen: boolean;
+		achievementsOpen: boolean;
+	},
+	{ allowPlay: boolean; fps: HTMLElement }
+> = function () {
 	this.css = `
 		padding: 0.5em;
 
@@ -83,47 +86,69 @@ const TopBar: Component<{
 	this.mount = () => {
 		setInterval(() => {
 			if (gameState.playing) {
-				const avgFrametime = gameState.timebuf.toArray().reduce((acc, x) => acc + x, 0) / TIMEBUF_SIZE;
+				const avgFrametime =
+					gameState.timebuf.toArray().reduce((acc, x) => acc + x, 0) /
+					TIMEBUF_SIZE;
 				const avgFps = (1000 / avgFrametime).toFixed(0);
 				this.fps.innerText = "" + avgFps;
 			}
 		}, 1000);
-	}
+	};
 
 	return (
 		<div>
 			<div class="group">
 				<Logo />
-				{$if(use(gameState.playing), <div>FPS: <span bind:this={use(this.fps)}></span></div>)}
+				{$if(
+					use(gameState.playing),
+					<div>
+						FPS: <span bind:this={use(this.fps)}></span>
+					</div>
+				)}
 			</div>
 			<div class="expand" />
 			<div class="group">
 				{/* <Button on:click={() => this.achievementsOpen = true} icon="full" type="normal" disabled={false}>
 					<Icon icon={iconTrophy} />
 				</Button> */}
-				<Button on:click={() => this.fsOpen = true} icon="full" type="normal" disabled={false}>
+				<Button
+					on:click={() => (this.fsOpen = true)}
+					icon="full"
+					type="normal"
+					disabled={false}
+				>
 					<Icon icon={iconFolderOpen} />
 				</Button>
-				<Button on:click={async () => {
-					try {
-						(navigator as any).keyboard.lock();
-						await this.canvas.requestFullscreen({ navigationUI: "hide" });
-					} catch { }
-				}} icon="full" type="normal" disabled={use(gameState.playing, x => !x)}>
+				<Button
+					on:click={async () => {
+						try {
+							(navigator as any).keyboard.lock();
+							await this.canvas.requestFullscreen({ navigationUI: "hide" });
+						} catch {}
+					}}
+					icon="full"
+					type="normal"
+					disabled={use(gameState.playing, (x) => !x)}
+				>
 					<Icon icon={iconFullscreen} />
 				</Button>
-				<Button on:click={() => {
-					play();
-				}} icon="left" type="primary" disabled={use(this.allowPlay, x => !x)}>
+				<Button
+					on:click={() => {
+						play();
+					}}
+					icon="left"
+					type="primary"
+					disabled={use(this.allowPlay, (x) => !x)}
+				>
 					<Icon icon={iconPlayArrow} />
 					Play
 				</Button>
 			</div>
 		</div>
-	)
-}
+	);
+};
 
-const BottomBar: Component<{}, {}> = function() {
+const BottomBar: Component<{}, {}> = function () {
 	this.css = `
 		background: var(--bg);
 		border-top: 2px solid var(--surface1);
@@ -148,13 +173,18 @@ const BottomBar: Component<{}, {}> = function() {
 
 	return (
 		<div>
-			<span>Ported by <Link href="https://github.com/velzie">velzie</Link></span>
-			<span>All game assets and code belong to <Link href="https://re-logic.com/">Re-Logic</Link> All rights reserved.</span>
+			<span>
+				Ported by <Link href="https://github.com/velzie">velzie</Link>
+			</span>
+			<span>
+				All game assets and code belong to{" "}
+				<Link href="https://re-logic.com/">Re-Logic</Link> All rights reserved.
+			</span>
 		</div>
-	)
-}
+	);
+};
 
-const GameView: Component<{ canvas: HTMLCanvasElement }, {}> = function() {
+const GameView: Component<{ canvas: HTMLCanvasElement }, {}> = function () {
 	this.css = `
 		aspect-ratio: 16 / 9;
 		user-select: none;
@@ -188,8 +218,10 @@ const GameView: Component<{ canvas: HTMLCanvasElement }, {}> = function() {
 			background: black;
 		}
 	`;
-	const div = use(gameState.playing, x => x ? "started" : "stopped");
-	const canvas = use(gameState.playing, x => x ? "canvas started" : "canvas stopped");
+	const div = use(gameState.playing, (x) => (x ? "started" : "stopped"));
+	const canvas = use(gameState.playing, (x) =>
+		x ? "canvas started" : "canvas stopped"
+	);
 
 	this.mount = () => {
 		// dotnet will immediately transfer the canvas to deputy thread, so this.mount is required
@@ -198,9 +230,7 @@ const GameView: Component<{ canvas: HTMLCanvasElement }, {}> = function() {
 
 	return (
 		<div class="tcontainer">
-			<div class={div}>
-				Game not running.
-			</div>
+			<div class={div}>Game not running.</div>
 			<canvas
 				id="canvas"
 				class={canvas}
@@ -208,10 +238,10 @@ const GameView: Component<{ canvas: HTMLCanvasElement }, {}> = function() {
 				on:contextmenu={(e: Event) => e.preventDefault()}
 			/>
 		</div>
-	)
-}
+	);
+};
 
-export const LogView: Component<{}, {}> = function() {
+export const LogView: Component<{}, {}> = function () {
 	this.css = `
 		height: 16rem;
 		overflow: scroll;
@@ -230,7 +260,7 @@ export const LogView: Component<{}, {}> = function() {
 		el.innerText = log;
 		el.style.color = color;
 		return el;
-	}
+	};
 
 	this.mount = () => {
 		useChange([gameState.logbuf], () => {
@@ -243,17 +273,17 @@ export const LogView: Component<{}, {}> = function() {
 		});
 	};
 
-	return (
-		<div class="tcontainer">
-		</div>
-	)
-}
+	return <div class="tcontainer"></div>;
+};
 
-export const Main: Component<{}, {
-	canvas: HTMLCanvasElement,
-	fsOpen: boolean,
-	achievementsOpen: boolean,
-}> = function() {
+export const Main: Component<
+	{},
+	{
+		canvas: HTMLCanvasElement;
+		fsOpen: boolean;
+		achievementsOpen: boolean;
+	}
+> = function () {
 	this.css = `
 		width: 100%;
 		height: 100%;
@@ -298,9 +328,11 @@ export const Main: Component<{}, {
 			<Dialog name="File System" bind:open={use(this.fsOpen)}>
 				<OpfsExplorer open={use(this.fsOpen)} />
 			</Dialog>
-			<Dialog name="Achievements" bind:open={use(this.achievementsOpen)}>
-			</Dialog>
+			<Dialog
+				name="Achievements"
+				bind:open={use(this.achievementsOpen)}
+			></Dialog>
 			<BottomBar />
 		</div>
 	);
-}
+};
