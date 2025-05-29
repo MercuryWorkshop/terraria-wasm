@@ -52,7 +52,7 @@ proxyConsole("debug", "var(--fg6)");
 function hookfmod() {
 	let contexts: AudioContext[] = [];
 	let ctx = AudioContext;
-	(AudioContext as any) = function () {
+	(AudioContext as any) = function() {
 		let context = new ctx();
 
 		contexts.push(context);
@@ -63,14 +63,14 @@ function hookfmod() {
 		for (let context of contexts) {
 			try {
 				await context.resume();
-			} catch {}
+			} catch { }
 		}
 	});
 	window.addEventListener("blur", async () => {
 		for (let context of contexts) {
 			try {
 				await context.suspend();
-			} catch {}
+			} catch { }
 		}
 	});
 }
@@ -88,11 +88,14 @@ if (import.meta.env.PROD) {
 			console.log("Service worker installing");
 		} else if (registration.waiting) {
 			console.log("Service worker installed");
+			registration.waiting.addEventListener("statechange", (e) => {
+				if (!crossOriginIsolated) {
+					console.log("not crossoriginisolated, reloading");
+					setTimeout(() => location.reload(), 100);
+				}
+			});
 		} else if (registration.active) {
-			if (!crossOriginIsolated) {
-				console.log("not crossoriginisolated, reloading");
-				setTimeout(() => location.reload(), 100);
-			}
+
 		}
 	} catch (error) {
 		console.error(`Registration failed with ${error}`);
@@ -134,15 +137,15 @@ function encryptRSA(data: Uint8Array, n: bigint, e: bigint): Uint8Array {
 
 		return BigInt(
 			"0x" +
-				[
-					"00",
-					"02",
-					...padding.map((byte) => byte.toString(16).padStart(2, "0")),
-					"00",
-					...Array.from(messageBytes).map((byte: any) =>
-						byte.toString(16).padStart(2, "0")
-					),
-				].join("")
+			[
+				"00",
+				"02",
+				...padding.map((byte) => byte.toString(16).padStart(2, "0")),
+				"00",
+				...Array.from(messageBytes).map((byte: any) =>
+					byte.toString(16).padStart(2, "0")
+				),
+			].join("")
 		);
 	};
 	const paddedMessage = pkcs1v15Pad(data, n);
