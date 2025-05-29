@@ -80,20 +80,26 @@ if (import.meta.env.PROD) {
 	try {
 		if (!crossOriginIsolated) {
 			console.log("not crossoriginisolated: using service worker");
+			document.open();
+			document.write("installing service worker, please wait...\n");
+			document.close();
+			setTimeout(() => location.reload(), 3000);
 		}
 		const registration = await navigator.serviceWorker.register("/sw.js", {
 			scope: "/",
 		});
+
 		if (registration.installing) {
 			console.log("Service worker installing");
-		} else if (registration.waiting) {
-			console.log("Service worker installed");
 			registration.waiting.addEventListener("statechange", (e) => {
 				if (!crossOriginIsolated) {
 					console.log("not crossoriginisolated, reloading");
-					setTimeout(() => location.reload(), 100);
+					setTimeout(() => location.reload(), 1000);
 				}
 			});
+		} else if (registration.waiting) {
+			console.log("Service worker installed");
+
 		} else if (registration.active) {
 
 		}
