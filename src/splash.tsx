@@ -703,10 +703,10 @@ export const Splash: Component<
 
 	return (
 		<div>
-			<img class="splash" src="/backdrop.png" />
+			<img class="splash" src="/backdrop.png" alt="Terraria art background" />
 			<div class="blur" />
 			<div class="main">
-				<img src="logo.png" />
+				<img src="logo.png" alt="Terraria logo" />
 				<div class="container tcontainer">
 					{use(this.next, (x) => {
 						if (!x) {

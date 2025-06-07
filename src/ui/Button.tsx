@@ -29,6 +29,7 @@ export const Button: Component<
 		type: "primary" | "normal" | "listitem" | "listaction";
 		icon: "full" | "left" | "none";
 		disabled: boolean;
+		label?: string;
 		title?: string;
 	},
 	{
@@ -119,6 +120,7 @@ export const Button: Component<
 				class={`tcontainer icon-${this.icon} type-${this.type} ${this.class}`}
 				disabled={use(this.disabled)}
 				title={use(this.title)}
+				aria-label={this.label}
 			>
 				{use(this.children)}
 			</button>

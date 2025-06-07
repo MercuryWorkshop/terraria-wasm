@@ -38,7 +38,7 @@ export const Logo: Component<{}, {}> = function () {
 	`;
 	return (
 		<div>
-			<img src="/app.ico" />
+			<img src="/app.ico" alt="Terraria icon" />
 			<span>terrarium</span>
 		</div>
 	);
@@ -106,14 +106,12 @@ const TopBar: Component<
 			</div>
 			<div class="expand" />
 			<div class="group">
-				{/* <Button on:click={() => this.achievementsOpen = true} icon="full" type="normal" disabled={false}>
-					<Icon icon={iconTrophy} />
-				</Button> */}
 				<Button
 					on:click={() => (this.fsOpen = true)}
 					icon="full"
 					type="normal"
 					disabled={false}
+					label="File System"
 				>
 					<Icon icon={iconFolderOpen} />
 				</Button>
@@ -127,6 +125,7 @@ const TopBar: Component<
 					icon="full"
 					type="normal"
 					disabled={use(gameState.playing, (x) => !x)}
+					label="Fullscreen"
 				>
 					<Icon icon={iconFullscreen} />
 				</Button>
