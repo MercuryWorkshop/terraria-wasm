@@ -38,7 +38,7 @@ export const Logo: Component<{}, {}> = function () {
 	`;
 	return (
 		<div>
-			<img src="/app.ico" alt="Terraria icon" />
+			<img src="/app.webp" alt="Terraria icon" />
 			<span>terrarium</span>
 		</div>
 	);
@@ -255,7 +255,7 @@ export const Main: Component<
 	this.css = `
 		width: 100%;
 		height: 100%;
-		background: url(/backdrop.png);
+		background: url(/backdrop.webp);
 		color: var(--fg);
 
 		display: flex;

@@ -40,7 +40,7 @@ const Intro: Component<
 		) => void;
 	},
 	{}
-> = function () {
+> = function() {
 	this.css = `
 		display: flex;
 		flex-direction: column;
@@ -64,6 +64,13 @@ const Intro: Component<
 		    width: 100%;
 		  }
 		}
+
+		@media (max-width: 825px) {
+			.buttons {
+				flex-direction: column;
+				gap: 0.5rem;
+			}
+		}
 	`;
 
 	return (
@@ -74,9 +81,12 @@ const Intro: Component<
 				on r58's{" "}
 				<Link href="https://github.com/MercuryWorkshop/celeste-wasm">
 					Celeste browser port
-				</Link>
-				<br />
-				Want to know how this was made? Check the{" "}
+				</Link>.
+			</div>
+			<div>
+				A <Link href="https://mercurywork.shop">Mercury Workshop</Link> Project.
+				Ported by <Link href="https://velzie.rip">velzie</Link>.
+				Want to know more about how this was made? Check the{" "}
 				<Link href="https://velzie.rip/blog/celeste-wasm/">writeup</Link>!
 			</div>
 
@@ -93,11 +103,6 @@ const Intro: Component<
 				</div>
 			)}
 
-			<div>
-				A <Link href="https://mercurywork.shop">Mercury Workshop</Link> Project.
-				Ported by <Link href="https://velzie.rip">velzie</Link>
-			</div>
-
 			{PICKERS_UNAVAILABLE ? (
 				<div class="error">
 					Your browser does not support the{" "}
@@ -110,7 +115,6 @@ const Intro: Component<
 				</div>
 			) : null}
 
-			<div style="flex: 1"></div>
 			<div>
 				You will need to install Terraria to your browser with one of the
 				following methods:
@@ -164,7 +168,7 @@ const Intro: Component<
 	);
 };
 
-const Progress: Component<{ percent: number }, {}> = function () {
+const Progress: Component<{ percent: number }, {}> = function() {
 	this.css = `
 		background: var(--surface1);
 		border-radius: 1rem;
@@ -194,7 +198,7 @@ const Copy: Component<
 		status: string;
 		percent: number;
 	}
-> = function () {
+> = function() {
 	this.css = `
 		display: flex;
 		flex-direction: column;
@@ -273,7 +277,7 @@ const Extract: Component<
 		status: string;
 		percent: number;
 	}
-> = function () {
+> = function() {
 	this.css = `
 		/* hacky */
 		.center svg {
@@ -359,7 +363,7 @@ const SimpleDownload: Component<
 		status: string;
 		percent: number;
 	}
-> = function () {
+> = function() {
 	this.css = `
 		/* hacky */
 		.center svg {
@@ -442,7 +446,7 @@ export const Download: Component<
 		username: string;
 		password: string;
 	}
-> = function () {
+> = function() {
 	this.username = "";
 	this.password = "";
 
@@ -638,7 +642,7 @@ export const Splash: Component<
 	{
 		next: "" | "copy" | "download" | "extract" | "simpledownload";
 	}
-> = function () {
+> = function() {
 	this.css = `
 		position: relative;
 
@@ -666,13 +670,12 @@ export const Splash: Component<
 			align-items: center;
 			justify-content: center;
 			z-index: 3;
-			padding-bottom: 5em;
+			padding: 0.5em;
 		}
 
 		.container {
 			backdrop-filter: blur(0.5vw);
 			width: min(50rem, 100%);
-			flex: 1;
 			margin: 0 1rem;
 			padding: 1em;
 			font-size: 18pt;
@@ -697,16 +700,26 @@ export const Splash: Component<
 		.wisp input {
 			flex: 1;
 		}
+
+		.logo {
+			display: flex;
+			align-items: center;
+		}
+
+		.logo img {
+			width: 100%;
+			aspect-ratio: 3 / 1;
+		}
 	`;
 
 	this.next = "";
 
 	return (
 		<div>
-			<img class="splash" src="/backdrop.png" alt="Terraria art background" />
+			<img class="splash" src="/backdrop.webp" alt="Terraria art background" />
 			<div class="blur" />
 			<div class="main">
-				<img src="logo.png" alt="Terraria logo" />
+				<div class="logo"><img src="/logo.webp" alt="Terraria logo" /></div>
 				<div class="container tcontainer">
 					{use(this.next, (x) => {
 						if (!x) {
