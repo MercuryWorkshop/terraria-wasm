@@ -708,7 +708,8 @@ export const Splash: Component<
 
 		.logo img {
 			width: 100%;
-			aspect-ratio: 3 / 1;
+			height: auto;
+			aspect-ratio: 3.01;
 		}
 	`;
 
@@ -719,7 +720,7 @@ export const Splash: Component<
 			<img class="splash" src="/backdrop.webp" alt="Terraria art background" />
 			<div class="blur" />
 			<div class="main">
-				<div class="logo"><img src="/logo.webp" alt="Terraria logo" /></div>
+				<div class="logo"><img src="/logo.webp" alt="Terraria logo" width="421" height="140" fetchpriority="high" /></div>
 				<div class="container tcontainer">
 					{use(this.next, (x) => {
 						if (!x) {
