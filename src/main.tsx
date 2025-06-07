@@ -1,12 +1,13 @@
 import { gameState, play, preInit, TIMEBUF_SIZE } from "./game";
-
+import { LogView } from "./game/logs";
 import { OpfsExplorer } from "./fs";
+import { Dialog } from "./ui/Dialog";
+import { Button, Icon, Link } from "./ui/Button";
 
 import iconPlayArrow from "@ktibow/iconset-material-symbols/play-arrow";
 import iconFullscreen from "@ktibow/iconset-material-symbols/fullscreen";
 import iconFolderOpen from "@ktibow/iconset-material-symbols/folder-open";
-import { Dialog } from "./ui/Dialog";
-import { Button, Icon, Link } from "./ui/Button";
+
 export const NAME = "Terraria";
 
 export const Logo: Component<{}, {}> = function () {
@@ -39,9 +40,6 @@ export const Logo: Component<{}, {}> = function () {
 		<div>
 			<img src="/app.ico" />
 			<span>terrarium</span>
-			<div class="extras">
-				<span>v1.4.0.0</span>
-			</div>
 		</div>
 	);
 };
@@ -242,41 +240,6 @@ const GameView: Component<
 			/>
 		</div>
 	);
-};
-
-export const LogView: Component<{}, {}> = function () {
-	this.css = `
-		height: 16rem;
-		overflow: scroll;
-		padding: 1em;
-		background: var(--bg);
-
-		font-family: var(--font-mono);
-
-		::-webkit-scrollbar {
-		  display: none;
-    }
-	`;
-
-	const create = (color: string, log: string) => {
-		const el = document.createElement("div");
-		el.innerText = log;
-		el.style.color = color;
-		return el;
-	};
-
-	this.mount = () => {
-		useChange([gameState.logbuf], () => {
-			if (gameState.logbuf.length > 0) {
-				for (const log of gameState.logbuf) {
-					this.root.appendChild(create(log.color, log.log));
-				}
-				this.root.scrollTop = this.root.scrollHeight;
-			}
-		});
-	};
-
-	return <div class="tcontainer"></div>;
 };
 
 export const Main: Component<

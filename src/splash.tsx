@@ -1,4 +1,4 @@
-import { LogView, NAME } from "./main";
+import { NAME } from "./main";
 import { Button, Icon, Link } from "./ui/Button";
 import {
 	copyFolder,
@@ -8,15 +8,16 @@ import {
 	rootFolder,
 	TAR_TYPES,
 } from "./fs";
+import { downloadApp, gameState, initSteam, realFetch } from "./game";
+import { LogView } from "./game/logs";
+import { TextField } from "./ui/TextField";
+import { store } from "./store";
 
 import iconFolderOpen from "@ktibow/iconset-material-symbols/folder-open-outline";
 import iconFolderZip from "@ktibow/iconset-material-symbols/folder-zip-outline";
 import iconDownload from "@ktibow/iconset-material-symbols/download";
 import iconArchive from "@ktibow/iconset-material-symbols/archive";
 import iconEncrypted from "@ktibow/iconset-material-symbols/encrypted";
-import { downloadApp, gameState, initSteam, realFetch } from "./game";
-import { TextField } from "./ui/TextField";
-import { store } from "./store";
 
 const validateDirectory = async (directory: FileSystemDirectoryHandle) => {
 	if (directory.name != "Content") {
@@ -124,9 +125,9 @@ const Intro: Component<
 					>
 						<Icon icon={iconDownload} />
 						Download Terraria
-					</Button> /* @ts-expect-error */
+					</Button>
 				) : (
-					<>
+					[
 						<Button
 							on:click={() => this["on:next"]("copy")}
 							type="primary"
@@ -137,7 +138,7 @@ const Intro: Component<
 							{PICKERS_UNAVAILABLE
 								? "Copying local assets is unsupported"
 								: "Copy local assets"}
-						</Button>
+						</Button>,
 						<Button
 							on:click={() => this["on:next"]("download")}
 							type="primary"
@@ -146,7 +147,7 @@ const Intro: Component<
 						>
 							<Icon icon={iconDownload} />
 							Download Assets from Steam
-						</Button>
+						</Button>,
 						<Button
 							on:click={() => this["on:next"]("extract")}
 							type="primary"
@@ -155,8 +156,8 @@ const Intro: Component<
 						>
 							<Icon icon={iconArchive} />
 							Upload Archive
-						</Button>
-					</>
+						</Button>,
+					]
 				)}
 			</div>
 		</div>

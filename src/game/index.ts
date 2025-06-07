@@ -1,7 +1,8 @@
 import { RingBuffer } from "ring-buffer-ts";
 // @ts-ignore
 import { libcurl } from "libcurl.js";
-import { store } from "./store";
+import { store } from "../store";
+import { DotnetHostBuilder } from "./dotnetdefs";
 
 export type Log = { color: string; log: string };
 export const TIMEBUF_SIZE = 120;
@@ -23,36 +24,10 @@ export const gameState: Stateful<{
 	timebuf: new RingBuffer<number>(TIMEBUF_SIZE),
 });
 
-function proxyConsole(name: string, color: string) {
-	// @ts-expect-error ts sucks
-	const old = console[name].bind(console);
-	// @ts-expect-error ts sucks
-	console[name] = (...args) => {
-		let str;
-		try {
-			str = args.join(" ");
-		} catch {
-			str = "<failed to render>";
-		}
-		old(...args);
-		gameState.logbuf = [
-			{
-				color,
-				log: `[${new Date().toISOString()}]: ${str}`,
-			},
-		];
-	};
-}
-proxyConsole("error", "var(--error)");
-proxyConsole("warn", "var(--warning)");
-proxyConsole("log", "var(--fg)");
-proxyConsole("info", "var(--info)");
-proxyConsole("debug", "var(--fg6)");
-
 function hookfmod() {
 	let contexts: AudioContext[] = [];
 	let ctx = AudioContext;
-	(AudioContext as any) = function() {
+	(AudioContext as any) = function () {
 		let context = new ctx();
 
 		contexts.push(context);
@@ -63,22 +38,22 @@ function hookfmod() {
 		for (let context of contexts) {
 			try {
 				await context.resume();
-			} catch { }
+			} catch {}
 		}
 	});
 	window.addEventListener("blur", async () => {
 		for (let context of contexts) {
 			try {
 				await context.suspend();
-			} catch { }
+			} catch {}
 		}
 	});
 }
 hookfmod();
 
-const wasm = await eval(`import("/_framework/dotnet.js")`);
-const dotnet = wasm.dotnet;
-(window as any).wasm = wasm;
+const dotnet: DotnetHostBuilder = (
+	await eval(`import("/_framework/dotnet.js")`)
+).dotnet;
 let exports: any;
 
 // the funny custom rsa
@@ -110,15 +85,15 @@ function encryptRSA(data: Uint8Array, n: bigint, e: bigint): Uint8Array {
 
 		return BigInt(
 			"0x" +
-			[
-				"00",
-				"02",
-				...padding.map((byte) => byte.toString(16).padStart(2, "0")),
-				"00",
-				...Array.from(messageBytes).map((byte: any) =>
-					byte.toString(16).padStart(2, "0")
-				),
-			].join("")
+				[
+					"00",
+					"02",
+					...padding.map((byte) => byte.toString(16).padStart(2, "0")),
+					"00",
+					...Array.from(messageBytes).map((byte: any) =>
+						byte.toString(16).padStart(2, "0")
+					),
+				].join("")
 		);
 	};
 	const paddedMessage = pkcs1v15Pad(data, n);
@@ -143,58 +118,50 @@ export async function preInit() {
 			pthreadPoolInitialSize: 16,
 		})
 		.withEnvironmentVariable("MONO_SLEEP_ABORT_LIMIT", "99999")
-		.withResourceLoader(
-			(
-				type: string,
-				_name: string,
-				defaultUri: string,
-				_integrity: string,
-				behavior: string
-			) => {
-				// for split wasm
-				if (type === "dotnetwasm" && behavior === "dotnetwasm") {
-					return (async () => {
-						let idx = 0;
+		.withResourceLoader((type, _name, defaultUri, _integrity, behavior) => {
+			// for split wasm
+			if (type === "dotnetwasm" && behavior === "dotnetwasm") {
+				return (async () => {
+					let idx = 0;
 
-						let fetchNext = async () => {
-							let res = await realFetch(defaultUri + idx);
-							idx++;
-							if (!res.body) throw new Error("no body in fetch response");
-							return res.status === 200 && !res.headers.get("content-type")
-								? res.body.getReader()
-								: null;
-						};
+					let fetchNext = async () => {
+						let res = await realFetch(defaultUri + idx);
+						idx++;
+						if (!res.body) throw new Error("no body in fetch response");
+						return res.status === 200 && !res.headers.get("content-type")
+							? res.body.getReader()
+							: null;
+					};
 
-						let chunk = await fetchNext();
-						if (!chunk) throw new Error("failed to fetch first chunk");
-						let currentStream: ReadableStreamDefaultReader<Uint8Array> = chunk;
+					let chunk = await fetchNext();
+					if (!chunk) throw new Error("failed to fetch first chunk");
+					let currentStream: ReadableStreamDefaultReader<Uint8Array> = chunk;
 
-						let stream = new ReadableStream({
-							async pull(controller) {
-								let { value, done } = await currentStream.read();
-								if (done || !value) {
-									chunk = await fetchNext();
+					let stream = new ReadableStream({
+						async pull(controller) {
+							let { value, done } = await currentStream.read();
+							if (done || !value) {
+								chunk = await fetchNext();
 
-									if (chunk) {
-										currentStream = chunk;
-										await this.pull!(controller);
-									} else {
-										controller.close();
-									}
+								if (chunk) {
+									currentStream = chunk;
+									await this.pull!(controller);
 								} else {
-									controller.enqueue(value);
+									controller.close();
 								}
-							},
-						});
+							} else {
+								controller.enqueue(value);
+							}
+						},
+					});
 
-						let res = new Response(stream, {
-							headers: new Headers({ "Content-Type": "application/wasm" }),
-						});
-						return res;
-					})();
-				}
+					let res = new Response(stream, {
+						headers: new Headers({ "Content-Type": "application/wasm" }),
+					});
+					return res;
+				})();
 			}
-		)
+		})
 		.create();
 
 	console.log("loading libcurl");
@@ -215,7 +182,7 @@ export async function preInit() {
 	window.fetch = libcurl.fetch;
 
 	const config = runtime.getConfig();
-	exports = await runtime.getAssemblyExports(config.mainAssemblyName);
+	exports = await runtime.getAssemblyExports(config.mainAssemblyName!);
 	window.exports = exports;
 
 	runtime.setModuleImports("interop.js", {
@@ -238,7 +205,7 @@ export async function preInit() {
 	});
 
 	(self as any).wasm = {
-		Module: dotnet.instance.Module,
+		Module: runtime.Module,
 		dotnet,
 		runtime,
 		config,
