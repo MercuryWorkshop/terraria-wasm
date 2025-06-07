@@ -34,21 +34,22 @@ const App: Component<
 	`;
 
 	let main = <Main />;
+	const start = () => main.$.start();
 	const next = () => {
 		this.el.addEventListener("animationend", this.el.remove);
 		this.el.style.animation = "fadeout 0.5s ease";
-		main.$.start();
+		start();
 	};
 
 	this.mount = () => {
-		if (initialHasContent) main.$.start();
+		if (initialHasContent) start();
 	};
 
 	return (
 		<div id="app" class={"dark"}>
 			{initialHasContent ? null : (
 				<div id="splash" bind:this={use(this.el)}>
-					<Splash on:next={next} />
+					<Splash on:next={next} start={start} />
 				</div>
 			)}
 			<div id="main">{main}</div>

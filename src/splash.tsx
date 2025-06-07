@@ -2,8 +2,11 @@ import { NAME } from "./main";
 import { Button, Icon, Link } from "./ui/Button";
 import {
 	copyFolder,
+	copyFolderForBadBrowsers,
 	countFolder,
+	countFolderForBadBrowsers,
 	extractTar,
+	FSAPI_UNAVAILABLE,
 	PICKERS_UNAVAILABLE,
 	rootFolder,
 	TAR_TYPES,
@@ -14,6 +17,7 @@ import { TextField } from "./ui/TextField";
 import { store } from "./store";
 
 import iconFolderOpen from "@ktibow/iconset-material-symbols/folder-open-outline";
+import iconCloudUpload from "@ktibow/iconset-material-symbols/cloud-upload";
 import iconFolderZip from "@ktibow/iconset-material-symbols/folder-zip-outline";
 import iconDownload from "@ktibow/iconset-material-symbols/download";
 import iconArchive from "@ktibow/iconset-material-symbols/archive";
@@ -32,6 +36,29 @@ const validateDirectory = async (directory: FileSystemDirectoryHandle) => {
 	}
 	return "";
 };
+const validateDirectoryForBadBrowsers = async (
+	entry: FileSystemEntry | null
+) => {
+	if (!entry || !entry.isDirectory) {
+		return "what?";
+	}
+	let directory = entry as FileSystemDirectoryEntry;
+	if (directory.name != "Content") {
+		return "Directory name is not Content";
+	}
+	let reader = directory.createReader();
+	return new Promise<string>((resolve) => {
+		reader.readEntries((entries: FileSystemEntry[]) => {
+			for (const child of ["Fonts", "Images", "Sounds"]) {
+				if (!entries.some((e) => e.name === child && e.isDirectory)) {
+					resolve(`Failed to find subdirectory Content/${child}`);
+					return;
+				}
+			}
+		});
+		resolve("");
+	});
+};
 
 const Intro: Component<
 	{
@@ -39,8 +66,10 @@ const Intro: Component<
 			type: "copy" | "download" | "simpledownload" | "extract"
 		) => void;
 	},
-	{}
-> = function() {
+	{
+		starting: boolean;
+	}
+> = function () {
 	this.css = `
 		display: flex;
 		flex-direction: column;
@@ -73,6 +102,11 @@ const Intro: Component<
 		}
 	`;
 
+	const next = (stage: "copy" | "download" | "simpledownload" | "extract") => {
+		this.starting = true;
+		this["on:next"](stage);
+	};
+
 	return (
 		<div>
 			<div>
@@ -81,12 +115,13 @@ const Intro: Component<
 				on r58's{" "}
 				<Link href="https://github.com/MercuryWorkshop/celeste-wasm">
 					Celeste browser port
-				</Link>.
+				</Link>
+				.
 			</div>
 			<div>
 				A <Link href="https://mercurywork.shop">Mercury Workshop</Link> Project.
-				Ported by <Link href="https://velzie.rip">velzie</Link>.
-				Want to know more about how this was made? Check the{" "}
+				Ported by <Link href="https://velzie.rip">velzie</Link>. Want to know
+				more about how this was made? Check the{" "}
 				<Link href="https://velzie.rip/blog/celeste-wasm/">writeup</Link>!
 			</div>
 
@@ -99,19 +134,29 @@ const Intro: Component<
 				<div>
 					THIS IS AN UNOFFICIAL DEPLOYMENT OF Terrarium. I (velzie) AM NOT
 					HOSTING THE GAME CONTENT HERE. You can find the official deployment{" "}
-					<Link href="https://terrariaworkshop.com">here</Link>
+					<Link href="https://terraria.mercurywork.shop">here</Link>
 				</div>
 			)}
 
-			{PICKERS_UNAVAILABLE ? (
+			{!import.meta.env.VITE_SIMPLE_DOWNLOAD && PICKERS_UNAVAILABLE ? (
 				<div class="error">
 					Your browser does not support the{" "}
 					<Link href="https://developer.mozilla.org/en-US/docs/Web/API/Window/showDirectoryPicker">
 						File System Access API
 					</Link>
-					. You will be unable to copy your Terraria assets to play or use the
-					upload features in the filesystem viewer. Please switch to a chromium
-					based browser.
+					. You will be unable to extract a {NAME} archive to play or use the
+					upload/download features in the filesystem viewer. Please switch to a
+					chromium based browser.
+				</div>
+			) : null}
+			{!import.meta.env.VITE_SIMPLE_DOWNLOAD && FSAPI_UNAVAILABLE ? (
+				<div class="error">
+					Your browser does not support the{" "}
+					<Link href="https://developer.mozilla.org/en-US/docs/Web/API/DataTransferItem/webkitGetAsEntry">
+						File and Directory Entries API
+					</Link>
+					. You will be unable to copy game assets from your local install of
+					Terraria.
 				</div>
 			) : null}
 
@@ -122,10 +167,10 @@ const Intro: Component<
 			<div class="buttons">
 				{import.meta.env.VITE_SIMPLE_DOWNLOAD ? (
 					<Button
-						on:click={() => this["on:next"]("simpledownload")}
+						on:click={() => next("simpledownload")}
 						type="primary"
 						icon="left"
-						disabled={false}
+						disabled={use(this.starting)}
 					>
 						<Icon icon={iconDownload} />
 						Download Terraria
@@ -133,13 +178,13 @@ const Intro: Component<
 				) : (
 					[
 						<Button
-							on:click={() => this["on:next"]("copy")}
+							on:click={() => next("copy")}
 							type="primary"
 							icon="left"
-							disabled={PICKERS_UNAVAILABLE}
+							disabled={use(this.starting, (x) => x || FSAPI_UNAVAILABLE)}
 						>
 							<Icon icon={iconFolderOpen} />
-							{PICKERS_UNAVAILABLE
+							{FSAPI_UNAVAILABLE
 								? "Copying local assets is unsupported"
 								: "Copy local assets"}
 						</Button>,
@@ -147,19 +192,21 @@ const Intro: Component<
 							on:click={() => this["on:next"]("download")}
 							type="primary"
 							icon="left"
-							disabled={false}
+							disabled={use(this.starting)}
 						>
 							<Icon icon={iconDownload} />
-							Download Assets from Steam
+							Download assets from Steam
 						</Button>,
 						<Button
 							on:click={() => this["on:next"]("extract")}
 							type="primary"
 							icon="left"
-							disabled={false}
+							disabled={use(this.starting, (x) => x || PICKERS_UNAVAILABLE)}
 						>
 							<Icon icon={iconArchive} />
-							Upload Archive
+							{PICKERS_UNAVAILABLE
+								? `Extracting ${NAME} archive is unsupported`
+								: `Extract ${NAME} archive`}
 						</Button>,
 					]
 				)}
@@ -168,7 +215,7 @@ const Intro: Component<
 	);
 };
 
-const Progress: Component<{ percent: number }, {}> = function() {
+const Progress: Component<{ percent: number }, {}> = function () {
 	this.css = `
 		background: var(--surface1);
 		border-radius: 1rem;
@@ -198,11 +245,79 @@ const Copy: Component<
 		status: string;
 		percent: number;
 	}
-> = function() {
+> = function () {
 	this.css = `
 		display: flex;
 		flex-direction: column;
 		gap: 0.5rem;
+
+		code {
+			font-size: 18px;
+		}
+
+		.droparea {
+			position: relative;
+			border: 2px dashed color-mix(in srgb, var(--bg) 75%, var(--surface6));
+			color: var(--fg6);
+			font-size: 1.05rem;
+			font-weight: 500;
+			border-radius: 1rem;
+			padding: 2rem;
+			text-align: center;
+			background: color-mix(in srgb, var(--bg) 45%, transparent);
+			transition: border-color 0.2s ease;
+		}
+
+		.droparea.true {
+			pointer-events: none;
+			cursor: no-drop;
+
+			* {
+				cursor: no-drop;
+			}
+
+			background:  color-mix(in srgb, var(--bg-sub) 45%, transparent);
+			color: var(--surface6);
+			border-color: color-mix(in srgb, var(--bg) 75%, var(--surface4));
+		}
+
+		.droparea.dragover {
+			border-color: var(--accent);
+			color: color-mix(in srgb, var(--fg3) 92%, var(--accent));
+			.dnd-bg-hover {
+				transition: background-image 0.35s ease;
+				background-image: radial-gradient(
+					circle at center,
+					color-mix(in srgb, var(--accent) 25%, transparent),
+					transparent
+				);
+			}
+		}
+
+		.dnd-bg-hover {
+			position: absolute;
+			top: 0;
+			left: 0;
+			width: 100%;
+			height: 100%;
+			border-radius: 1rem;
+			z-index: 9;
+			transition: background-image 0.35s ease;
+			background-image: radial-gradient(
+				circle at center,
+				color-mix(in srgb, var(--surface3) 5%, transparent),
+				transparent
+			);
+		}
+
+		.dnd-content {
+			z-index: 10;
+			position: relative;
+		}
+
+		.dnd-icon {
+			font-size: 2.65rem;
+		}
 	`;
 
 	const opfs = async () => {
@@ -218,6 +333,41 @@ const Copy: Component<
 		this.copying = true;
 		const before = performance.now();
 		await copyFolder(directory, rootFolder, (x) => {
+			cnt++;
+			this.percent = (cnt / max) * 100;
+			console.debug(`copied ${x}: ${((cnt / max) * 100).toFixed(2)}`);
+		});
+		const after = performance.now();
+		console.debug(`copy took ${(after - before).toFixed(2)}ms`);
+
+		await new Promise((r) => setTimeout(r, 250));
+		await rootFolder.getFileHandle(".ContentExists", { create: true });
+		this["on:done"]();
+	};
+	const opfsForBadBrowsers = async (transfer: DataTransferItem) => {
+		// mdn told me to check for this
+		let handle: FileSystemEntry | null;
+		if (
+			"getAsEntry" in transfer &&
+			typeof (transfer as any).getAsEntry === "function"
+		) {
+			handle = (transfer as any).getAsEntry();
+		} else {
+			handle = transfer.webkitGetAsEntry();
+		}
+
+		const res = await validateDirectoryForBadBrowsers(handle);
+		if (res) {
+			this.status = res;
+			return;
+		}
+
+		const contentFolder = handle as FileSystemDirectoryEntry;
+		const max = await countFolderForBadBrowsers(contentFolder);
+		let cnt = 0;
+		this.copying = true;
+		const before = performance.now();
+		await copyFolderForBadBrowsers(contentFolder, rootFolder, (x) => {
 			cnt++;
 			this.percent = (cnt / max) * 100;
 			console.debug(`copied ${x}: ${((cnt / max) * 100).toFixed(2)}`);
@@ -258,11 +408,48 @@ const Copy: Component<
 				on:click={opfs}
 				type="primary"
 				icon="left"
-				disabled={use(this.copying)}
+				disabled={use(this.copying, (x) => x || PICKERS_UNAVAILABLE)}
 			>
 				<Icon icon={iconFolderOpen} />
-				Select Terraria Content directory
+				{PICKERS_UNAVAILABLE
+					? "Selecting Terraria Content directory is unsupported"
+					: "Select Terraria Content directory"}
 			</Button>
+			<div
+				class={use`droparea ${this.copying}`}
+				on:drop={async (e: DragEvent) => {
+					(
+						(e.currentTarget || e.target) as HTMLElement | null
+					)?.classList.remove("dragover");
+					e.preventDefault();
+					if (!e.dataTransfer || !e.dataTransfer.items || this.copying) return;
+					const transfer = e.dataTransfer.items[0];
+					await opfsForBadBrowsers(transfer);
+				}}
+				on:dragover={(e: DragEvent) => {
+					e.preventDefault();
+					e.dataTransfer!.dropEffect = "copy";
+					if (this.copying) return;
+					((e.currentTarget || e.target) as HTMLElement).classList.add(
+						"dragover"
+					);
+				}}
+				on:dragleave={(e: DragEvent) => {
+					(
+						(e.currentTarget || e.target) as HTMLElement | null
+					)?.classList.remove("dragover");
+				}}
+			>
+				<div class="dnd-bg-hover"></div>
+				<div class="dnd-content">
+					<Icon icon={iconCloudUpload} class="dnd-icon" />
+					{PICKERS_UNAVAILABLE ? (
+						<p>Drag and drop Terraria Content directory</p>
+					) : (
+						<p>Or, drag and drop one here</p>
+					)}
+				</div>
+			</div>
 			{$if(use(this.status), <div class="error">{use(this.status)}</div>)}
 		</div>
 	);
@@ -277,7 +464,7 @@ const Extract: Component<
 		status: string;
 		percent: number;
 	}
-> = function() {
+> = function () {
 	this.css = `
 		/* hacky */
 		.center svg {
@@ -344,7 +531,7 @@ const Extract: Component<
 				on:click={opfs}
 				type="primary"
 				icon="left"
-				disabled={use(this.extracting)}
+				disabled={use(this.extracting, (x) => x)}
 			>
 				<Icon icon={iconFolderZip} />
 				Select {NAME} archive
@@ -363,7 +550,7 @@ const SimpleDownload: Component<
 		status: string;
 		percent: number;
 	}
-> = function() {
+> = function () {
 	this.css = `
 		/* hacky */
 		.center svg {
@@ -446,7 +633,7 @@ export const Download: Component<
 		username: string;
 		password: string;
 	}
-> = function() {
+> = function () {
 	this.username = "";
 	this.password = "";
 
@@ -625,7 +812,7 @@ export const Download: Component<
 						on:click={download}
 					>
 						<Icon icon={iconEncrypted} />
-						Download Assets
+						Download assets
 					</Button>
 				</div>
 			)}
@@ -638,11 +825,12 @@ export const Download: Component<
 export const Splash: Component<
 	{
 		"on:next": () => void;
+		start: () => Promise<void>;
 	},
 	{
 		next: "" | "copy" | "download" | "extract" | "simpledownload";
 	}
-> = function() {
+> = function () {
 	this.css = `
 		position: relative;
 
@@ -720,11 +908,26 @@ export const Splash: Component<
 			<img class="splash" src="/backdrop.webp" alt="Terraria art background" />
 			<div class="blur" />
 			<div class="main">
-				<div class="logo"><img src="/logo.webp" alt="Terraria logo" width="421" height="140" fetchpriority="high" /></div>
+				<div class="logo">
+					<img
+						src="/logo.webp"
+						alt="Terraria logo"
+						width="421"
+						height="140"
+						fetchpriority="high"
+					/>
+				</div>
 				<div class="container tcontainer">
 					{use(this.next, (x) => {
 						if (!x) {
-							return <Intro on:next={(x) => (this.next = x)} />;
+							return (
+								<Intro
+									on:next={async (x) => {
+										await this.start();
+										this.next = x;
+									}}
+								/>
+							);
 						} else if (x === "copy") {
 							return <Copy on:done={this["on:next"]} />;
 						} else if (x === "extract") {

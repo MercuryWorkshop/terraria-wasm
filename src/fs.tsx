@@ -22,6 +22,11 @@ import iconArrowBack from "@ktibow/iconset-material-symbols/arrow-back";
 export const PICKERS_UNAVAILABLE =
 	!window.showDirectoryPicker || !window.showOpenFilePicker;
 
+export const FSAPI_UNAVAILABLE =
+	(!window.showDirectoryPicker || !window.showOpenFilePicker) &&
+	!(DataTransferItem.prototype as any).getAsEntry &&
+	!DataTransferItem.prototype.webkitGetAsEntry;
+
 export const rootFolder = await navigator.storage.getDirectory();
 
 export const TAR_TYPES = [
@@ -56,6 +61,18 @@ export async function copyFile(
 	await data.pipeTo(writable);
 }
 
+export async function copyFileForBadBrowsers(
+	file: FileSystemFileEntry,
+	to: FileSystemDirectoryHandle
+) {
+	const data = await new Promise<File>((resolve, reject) => {
+		file.file(resolve, reject);
+	});
+	const handle = await to.getFileHandle(file.name, { create: true });
+	const writable = await handle.createWritable();
+	await data.stream().pipeTo(writable);
+}
+
 export async function countFolder(
 	folder: FileSystemDirectoryHandle
 ): Promise<number> {
@@ -66,6 +83,28 @@ export async function countFolder(
 				count++;
 			} else {
 				await countOne(entry);
+			}
+		}
+	}
+	await countOne(folder);
+	return count;
+}
+
+export async function countFolderForBadBrowsers(
+	folder: FileSystemDirectoryEntry
+): Promise<number> {
+	let count = 0;
+	async function countOne(folder: FileSystemDirectoryEntry) {
+		const reader = folder.createReader();
+		const entries = await new Promise<FileSystemEntry[]>((resolve, reject) => {
+			reader.readEntries(resolve, reject);
+		});
+
+		for (const entry of entries) {
+			if (entry.isFile) {
+				count++;
+			} else {
+				await countOne(entry as FileSystemDirectoryEntry);
 			}
 		}
 	}
@@ -89,6 +128,38 @@ export async function copyFolder(
 			} else {
 				const newTo = await to.getDirectoryHandle(name, { create: true });
 				await upload(entry, newTo);
+			}
+		}
+	}
+	const newFolder = await to.getDirectoryHandle(folder.name, { create: true });
+	await upload(folder, newFolder);
+}
+
+export async function copyFolderForBadBrowsers(
+	folder: FileSystemDirectoryEntry,
+	to: FileSystemDirectoryHandle,
+	callback?: (name: string) => void
+) {
+	async function upload(
+		from: FileSystemDirectoryEntry,
+		to: FileSystemDirectoryHandle
+	) {
+		const reader = from.createReader();
+		const entries = await new Promise<FileSystemEntry[]>((resolve, reject) => {
+			reader.readEntries(resolve, reject);
+		});
+
+		for (const entry of entries) {
+			if (entry.isFile) {
+				const file = entry as FileSystemFileEntry;
+				const fileHandle = await to.getFileHandle(file.name, { create: true });
+				const writable = await fileHandle.createWritable();
+				file.file((f) => f.stream().pipeTo(writable));
+				if (callback) callback(file.name);
+			} else {
+				const dir = entry as FileSystemDirectoryEntry;
+				const newTo = await to.getDirectoryHandle(dir.name, { create: true });
+				await upload(dir, newTo);
 			}
 		}
 	}

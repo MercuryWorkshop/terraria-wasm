@@ -8,7 +8,7 @@ import iconPlayArrow from "@ktibow/iconset-material-symbols/play-arrow";
 import iconFullscreen from "@ktibow/iconset-material-symbols/fullscreen";
 import iconFolderOpen from "@ktibow/iconset-material-symbols/folder-open";
 
-export const NAME = "Terraria";
+export const NAME = "terrarium";
 
 export const Logo: Component<{}, {}> = function () {
 	this.css = `
@@ -39,7 +39,7 @@ export const Logo: Component<{}, {}> = function () {
 	return (
 		<div>
 			<img src="/app.webp" alt="Terraria icon" />
-			<span>terrarium</span>
+			<span>{NAME}</span>
 		</div>
 	);
 };
@@ -184,7 +184,7 @@ const BottomBar: Component<{}, {}> = function () {
 const GameView: Component<
 	{ canvas: HTMLCanvasElement },
 	{},
-	{ start: () => void }
+	{ start: () => Promise<void> }
 > = function () {
 	this.css = `
 		aspect-ratio: 16 / 9;
@@ -224,8 +224,8 @@ const GameView: Component<
 		x ? "canvas started" : "canvas stopped"
 	);
 
-	this.start = () => {
-		preInit();
+	this.start = async () => {
+		await preInit();
 	};
 
 	return (
@@ -249,7 +249,7 @@ export const Main: Component<
 		achievementsOpen: boolean;
 	},
 	{
-		start: () => void;
+		start: () => Promise<void>;
 	}
 > = function () {
 	this.css = `
