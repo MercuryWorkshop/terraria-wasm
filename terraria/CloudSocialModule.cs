@@ -4,7 +4,6 @@ using Steamworks;
 using Terraria.Social.Base;
 using System.IO;
 
-
 namespace Terraria.Social.Custom;
 
 public class CloudSocialModule : Terraria.Social.Base.CloudSocialModule

@@ -8,12 +8,6 @@ using Terraria.Initializers;
 using Terraria.Localization;
 using Terraria.Social;
 using System.Collections.Generic;
-using DepotDownloader;
-using SteamKit2;
-using QRCoder;
-using System.Text.RegularExpressions;
-using System.Linq;
-using SDL3;
 
 partial class JS
 {
@@ -35,7 +29,6 @@ partial class Program
 
     [DllImport("Emscripten")]
     public extern static int mount_opfs();
-
 
     static Terraria.Main game;
     public static bool firstLaunch = true;
@@ -64,40 +57,7 @@ partial class Program
             Directory.CreateSymbolicLink("/Content", "/libsdl/Content");
             TryCreateDirectory("/libsdl/remote/");
 
-            AccountSettingsStore.LoadFromFile("/libsdl/account.config");
-            DebugLog.Enabled = false;
-
-            // DebugLog.Enabled = true;
-            // DebugLog.AddListener((category, message) =>
-            // {
-            //     Console.WriteLine("[{0}] {1}", category, message);
-            // });
-
-
-            ContentDownloader.Config.RememberPassword = true;
-            // ContentDownloader.Config.UseQrCode = HasParameter(args, "-qr");
-
-            // ContentDownloader.Config.DownloadManifestOnly = HasParameter(args, "-manifest-only");
-
-
-            ContentDownloader.Config.CellID = 0;
-
-
-            ContentDownloader.Config.UsingFileList = true;
-            ContentDownloader.Config.FilesToDownload = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-            ContentDownloader.Config.FilesToDownloadRegex = [
-                new Regex("Content\\/.*", RegexOptions.Compiled | RegexOptions.IgnoreCase),
-            ];
-
-            ContentDownloader.Config.InstallDirectory = "/libsdl/";
-
-            ContentDownloader.Config.VerifyAll = false;
-            ContentDownloader.Config.MaxServers = 20;
-
-
-            ContentDownloader.Config.MaxDownloads = 8;
-            ContentDownloader.Config.MaxServers = 8;
-            ContentDownloader.Config.LoginID = null;
+			Steam.PreInit();
         });
     }
 
@@ -126,92 +86,6 @@ partial class Program
             return Task.FromException(e);
         }
     }
-
-    [JSExport]
-    internal static async Task<int> InitSteamSaved()
-    {
-        try
-        {
-            if (AccountSettingsStore.Instance.LoginTokens.Keys.Count > 0)
-            {
-                string username = AccountSettingsStore.Instance.LoginTokens.Keys.First();
-                if (String.IsNullOrEmpty(username)) return 1;
-
-                Console.WriteLine("Using saved login token for " + username);
-
-                if (ContentDownloader.InitializeSteam3(username, null))
-                {
-                    return 0;
-                }
-            }
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine(ex);
-            return 1;
-        }
-        return 1;
-    }
-
-    [JSExport]
-    internal static async Task<bool> DownloadSteamCloud()
-    {
-        return await ContentDownloader.steam3.DownloadSteamCloud(105600, 100, "/libsdl/remote/");
-    }
-
-    [JSExport]
-    internal static async Task<int> InitSteam(string username, string password, bool qr)
-    {
-        try
-        {
-            ContentDownloader.Config.UseQrCode = qr;
-            Steam3Session.qrCallback = (QRCodeData q) =>
-            {
-                Console.WriteLine("Got QR code data");
-                PngByteQRCode png = new PngByteQRCode(q);
-                byte[] bytes = png.GetGraphic(20);
-                string dataurl = "data:image/png;base64," + Convert.ToBase64String(bytes);
-                JS.newqr(dataurl);
-            };
-
-            if (ContentDownloader.InitializeSteam3(username, password))
-            {
-                return 0;
-            }
-            else
-            {
-                Console.WriteLine("Error: InitializeSteam failed");
-                return 1;
-            }
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine(ex);
-        }
-
-
-        return 1;
-    }
-
-    [JSExport]
-    internal static async Task<int> DownloadApp()
-    {
-        var depotManifestIds = new List<(uint, ulong)>();
-        depotManifestIds.Add((105601, 8046724853517638985));
-        // depotManifestIds.Add((731, 7617088375292372759));
-
-        try
-        {
-            await ContentDownloader.DownloadAppAsync(105600, depotManifestIds, "public", null, null, null, false, false).ConfigureAwait(false);
-            return 0;
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine("Could not download app: " + ex.Message);
-            return 1;
-        }
-    }
-
 
     [JSExport]
     internal static Task Cleanup()

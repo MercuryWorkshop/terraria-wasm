@@ -229,10 +229,10 @@ export async function initSteam(
 	password: string | null,
 	qr: boolean
 ) {
-	return await exports.Program.InitSteam(username, password, qr);
+	return await exports.Steam.Init(username, password, qr);
 }
 export async function downloadApp() {
-	return await exports.Program.DownloadApp();
+	return await exports.Steam.DownloadApp();
 }
 
 export async function play() {
