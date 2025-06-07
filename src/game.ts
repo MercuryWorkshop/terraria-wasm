@@ -76,39 +76,6 @@ function hookfmod() {
 }
 hookfmod();
 
-if (import.meta.env.PROD) {
-	try {
-		if (!crossOriginIsolated) {
-			console.log("not crossoriginisolated: using service worker");
-			document.open();
-			document.write("installing service worker, please wait...\n");
-			document.close();
-			setTimeout(() => location.reload(), 3000);
-		}
-		const registration = await navigator.serviceWorker.register("/sw.js", {
-			scope: "/",
-		});
-
-		if (registration.installing) {
-			console.log("Service worker installing");
-			registration.waiting.addEventListener("statechange", (e) => {
-				if (!crossOriginIsolated) {
-					console.log("not crossoriginisolated, reloading");
-					setTimeout(() => location.reload(), 1000);
-				}
-			});
-		} else if (registration.waiting) {
-			console.log("Service worker installed");
-
-		} else if (registration.active) {
-
-		}
-	} catch (error) {
-		console.error(`Registration failed with ${error}`);
-	}
-} else {
-	console.log("dev build: won't register service worker");
-}
 const wasm = await eval(`import("/_framework/dotnet.js")`);
 const dotnet = wasm.dotnet;
 (window as any).wasm = wasm;
@@ -176,6 +143,58 @@ export async function preInit() {
 			pthreadPoolInitialSize: 16,
 		})
 		.withEnvironmentVariable("MONO_SLEEP_ABORT_LIMIT", "99999")
+		.withResourceLoader(
+			(
+				type: string,
+				_name: string,
+				defaultUri: string,
+				_integrity: string,
+				behavior: string
+			) => {
+				// for split wasm
+				if (type === "dotnetwasm" && behavior === "dotnetwasm") {
+					return (async () => {
+						let idx = 0;
+
+						let fetchNext = async () => {
+							let res = await realFetch(defaultUri + idx);
+							idx++;
+							if (!res.body) throw new Error("no body in fetch response");
+							return res.status === 200 && !res.headers.get("content-type")
+								? res.body.getReader()
+								: null;
+						};
+
+						let chunk = await fetchNext();
+						if (!chunk) throw new Error("failed to fetch first chunk");
+						let currentStream: ReadableStreamDefaultReader<Uint8Array> = chunk;
+
+						let stream = new ReadableStream({
+							async pull(controller) {
+								let { value, done } = await currentStream.read();
+								if (done || !value) {
+									chunk = await fetchNext();
+
+									if (chunk) {
+										currentStream = chunk;
+										await this.pull!(controller);
+									} else {
+										controller.close();
+									}
+								} else {
+									controller.enqueue(value);
+								}
+							},
+						});
+
+						let res = new Response(stream, {
+							headers: new Headers({ "Content-Type": "application/wasm" }),
+						});
+						return res;
+					})();
+				}
+			}
+		)
 		.create();
 
 	console.log("loading libcurl");
@@ -214,7 +233,6 @@ export async function preInit() {
 
 	runtime.setModuleImports("depot.js", {
 		newqr: (qr: string) => {
-			console.log("QR DATA" + qr);
 			gameState.qr = qr;
 		},
 	});

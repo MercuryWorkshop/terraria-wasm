@@ -184,7 +184,11 @@ const BottomBar: Component<{}, {}> = function () {
 	);
 };
 
-const GameView: Component<{ canvas: HTMLCanvasElement }, {}> = function () {
+const GameView: Component<
+	{ canvas: HTMLCanvasElement },
+	{},
+	{ start: () => void }
+> = function () {
 	this.css = `
 		aspect-ratio: 16 / 9;
 		user-select: none;
@@ -223,8 +227,7 @@ const GameView: Component<{ canvas: HTMLCanvasElement }, {}> = function () {
 		x ? "canvas started" : "canvas stopped"
 	);
 
-	this.mount = () => {
-		// dotnet will immediately transfer the canvas to deputy thread, so this.mount is required
+	this.start = () => {
 		preInit();
 	};
 
@@ -282,6 +285,9 @@ export const Main: Component<
 		canvas: HTMLCanvasElement;
 		fsOpen: boolean;
 		achievementsOpen: boolean;
+	},
+	{
+		start: () => void;
 	}
 > = function () {
 	this.css = `
@@ -314,6 +320,9 @@ export const Main: Component<
 	this.fsOpen = false;
 	this.achievementsOpen = false;
 
+	let game = <GameView bind:canvas={use(this.canvas)} />;
+	this.start = () => game.$.start();
+
 	return (
 		<div>
 			<TopBar
@@ -322,7 +331,7 @@ export const Main: Component<
 				bind:achievementsOpen={use(this.achievementsOpen)}
 			/>
 			<div class="main">
-				<GameView bind:canvas={use(this.canvas)} />
+				{game}
 				<LogView />
 			</div>
 			<Dialog name="File System" bind:open={use(this.fsOpen)}>

@@ -33,9 +33,15 @@ const App: Component<
 		}
 	`;
 
+	let main = <Main />;
 	const next = () => {
 		this.el.addEventListener("animationend", this.el.remove);
 		this.el.style.animation = "fadeout 0.5s ease";
+		main.$.start();
+	};
+
+	this.mount = () => {
+		if (initialHasContent) main.$.start();
 	};
 
 	return (
@@ -45,9 +51,7 @@ const App: Component<
 					<Splash on:next={next} />
 				</div>
 			)}
-			<div id="main">
-				<Main />
-			</div>
+			<div id="main">{main}</div>
 		</div>
 	);
 };
@@ -55,9 +59,6 @@ const App: Component<
 const root = document.getElementById("app")!;
 try {
 	root.replaceWith(<App />);
-	navigator.serviceWorker.register("/sw.js", {
-		scope: "/",
-	});
 } catch (err) {
 	console.log(err);
 	root.replaceWith(document.createTextNode(`Failed to load: ${err}`));
