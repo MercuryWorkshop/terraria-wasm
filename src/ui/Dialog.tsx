@@ -24,26 +24,26 @@ export const Dialog: Component<
 		opacity: 0;
 
 		scale: .9;
-    transform: rotate3d(1, 0, 0, -20deg);
-    filter: brightness(1.5);
+		transform: rotate3d(1, 0, 0, -20deg);
+		filter: brightness(1.5);
 
 		pointer-events: none;
 		transition: opacity 0.25s, transform 0.175s, filter 0.2s, scale 0.2s, background 0.1s, border-color 0.1s;
-    transition-timing-function: ease;
-    transition-delay: 0.05s, 0.05s, 0.05s, 0.05s;
-    transform-origin: 50% 0%;
-    perspective: 1250px;
+		transition-timing-function: ease;
+		transition-delay: 0.05s, 0.05s, 0.05s, 0.05s;
+		transform-origin: 50% 0%;
+		perspective: 1250px;
 
 		&[open] {
 			opacity: 1;
 			transform: rotate3d(1,0,0,0deg);
 			filter: brightness(1.0);
-		  transition-delay: 0.05s, 0.05s, 0.05s, 0.2s;
+			transition-delay: 0.05s, 0.05s, 0.05s, 0.2s;
 			pointer-events: auto;
 		}
 
 		&[open]::backdrop {
-		  background: rgba(32, 28, 28, 0.35);
+			background: rgba(32, 28, 28, 0.35);
 		}
 
 		&::backdrop {
@@ -55,11 +55,11 @@ export const Dialog: Component<
 			display: flex;
 			gap: 0.5rem;
 			align-items: center;
-      border-bottom: 1.8px solid var(--surface2);
-      transition: border-color 0.1s ease;
-      padding-bottom: 0.5rem;
-      user-select: none;
-      -webkit-user-select: none;
+			border-bottom: 1.8px solid var(--surface2);
+			transition: border-color 0.1s ease;
+			padding-bottom: 0.5rem;
+			user-select: none;
+			-webkit-user-select: none;
 		}
 
 		.header h2 {
@@ -70,7 +70,7 @@ export const Dialog: Component<
 			overflow-y: scroll;
 			overflow-x: hidden;
 			scrollbar-width: none;
-      scrollbar-color: transparent transparent;
+			scrollbar-color: transparent transparent;
 		}
 
 		.expand { flex: 1 }

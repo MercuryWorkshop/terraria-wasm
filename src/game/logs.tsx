@@ -36,8 +36,8 @@ export const LogView: Component<{}, {}> = function () {
 		font-family: var(--font-mono);
 
 		::-webkit-scrollbar {
-		  display: none;
-    }
+			display: none;
+		}
 	`;
 
 	const create = (color: string, log: string) => {

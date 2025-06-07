@@ -461,54 +461,54 @@ export const Download: Component<
 		}
 
 		.methods {
-		  display: flex;
-		  gap: 1rem;
+			display: flex;
+			gap: 1rem;
 		}
 		.methods > div {
-		  flex: 1;
-      display: flex;
-      flex-direction: column;
-      gap: 0.5rem;
+			flex: 1;
+			display: flex;
+			flex-direction: column;
+			gap: 0.5rem;
 
-      padding: 1rem;
+			padding: 1rem;
 		}
 		input {
-		  color: var(--fg);
-		  background: var(--bg);
-		  border: 2px solid black;
-		  border-radius: 0.5em;
-		  padding: 0.25rem;
+			color: var(--fg);
+			background: var(--bg);
+			border: 2px solid black;
+			border-radius: 0.5em;
+			padding: 0.25rem;
 
-		  font-family: Andy Bold;
-		  font-size: 18pt;
+			font-family: Andy Bold;
+			font-size: 18pt;
 		}
 
 		.spacer {
-		      flex: 1;
-		      margin-top: 0.5em;
-		      margin-bottom: 0.5em;
-		      border-bottom: 1px solid var(--fg);
-    }
+			flex: 1;
+			margin-top: 0.5em;
+			margin-bottom: 0.5em;
+			border-bottom: 1px solid var(--fg);
+		}
 
 		h1, h3 {
-		  text-align: center;
-		  font-family: Andy Bold;
-      padding: 0;
-      margin: 0;
+			text-align: center;
+			font-family: Andy Bold;
+			padding: 0;
+			margin: 0;
 		}
 		.logcontainer {
-		  font-size: initial;
+			font-size: initial;
 		}
 
 		.qrcontainer {
-		  display: flex;
-      justify-content: center;
-      flex-direction: column;
-      align-items: center;
-      width: 100%;
+			display: flex;
+			justify-content: center;
+			flex-direction: column;
+			align-items: center;
+			width: 100%;
 		}
 		.qrcontainer img {
-		  width: 40%;
+			width: 40%;
 		}
 	`;
 

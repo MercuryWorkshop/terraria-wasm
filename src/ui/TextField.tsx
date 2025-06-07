@@ -9,29 +9,29 @@ export const TextField: Component<
 	{}
 > = function () {
 	this.css = `
-    border: 0.1rem solid var(--surface1);
-    border-radius: 4rem;
-    padding: 0.5rem;
-    font-family: var(--font-body);
-    padding-left: 0.75rem;
-    transition: all 0.1s ease;
-	color: var(--fg);
-	font-size: 1.25rem;
+		border: 0.1rem solid var(--surface1);
+		border-radius: 4rem;
+		padding: 0.5rem;
+		font-family: var(--font-body);
+		padding-left: 0.75rem;
+		transition: all 0.1s ease;
+		color: var(--fg);
+		font-size: 1.25rem;
 
-    &:hover {
-      transition: all 0.1s ease;
-      border-color: var(--surface2);
-    }
+		&:hover {
+			transition: all 0.1s ease;
+			border-color: var(--surface2);
+		}
 
-    &:focus {
-      transition: all 0.1s ease;
-      border-color: var(--accent);
-    }
+		&:focus {
+			transition: all 0.1s ease;
+			border-color: var(--accent);
+		}
 
-    ::placeholder {
-      color: var(--surface5);
-    }
-  `;
+		::placeholder {
+			color: var(--surface5);
+		}
+	`;
 
 	return (
 		<input
