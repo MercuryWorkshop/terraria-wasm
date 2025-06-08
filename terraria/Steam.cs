@@ -71,9 +71,10 @@ partial class Steam
     [JSExport]
     internal static async Task<int> DownloadApp()
     {
-        var depotManifestIds = new List<(uint, ulong)>();
-        depotManifestIds.Add((105601, 8046724853517638985));
-        // depotManifestIds.Add((731, 7617088375292372759));
+        List<(uint, ulong)> depotManifestIds = [
+			(105601, 8046724853517638985),
+			//(731, 7617088375292372759)
+		];
 
         try
         {

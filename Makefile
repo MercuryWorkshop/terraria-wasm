@@ -1,5 +1,6 @@
 STATICS_RELEASE=c93989e1-7585-4b18-ae46-51fceedf9aeb
 Profile=Release
+Aot=true
 DOTNETFLAGS=--nodereuse:false
 
 statics:
@@ -32,7 +33,7 @@ clean:
 	rm -rvf statics {terraria,SteamKit2.WASM/SteamKit/SteamKit2/SteamKit2,SteamKit2.WASM/protobuf-net/src/protobuf-net.Core}/{bin,obj} FNA node_modules || true
 
 build: deps
-	if [ $(Profile) = "Debug" ]; then\
+	if [ $(Aot) != "true" ]; then\
 		sed 's/\[DllImport(nativeLibName, EntryPoint = "SDL_CreateWindow", CallingConvention = CallingConvention\.Cdecl)\]/[DllImport(nativeLibName, EntryPoint = "SDL__CreateWindow", CallingConvention = CallingConvention.Cdecl)]/' < SDL3.Legacy.cs |\
 		sed '/\[DllImport(nativeLibName, CallingConvention = CallingConvention.Cdecl)\]/ { N; s|\(\[DllImport(nativeLibName, CallingConvention = CallingConvention.Cdecl)\]\)\n\(.*SDL_GetWindowFlags.*\)|[DllImport(nativeLibName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "SDL__GetWindowFlags")]\n\2| }'\
 		> FNA/lib/SDL3-CS/SDL3/SDL3.Legacy.cs;\
@@ -41,7 +42,7 @@ build: deps
 	fi
 #
 	rm -r public/_framework terraria/bin/$(Profile)/net9.0/publish/wwwroot/_framework || true
-	cd terraria && dotnet publish -c $(Profile) -v diag $(DOTNETFLAGS)
+	cd terraria && dotnet publish -c $(Profile) -v diag $(DOTNETFLAGS) /p:TerrariaWasmAot="$(Aot)"
 	cp -r terraria/bin/$(Profile)/net9.0/publish/wwwroot/_framework public/_framework
 #
 	# microsoft messed up

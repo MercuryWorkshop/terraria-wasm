@@ -1,4 +1,4 @@
-import { gameState, play, preInit, TIMEBUF_SIZE } from "./game";
+import { gameState, play, preInit } from "./game";
 import { LogView } from "./game/logs";
 import { OpfsExplorer } from "./fs";
 import { Dialog } from "./ui/Dialog";
@@ -50,7 +50,7 @@ const TopBar: Component<
 		fsOpen: boolean;
 		achievementsOpen: boolean;
 	},
-	{ allowPlay: boolean; fps: HTMLElement }
+	{ allowPlay: boolean }
 > = function () {
 	this.css = `
 		padding: 0.5em;
@@ -81,28 +81,10 @@ const TopBar: Component<
 		this.allowPlay = gameState.ready && !gameState.playing;
 	});
 
-	this.mount = () => {
-		setInterval(() => {
-			if (gameState.playing) {
-				const avgFrametime =
-					gameState.timebuf.toArray().reduce((acc, x) => acc + x, 0) /
-					TIMEBUF_SIZE;
-				const avgFps = (1000 / avgFrametime).toFixed(0);
-				this.fps.innerText = "" + avgFps;
-			}
-		}, 1000);
-	};
-
 	return (
 		<div>
 			<div class="group">
 				<Logo />
-				{$if(
-					use(gameState.playing),
-					<div>
-						FPS: <span bind:this={use(this.fps)}></span>
-					</div>
-				)}
 			</div>
 			<div class="expand" />
 			<div class="group">

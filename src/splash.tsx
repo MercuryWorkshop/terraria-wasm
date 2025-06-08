@@ -508,6 +508,7 @@ const Extract: Component<
 			progressStream = progressStream.pipeThrough(
 				new DecompressionStream("gzip")
 			);
+
 		await extractTar(progressStream, rootFolder, (type, name) =>
 			console.log(`untarred ${type} ${name}`)
 		);

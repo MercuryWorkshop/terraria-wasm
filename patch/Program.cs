@@ -4,28 +4,28 @@ string output = args[1];
 var outputStream = new StreamWriter(output);
 
 string? callbackType = null;
-int doCallbackId = -1;
+int doCallbackIdx = -1;
 
 using (var reader = new StreamReader(input))
 {
     string? line = null;
     while ((line = reader.ReadLine()) != null)
     {
-        if (callbackType == null && line.Contains("(type") && line.Contains("(func (param i32 i32 i32) (result i32))"))
+        if (line.Contains("(type") && line.Contains("(func (param i32 i32 i32) (result i32))"))
         {
             callbackType = line.Split(";")[1];
-            Console.Error.WriteLine($"found callback type: {callbackType}");
+            Console.Error.WriteLine($"found callback type id: {callbackType}");
         }
         if (line.Contains("(elem (;0;)"))
         {
             string[] functable = string.Join("func", line.Split("func").Skip(1)).TrimEnd(')').Split(" ");
-            doCallbackId = functable.Index().First(x => x.Item == "$do_callback").Index;
-            Console.Error.WriteLine($"found callback index: {doCallbackId}");
+            doCallbackIdx = functable.Index().First(x => x.Item == "$do_callback").Index;
+            Console.Error.WriteLine($"found emscripten callback index: {doCallbackIdx}");
         }
     }
 }
 
-if (callbackType == null || doCallbackId == -1) throw new Exception(":(");
+if (callbackType == null || doCallbackIdx == -1) throw new Exception(":(");
 
 bool inTarget = false;
 int nesting = 0;
@@ -40,7 +40,9 @@ using (var reader = new StreamReader(input))
             Console.Error.WriteLine(line);
         }
         else
+        {
             outputStream.WriteLine(line);
+        }
 
         if (nesting < 0)
         {
@@ -83,7 +85,7 @@ using (var reader = new StreamReader(input))
 			  call $__assert_fail
 			  unreachable
 			end)
-			""".Replace("__X__", $"{doCallbackId}"));
+			""".Replace("__X__", $"{doCallbackIdx}"));
             inTarget = true;
         }
 

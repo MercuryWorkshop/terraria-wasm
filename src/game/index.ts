@@ -1,11 +1,9 @@
-import { RingBuffer } from "ring-buffer-ts";
 // @ts-ignore
 import { libcurl } from "libcurl.js";
 import { store } from "../store";
 import { DotnetHostBuilder } from "./dotnetdefs";
 
 export type Log = { color: string; log: string };
-export const TIMEBUF_SIZE = 120;
 export const gameState: Stateful<{
 	ready: boolean;
 	loginstate: number;
@@ -14,14 +12,12 @@ export const gameState: Stateful<{
 
 	// these will NOT work with use()
 	logbuf: Log[];
-	timebuf: RingBuffer<number>;
 }> = $state({
 	qr: null,
 	ready: false,
 	loginstate: 0,
 	playing: false,
 	logbuf: [],
-	timebuf: new RingBuffer<number>(TIMEBUF_SIZE),
 });
 
 function hookfmod() {
@@ -118,6 +114,23 @@ export async function preInit() {
 			pthreadPoolInitialSize: 16,
 		})
 		.withEnvironmentVariable("MONO_SLEEP_ABORT_LIMIT", "99999")
+		.withRuntimeOptions([
+			// jit functions quickly and jit more functions
+			`--jiterpreter-minimum-trace-hit-count=${500}`,
+
+			// monitor jitted functions for less time
+			`--jiterpreter-trace-monitoring-period=${100}`,
+
+			// reject less funcs
+			`--jiterpreter-trace-monitoring-max-average-penalty=${150}`,
+
+			// increase jit function limits
+			`--jiterpreter-wasm-bytes-limit=${64 * 1024 * 1024}`,
+			`--jiterpreter-table-size=${32 * 1024}`,
+
+			// print jit stats
+			`--jiterpreter-stats-enabled`,
+		])
 		.withResourceLoader((type, _name, defaultUri, _integrity, behavior) => {
 			// for split wasm
 			if (type === "dotnetwasm" && behavior === "dotnetwasm") {
@@ -238,35 +251,19 @@ export async function downloadApp() {
 export async function play() {
 	gameState.playing = true;
 
-	const before = performance.now();
 	console.debug("Init...");
+	const before = performance.now();
 	await exports.Program.Init(screen.width, screen.height);
 	const after = performance.now();
 	console.debug(`Init : ${(after - before).toFixed(2)}ms`);
 
 	console.debug("MainLoop...");
-	const main = async () => {
-		const before = performance.now();
-		const ret = await exports.Program.MainLoop();
-		const after = performance.now();
+	await exports.Program.MainLoop();
+	console.debug("Cleanup...");
 
-		gameState.timebuf.add(after - before);
-
-		if (!ret) {
-			console.debug("Cleanup...");
-
-			gameState.timebuf.clear();
-
-			await exports.Program.Cleanup();
-			gameState.ready = false;
-			gameState.playing = false;
-
-			return;
-		}
-
-		requestAnimationFrame(main);
-	};
-	requestAnimationFrame(main);
+	await exports.Program.Cleanup();
+	gameState.ready = false;
+	gameState.playing = false;
 }
 
 useChange([gameState.playing], () => {

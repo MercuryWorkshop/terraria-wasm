@@ -95,18 +95,18 @@ partial class Program
     }
 
     [JSExport]
-    internal static Task<bool> MainLoop()
+    internal static Task MainLoop()
     {
         try
         {
-            game.RunOneFrame();
+            game.Run();
         }
         catch (Exception e)
         {
             Console.Error.WriteLine("Error in MainLoop()!");
             Console.Error.WriteLine(e);
-            return Task.FromException<bool>(e);
+            return Task.FromException(e);
         }
-        return Task.FromResult(game.RunApplication);
+        return Task.Delay(0);
     }
 }

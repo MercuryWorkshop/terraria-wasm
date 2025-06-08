@@ -1,9 +1,9 @@
 <Project Sdk="Microsoft.NET.Sdk.WebAssembly">
-	<PropertyGroup Condition="'$(Configuration)' == 'Debug'">
-		<RunAOTCompilation>false</RunAOTCompilation>
-	</PropertyGroup>
-	<PropertyGroup Condition="'$(Configuration)' == 'Release'">
+	<PropertyGroup Condition="'$(TerrariaWasmAot)' == 'true'">
 		<RunAOTCompilation>true</RunAOTCompilation>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(TerrariaWasmAot)' != 'true'">
+		<RunAOTCompilation>false</RunAOTCompilation>
 	</PropertyGroup>
 
 	<PropertyGroup>
@@ -30,9 +30,9 @@
 		<WasmNativeStrip>false</WasmNativeStrip>
 		<WasmNativeDebugSymbols>true</WasmNativeDebugSymbols>
 
-		<EmccExtraLDFlags>-sMIN_WEBGL_VERSION=2 -sWASMFS -sOFFSCREENCANVAS_SUPPORT</EmccExtraLDFlags>
 		<EmccLinkOptimizationFlag>-O3</EmccLinkOptimizationFlag>
 		<EmccCompileOptimizationFlag>-O3</EmccCompileOptimizationFlag>
+		<EmccExtraLDFlags>-sMIN_WEBGL_VERSION=2 -sWASMFS -sOFFSCREENCANVAS_SUPPORT</EmccExtraLDFlags>
 		<EmccEnvironment>web,worker</EmccEnvironment>
 	</PropertyGroup>
 
@@ -48,6 +48,8 @@
 
 		<!-- WASMFS -->
 		<NativeFileReference Include="Emscripten.c" />
+		<!-- FNA -->
+		<NativeFileReference Include="__Native.c" />
 	</ItemGroup>
 
 	<ItemGroup>

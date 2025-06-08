@@ -19,9 +19,6 @@ importers:
       libcurl.js:
         specifier: ^0.7.1
         version: 0.7.1
-      ring-buffer-ts:
-        specifier: ^1.2.0
-        version: 1.2.0
       rollup-plugin-node-polyfills:
         specifier: ^0.2.1
         version: 0.2.1
@@ -1064,12 +1061,6 @@ packages:
       }
     engines: { iojs: ">=1.0.0", node: ">=0.10.0" }
 
-  ring-buffer-ts@1.2.0:
-    resolution:
-      {
-        integrity: sha512-dkGqA7YHZgXp1dWwcNIsmt+4EgHK1RmY9sp7eqHLLfTkhYhQQ4agAwqgED7hJakELMaXkBgZ5568vqaI3/wV6Q==,
-      }
-
   rollup-plugin-inject@3.0.2:
     resolution:
       {
@@ -1751,8 +1742,6 @@ snapshots:
   relateurl@0.2.7: {}
 
   reusify@1.1.0: {}
-
-  ring-buffer-ts@1.2.0: {}
 
   rollup-plugin-inject@3.0.2:
     dependencies:
