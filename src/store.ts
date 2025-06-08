@@ -6,6 +6,7 @@ export let store = $store(
 				? "light"
 				: "dark",
 		wisp: "wss://anura.pro/",
+		epoxyVersion: "",
 	},
 	{ ident: "options", backing: "localstorage", autosave: "auto" }
 );

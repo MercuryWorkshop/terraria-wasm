@@ -1,6 +1,4 @@
-// @ts-ignore
-import { libcurl } from "libcurl.js";
-import { store } from "../store";
+import { epoxyFetch, EpxTcpWs, getWispUrl } from "../epoxy";
 import { DotnetHostBuilder } from "./dotnetdefs";
 
 export type Log = { color: string; log: string };
@@ -19,33 +17,6 @@ export const gameState: Stateful<{
 	playing: false,
 	logbuf: [],
 });
-
-function hookfmod() {
-	let contexts: AudioContext[] = [];
-	let ctx = AudioContext;
-	(AudioContext as any) = function () {
-		let context = new ctx();
-
-		contexts.push(context);
-		return context;
-	};
-
-	window.addEventListener("focus", async () => {
-		for (let context of contexts) {
-			try {
-				await context.resume();
-			} catch {}
-		}
-	});
-	window.addEventListener("blur", async () => {
-		for (let context of contexts) {
-			try {
-				await context.suspend();
-			} catch {}
-		}
-	});
-}
-hookfmod();
 
 const dotnet: DotnetHostBuilder = (
 	await eval(`import("/_framework/dotnet.js")`)
@@ -81,15 +52,15 @@ function encryptRSA(data: Uint8Array, n: bigint, e: bigint): Uint8Array {
 
 		return BigInt(
 			"0x" +
-				[
-					"00",
-					"02",
-					...padding.map((byte) => byte.toString(16).padStart(2, "0")),
-					"00",
-					...Array.from(messageBytes).map((byte: any) =>
-						byte.toString(16).padStart(2, "0")
-					),
-				].join("")
+			[
+				"00",
+				"02",
+				...padding.map((byte) => byte.toString(16).padStart(2, "0")),
+				"00",
+				...Array.from(messageBytes).map((byte: any) =>
+					byte.toString(16).padStart(2, "0")
+				),
+			].join("")
 		);
 	};
 	const paddedMessage = pkcs1v15Pad(data, n);
@@ -177,22 +148,24 @@ export async function preInit() {
 		})
 		.create();
 
-	console.log("loading libcurl");
-	await libcurl.load_wasm(
-		"https://cdn.jsdelivr.net/npm/libcurl.js@0.6.20/libcurl.wasm"
-	);
-	libcurl.set_websocket(store.wisp);
-
-	useChange([store.wisp], () => libcurl.set_websocket(store.wisp));
-
+	console.log("loading epoxy");
 	window.WebSocket = new Proxy(WebSocket, {
 		construct(t, a, n) {
-			if (a[0] === store.wisp) return Reflect.construct(t, a, n);
+			const url = new URL(a[0]);
+			if (a[0] === getWispUrl() || url.host === location.host)
+				return Reflect.construct(t, a, n);
+			if (url.hostname.startsWith("__terraria_wisp_proxy_ws__"))
+				return new EpxTcpWs(
+					url.pathname.substring(1),
+					url.hostname.replace("__terraria_wisp_proxy_ws__", "")
+				);
 
-			return new libcurl.WebSocket(...a);
+			// @ts-expect-error
+			return new EpxWs(...a);
 		},
 	});
-	window.fetch = libcurl.fetch;
+	// @ts-expect-error
+	window.fetch = epoxyFetch;
 
 	const config = runtime.getConfig();
 	exports = await runtime.getAssemblyExports(config.mainAssemblyName!);
@@ -229,10 +202,6 @@ export async function preInit() {
 	await runtime.runMain();
 	await exports.Program.PreInit();
 	console.debug("dotnet initialized");
-
-	// if (await exports.Program.InitSteamSaved() == 0) {
-	// 	gameState.loginstate = 2;
-	// }
 
 	gameState.ready = true;
 }
