@@ -48,7 +48,6 @@ const TopBar: Component<
 	{
 		canvas: HTMLCanvasElement;
 		fsOpen: boolean;
-		achievementsOpen: boolean;
 	},
 	{ allowPlay: boolean }
 > = function () {
@@ -228,7 +227,6 @@ export const Main: Component<
 	{
 		canvas: HTMLCanvasElement;
 		fsOpen: boolean;
-		achievementsOpen: boolean;
 	},
 	{
 		start: () => Promise<void>;
@@ -262,7 +260,6 @@ export const Main: Component<
 	`;
 
 	this.fsOpen = false;
-	this.achievementsOpen = false;
 
 	let game = <GameView bind:canvas={use(this.canvas)} />;
 	this.start = () => game.$.start();
@@ -272,7 +269,6 @@ export const Main: Component<
 			<TopBar
 				canvas={use(this.canvas)}
 				bind:fsOpen={use(this.fsOpen)}
-				bind:achievementsOpen={use(this.achievementsOpen)}
 			/>
 			<div class="main">
 				{game}
@@ -281,10 +277,6 @@ export const Main: Component<
 			<Dialog name="File System" bind:open={use(this.fsOpen)}>
 				<OpfsExplorer open={use(this.fsOpen)} />
 			</Dialog>
-			<Dialog
-				name="Achievements"
-				bind:open={use(this.achievementsOpen)}
-			></Dialog>
 			<BottomBar />
 		</div>
 	);

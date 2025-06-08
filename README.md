@@ -39,7 +39,14 @@ dotnet tool install --global ilspycmd --version 9.0.0.7889
 bash tools/decompile.sh ~/.local/share/Steam/steamapps/common/Terraria/Terraria.exe
 ```
 
-3. Build the project
+3. Patch Terraria
+
+```bash
+bash tools/copydecompiled.sh
+bash tools/applypatches.sh Vanilla
+```
+
+4. Build the project
 
 ```bash
 make serve
@@ -62,5 +69,5 @@ Do not publicly host the game assets without permission from Re-Logic. This is f
 
 # I want to add mods
 
-Right now performance is not good enough in dotnet interpreted mode, which is required for [the MonoMod WASM port](https://github.com/r58Playz/MonoMod) to function.
+Right now performance is not good enough in dotnet interpreted/jiterpreter mode, which is required for [the MonoMod WASM port](https://github.com/r58Playz/MonoMod) to function.
 Eventually it might be possible with improvements to the dotnet wasm jit or a "mixed aot" mode allowing for better FNA performance, but for now it isn't feasible
