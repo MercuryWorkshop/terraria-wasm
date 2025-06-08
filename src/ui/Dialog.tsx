@@ -71,6 +71,9 @@ export const Dialog: Component<
 			overflow-x: hidden;
 			scrollbar-width: none;
 			scrollbar-color: transparent transparent;
+			flex: 1;
+			display: flex;
+			flex-direction: column;
 		}
 
 		.expand { flex: 1 }

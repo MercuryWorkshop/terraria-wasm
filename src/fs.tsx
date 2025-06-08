@@ -355,7 +355,7 @@ export const OpfsExplorer: Component<
 		display: flex;
 		flex-direction: column;
 		gap: 1em;
-		min-height: min(44rem, 90vh);
+		flex: 1;
 
 		.path {
 			display: flex;
